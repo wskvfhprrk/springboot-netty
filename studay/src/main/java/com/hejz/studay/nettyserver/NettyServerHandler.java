@@ -3,7 +3,10 @@ package com.hejz.studay.nettyserver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hejz.studay.entity.*;
+import com.hejz.studay.repository.DtuInfoRepository;
+import com.hejz.studay.repository.RelayRepository;
 import com.hejz.studay.repository.SensorDataDbRepository;
+import com.hejz.studay.repository.SensorRepository;
 import com.hejz.studay.utils.CRC16;
 import com.hejz.studay.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
@@ -36,6 +39,13 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     private ObjectMapper objectMapper;
     @Autowired
     SensorDataDbRepository sensorDataDbRepository;
+    @Autowired
+    RelayRepository relayRepository;
+    @Autowired
+    SensorRepository sensorRepository;
+    @Autowired
+    DtuInfoRepository dtuInfoRepository;
+
     //所有的连接
     public static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
@@ -69,38 +79,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         log.info("初始化缓存数据…………");
         // TODO: 2023/1/5 改为从缓存和数据库中获取
         if (dtuInfos.isEmpty()) {
-            DtuInfo dtuInfo = new DtuInfo();
-            dtuInfo.setId(1L);
-            dtuInfo.setImei(imei);
-            dtuInfo.setImeiLength(15);
-            dtuInfo.setRelayLength(8);
-            dtuInfo.setSensorLength(7);
-            dtuInfo.setGroupIntervalTime(2000);
-            dtuInfo.setHeartbeatLength(2);
-            dtuInfo.setRegistrationLength(89);
-            dtuInfo.setAutomaticAdjustment(true);
+            DtuInfo dtuInfo = dtuInfoRepository.getDtuInfoByImei(imei);
             //感应器指令集
-            List<Sensor> sensors = sensorDataArrMap.get(imei) == null ? new ArrayList<>() : sensorDataArrMap.get(imei);
-            if (sensors.isEmpty()) {
-                sensors.add(new Sensor(1L, "865328063321359", 1, "空气温度 ", "01 03 03 00 00 01 84 4E", "D/10", "ºC", 25, 20, "2-1,1-1", "2-1,1-0"));
-                sensors.add(new Sensor(2L, "865328063321359", 1, "空气湿度 ", "01 03 03 01 00 01 D5 8E", "D/10", "%", 90, 70, "0", "0"));
-                sensors.add(new Sensor(3L, "865328063321359", 2, "土壤PH  ", "02 03 02 03 00 01 75 81", "D/10", "", 9, 6, "0", "0"));
-                sensors.add(new Sensor(4L, "865328063321359", 2, "土壤温度 ", "02 03 02 00 00 01 85 81", "D/100+5", "ºC", 25, 25, "0", "0"));
-                sensors.add(new Sensor(5L, "865328063321359", 2, "土壤湿度 ", "02 03 02 01 00 01 D4 41", "D/100", "%", 100, 80, "0", "0"));
-                sensors.add(new Sensor(6L, "865328063321359", 2, "土壤氮   ", "02 03 02 04 00 01 C4 40", "D/1", "mg/L", 100, 50, "0", "0"));
-                sensors.add(new Sensor(7L, "865328063321359", 2, "土壤磷   ", "02 03 02 05 00 01 95 80", "D/1", "mg/L", 100, 50, "0", "0"));
-                sensors.add(new Sensor(8L, "865328063321359", 2, "土壤钾   ", "02 03 02 06 00 01 65 80", "D/1", "mg/L", 100, 50, "0", "0"));
-                sensors.add(new Sensor(9L, "865328063321359", 2, "土壤电导率", "02 03 02 02 00 01 24 41", "D/1", "us/cm", 250, 80, "0", "0"));
-            }
+            List<Sensor> sensors =  sensorRepository.getAllByImei(imei);
             sensorDataArrMap.put(imei, sensors);
             //继电器指令集
-            List<Relay> relays = relayDataArrMap.get(imei) == null ? new ArrayList<>() : relayDataArrMap.get(imei);
-            if (relays.isEmpty()) {
-                relays.add(new Relay(1L, "865328063321359", 3, "棚双锁开关", "03 05 00 00 FF 00 8D D8", "03 05 00 00 00 00 CC 28", 30000L, "lcaolhost:8080/hello", "棚双锁开关"));
-                relays.add(new Relay(2L, "865328063321359", 3, "大棚总开关", "03 05 00 01 FF 00 DC 18", "03 05 00 01 00 00 9D E8", 30000L, "lcaolhost:8080/hello", "大棚总开关"));
-                relays.add(new Relay(3L, "865328063321359", 3, "", "03 05 00 02 FF 00 2C 18", "03 05 00 02 00 00 6D E8", 0L, "lcaolhost:8080/hello", ""));
-                relays.add(new Relay(4L, "865328063321359", 3, "", "03 05 00 03 FF 00 7D D8", "03 05 00 03 00 00 3C 28", 0L, "lcaolhost:8080/hello", ""));
-            }
+            List<Relay> relays = relayRepository.getAllByImei(imei);
             relayDataArrMap.put(imei, relays);
             dtuInfo.setRelayList(relays);
             dtuInfo.setSensorList(sensors);
@@ -447,7 +431,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             ids = sensor.getMaxControIds();
         } else if (data < sensor.getMin()) {
             log.info("{} 结果值 {} 小于最小值{}", sensor.getName(), data, sensor.getMin());
-            ids = sensor.getMinControIds();
+            ids = sensor.getMinRelayIds();
         } else {
             log.info("{} 结果值 {} 比较合理，不用处理！", sensor.getName(), data);
         }
@@ -475,7 +459,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             for (Relay relay : relayList) {
                 if (String.valueOf(relay.getId()).equals(split1[0])) {
                     String sendHex = split1[1].equals("1") ? relay.getOpneHex() : relay.getCloseHex();
-                    log.info("发送imei值：{} ,继电器为：{}，指令为：{}", sensor.getImei(), split1[1].equals("1") ? "闭合指令" : "断开指令", sendHex);
+                    log.info("发送imei值：{} ,继电器id：{}-{}，指令为：{}", sensor.getImei(),relay.getId(), split1[1].equals("1") ? "闭合指令" : "断开指令", sendHex);
                     write(Arrays.asList(sendHex), ctx);
                     //添加到要处理的有效指令中——在处理完后删除
                     List<String> list = validInstructionsMap.get(sensor.getImei()) == null ? new ArrayList<>() : validInstructionsMap.get(sensor.getImei());

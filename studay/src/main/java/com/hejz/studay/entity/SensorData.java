@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 /**
  * @author:hejz 75412985@qq.com
  * @create: 2023-01-09 08:54
- * @Description: 传感器返回值
+ * @Description: 传感器返回值-不是写入数据库中的
  */
 @Data
 @NoArgsConstructor

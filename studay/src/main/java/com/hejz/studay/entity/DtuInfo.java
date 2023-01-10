@@ -29,31 +29,61 @@ public class DtuInfo {
             columnDefinition="bigint"+" COMMENT 'ID'"
     )
     private Long id;
+    @Column(
+            name = "imei",
+            nullable = false,
+            columnDefinition="varchar(15)"+" COMMENT 'imei'"
+    )
     private String imei;
 
     /**
      * dtu注册信息的长度
      */
+    @Column(
+            name = "registration_length",
+            columnDefinition="int(2) default 89"+" COMMENT 'dtu注册信息的长度'"
+    )
     private Integer registrationLength = 89;
     /**
      * imei长度固定值
      */
+    @Column(
+            name = "imei_length",
+            columnDefinition="int(2) default 15"+" COMMENT 'imei长度固定值'"
+    )
     private Integer imeiLength = 15;
     /**
      * 继电器返回值长度
      */
+    @Column(
+            name = "relay_length",
+            columnDefinition="int(2) default 8"+" COMMENT '继电器返回值长度'"
+    )
     private Integer relayLength=8;
     /**
      * 感应器返回值长度
      */
+    @Column(
+            name = "sensor_length",
+            columnDefinition="int(2) default 7"+" COMMENT '感应器返回值长度'"
+    )
     private Integer sensorLength=7;
     /**
      * 心跳bates长度
      */
-    private Integer heartbeatLength;
+    @Column(
+            name = "heartbeat_length",
+            columnDefinition="int(2) default 2"+" COMMENT '心跳bates长度'"
+    )
+    private Integer heartbeatLength=2;
     /**
      * 每组发送接收间隔时间(毫秒)——略小于dtu每组间隔时间，大于每组中每个发送间隔时间
      */
+    @Column(
+            name = "group_interval_time",
+            nullable = true,
+            columnDefinition="int(10)"+" COMMENT '每组发送接收间隔时间(毫秒)——略小于dtu每组间隔时间，大于每组中每个发送间隔时间'"
+    )
     private Integer groupIntervalTime;
     /**
      * 传感器指中指令参数
@@ -66,8 +96,13 @@ public class DtuInfo {
     @Transient
     private List<Relay> relayList;
     /**
-     * 是否自动调整
+     * 是否自动控制——1是自动0是手动控制
      */
+    @Column(
+            name = "automatic_adjustment",
+            nullable = true,
+            columnDefinition="bit(1)"+" COMMENT '是否自动控制——1是自动0是手动控制'"
+    )
     private Boolean automaticAdjustment = true;
 
 }
