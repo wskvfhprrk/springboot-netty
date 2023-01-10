@@ -22,7 +22,7 @@ public class SensorDataDb {
     private Date date;
     private String imei;
     private String names;
-    private String datas;
+    private String data;
     private String units;
 
 }

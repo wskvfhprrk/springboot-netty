@@ -3,6 +3,7 @@ package com.hejz.studay.nettyserver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hejz.studay.entity.*;
+import com.hejz.studay.repository.SensorDataDbRepository;
 import com.hejz.studay.utils.CRC16;
 import com.hejz.studay.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
@@ -33,6 +34,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     private Logger log = LogManager.getLogger(NettyServerHandler.class);
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    SensorDataDbRepository sensorDataDbRepository;
     //所有的连接
     public static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
@@ -321,16 +324,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         String data = StringUtils.join(dataList, ",");
         List<String> unitList = sensorDataList.stream().map(sensorData -> sensorData.getUnit()).collect(Collectors.toList());
         String units = StringUtils.join(unitList, ",");
-        // TODO: 2023/1/10 改为jpa存数据
-//        LinkedHashMap<String, String> params = new LinkedHashMap<>();
-//        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        String format = sf.format(new Date());
-//        params.put("createDate", format);
-//        params.put("imei", imei);
-//        params.put("names", names);
-//        params.put("data", data);
-//        params.put("units", units);
-//        Dbcp2Base.execute(1, "insert into sensor_data(createDate,imei,names,data,units) values(?,?,?,?,?)", params, SensorDataDb.class);
+        //存进数据
+        SensorDataDb sensorDataDb = new SensorDataDb(new Date(), imei, names, data, units);
+        sensorDataDbRepository.save(sensorDataDb);
     }
 
     /**
