@@ -35,7 +35,7 @@ public class Relay {
 
     @Column(
             name = "imei",
-            nullable = true,
+            nullable = false,
             columnDefinition="varchar(15)"+" COMMENT 'imei'"
     )
     private String imei;
@@ -44,7 +44,7 @@ public class Relay {
      */
     @Column(
             name = "adrss",
-            nullable = true,
+            nullable = false,
             columnDefinition="varchar(15)"+" COMMENT '感应器编号地址——发出接收时指令地址位（每个感应器都有一个地址位的）'"
     )
     private Integer adrss;
@@ -59,7 +59,7 @@ public class Relay {
      */
     @Column(
             name = "opne_hex",
-            nullable = true,
+            nullable = false,
             columnDefinition="varchar(255)"+" COMMENT '关联打开命令发出的指令'"
     )
     private String opneHex;
@@ -68,7 +68,7 @@ public class Relay {
      */
     @Column(
             name = "close_hex",
-            nullable = true,
+            nullable = false,
             columnDefinition="varchar(255)"+" COMMENT '关联关闭命令发出的指令'"
     )
     private String closeHex;
