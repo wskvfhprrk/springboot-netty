@@ -1,20 +1,20 @@
 #删除服务器
-ECHO.
+ECHO
 Echo                  ==========================================================================
-ECHO.
+ECHO
 Echo                                            netty服务器启动
-ECHO.
+ECHO
 Echo                  ==========================================================================
-Echo.
-echo.
-echo.  删除服务器
+Echo
+echo
+echo  删除服务器
 ps -aux | grep studay | grep -v grep| awk '{print $2}' |xargs  kill -9
 #启动docker
-echo.  启动docker
+echo  启动docker
 systemctl start docker
 cd ~
 #删除文件
-echo. 删除旧文件
+echo 删除旧文件
 rm -rf springboot-netty
 #git拉取代码
 git clone git@github.com:wskvfhprrk/springboot-netty.git
