@@ -17,5 +17,13 @@ mvn clean package -Dmaven.test.skip=true
 #重启服务
 cd /root/springboot-netty/studay/target
 nohup java -jar -Dserver.port=8080 studay-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
-
-#nohup java -jar -Dserver.port=8080 /root/springboot-netty/studay/target/studay-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
+#接下来在服务器上安装screen
+#yum install screen
+cd /root/linux_xiaomiqu
+screen -S xiaomiqiu
+#启动小米球
+./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all
+#如何关闭？
+#ssh上主机
+#screen -r xiaomiqiu
+#此时就会出现你刚才的端口
