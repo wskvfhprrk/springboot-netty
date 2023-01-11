@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 import java.util.Date;
 import java.util.List;
 
-class DictionaryServiceTest extends StudayApplicationTests{
+class DictionaryServiceTest extends DemoApplicationTests {
 
     @Autowired
     DictionaryService dictionaryService;

@@ -1,9 +1,11 @@
 package com.hejz.studay.nettyserver;
 
+import ch.qos.logback.core.util.COWArrayList;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hejz.studay.entity.*;
 import com.hejz.studay.repository.*;
+import com.hejz.studay.service.RedisCacheService;
 import com.hejz.studay.utils.CRC16;
 import com.hejz.studay.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
@@ -32,6 +34,10 @@ import java.util.stream.Collectors;
 @Component
 @ChannelHandler.Sharable
 public class NettyServerHandler extends SimpleChannelInboundHandler {
+    public static final int imeiNum = 15;
+    public static final int dtuRegiterLength = 89;
+    public static final int dtuPollingReturnLength = 22;
+    public static final int realyReturnValuesLength = 23;
     private Logger log = LogManager.getLogger(NettyServerHandler.class);
     @Autowired
     private ObjectMapper objectMapper;
@@ -47,57 +53,46 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     RelayDefinitionCommandRepository relayDefinitionCommandRepository;
     @Autowired
     RedisTemplate redisTemplate;
+    @Autowired
+    RedisCacheService redisCacheService;
     //所有的连接
     public static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    //所有查询到的所有dtu的信息
-    private static final List<DtuInfo> dtuInfos = new ArrayList<>();
-    //记录imei中传感器值——缓存
-    private static final Map<String, List<Sensor>> sensorDataArrMap = new HashMap<>();
-    //记录imei中继电器值——缓存
-    private static final Map<String, List<Relay>> relayDataArrMap = new HashMap<>();
-    //dtu注册信息的长度
-    private static final int registrationLength = 89;
-    //imei长度固定值
-    private static final int imeiNum = 15;
-    //最后一条记录时间——用于计算最后一次返回dtu轮询值时间间隔时间确定每组数据定位
+    //    //所有查询到的所有dtu的信息
+//    private static final List<DtuInfo> dtuInfos = new ArrayList<>();
+//    //记录imei中传感器值——缓存
+//    private static final Map<String, List<Sensor>> sensorDataArrMap = new HashMap<>();
+//    //记录imei中继电器值——缓存
+//    private static final Map<String, List<Relay>> relayDataArrMap = new HashMap<>();
+//    //dtu注册信息的长度
+//    private static final int registrationLength = 89;
+//    //imei长度固定值
+//    private static final int imeiNum = 15;
+//    //最后一条记录时间——用于计算最后一次返回dtu轮询值时间间隔时间确定每组数据定位
     private static final Map<String, LocalDateTime> endTimeMap = new HashMap<>();
-    //缓存每组dtu查询后返回的bytes值，够数量才解析，不够数量解析没有用
+    //    //缓存每组dtu查询后返回的bytes值，够数量才解析，不够数量解析没有用
     private static final Map<String, List<byte[]>> sensorDataByteListMap = new HashMap<>();
-    //记录当前iemi中的dtuInfo信息
-    private static final Map<String, DtuInfo> dtuInfoMap = new HashMap<>();
-    //继电器状态值记录
+    //    //记录当前iemi中的dtuInfo信息
+//    private static final Map<String, DtuInfo> dtuInfoMap = new HashMap<>();
+//    //继电器状态值记录
     private static final Map<Long, Integer> relayStatusMap = new HashMap<>();
-    //处理器指令集
-    private static final Map<String, List<RelayDefinitionCommand>> relayDefinitionCommandMap = new HashMap<>();
+//    //处理器指令集
+//    private static final Map<String, List<RelayDefinitionCommand>> relayDefinitionCommandMap = new HashMap<>();
 
     /**
      * 设置设备信息——要使用数据固化和缓存
      *
      * @param imei 串号
      */
-    private List<Sensor> setDeviceInformation(String imei) {
+    private void setDeviceInformation(String imei) {
         log.info("初始化缓存数据…………");
-        // TODO: 2023/1/5 改为从缓存
-        if (dtuInfos.isEmpty()) {
-            DtuInfo dtuInfo = dtuInfoRepository.getDtuInfoByImei(imei);
-            //感应器指令集
-            List<Sensor> sensors = sensorRepository.getAllByImei(imei);
-            sensorDataArrMap.put(imei, sensors);
-            //继电器指令集
-            List<Relay> relays = relayRepository.getAllByImei(imei);
-            relayDataArrMap.put(imei, relays);
-            //
-            List<RelayDefinitionCommand> relayDefinitionCommandList = relayDefinitionCommandRepository.getAllByImei(imei);
-            relayDefinitionCommandMap.put(imei, relayDefinitionCommandList);
-            dtuInfos.add(dtuInfo);
-            dtuInfoMap.put(imei, dtuInfo);
-            //todo 初始化relayStatusMap——查询继电器状态
-            for (Relay relay : relays) {
-                relayStatusMap.put(relay.getId(), 0);
-            }
-        }
-        return sensorDataArrMap.get(imei);
+        // 为从缓存取数据
+        redisCacheService.getDtuInfoByImei(imei);
+        //感应器指令集
+        sensorRepository.getAllByImei(imei);
+        //继电器指令集
+        relayRepository.getAllByImei(imei);
+        relayDefinitionCommandRepository.getAllByImei(imei);
     }
 
     @Override
@@ -133,13 +128,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         byte[] bytes = new byte[readableBytes];
         byteBuf.readBytes(bytes);
         //dtu必须开通注册功能，开通注册才可以查询到信息
-        String imei = calculationImei(bytes);
-        DtuInfo dtuInfo = dtuInfoMap.get(imei);
-        if (readableBytes == registrationLength) {
+        if (readableBytes == dtuRegiterLength) {
             dtuRegister(bytes);
-        } else if (readableBytes == (imeiNum + dtuInfo.getSensorLength())) { //处理dtu轮询返回值
+        } else if (readableBytes == (dtuPollingReturnLength)) { //处理dtu轮询返回值
             ProcessDtuPollingReturnValue(ctx, bytes);
-        } else if (readableBytes == (imeiNum + dtuInfo.getRelayLength())) { //处理继电器返回值
+        } else if (readableBytes == (realyReturnValuesLength)) { //处理继电器返回值
             new Thread(() -> {
                 processingRelayReturnValues(ctx, bytes);
             }).start();
@@ -160,23 +153,23 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         String useData = sensorDataToString(bytes);
         log.info("继电器返回值：{}", useData);
         //在发送口加锁限定就行了
-//        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(useData, useData, Duration.ofMillis(dtuInfoMap.get(imei).getGroupIntervalTime()));
+//        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(useData, useData, Duration.ofMillis(redisCacheService.getDtuInfoByImei(imei).getGroupIntervalTime()));
 //        if(!aBoolean)return;
         //只检查闭合的接收数据，不检查断开的接收数据
         //查询机电器指令与之相配
-        Optional<Relay> relayOptional = relayDataArrMap.get(imei).stream().filter(relay -> relay.getOpneHex().equals(useData) || relay.getCloseHex().equals(useData)).findFirst();
+        Optional<Relay> relayOptional = redisCacheService.getRelayByImei(imei).stream().filter(relay -> relay.getOpneHex().equals(useData) || relay.getCloseHex().equals(useData)).findFirst();
         if (!relayOptional.isPresent()) return;
         int hexStatus = 0;
         if (relayOptional.get().getOpneHex().equals(useData)) hexStatus = 1;
         String ids = relayOptional.get().getId() + "-" + hexStatus;
-        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandMap.get(imei).stream().filter(r -> r.getRelayIds().indexOf(ids) >= 0 && r.getIsProcessTheReturnValue()).collect(Collectors.toList());
+        List<RelayDefinitionCommand> relayDefinitionCommands = redisCacheService.getRelayDefinitionCommandByImei(imei).stream().filter(r -> r.getRelayIds().indexOf(ids) >= 0 && r.getIsProcessTheReturnValue()).collect(Collectors.toList());
         if (relayDefinitionCommands.isEmpty()) return;
         LinkedHashSet<RelayDefinitionCommand> relayDefinitionCommandList = new LinkedHashSet<>();
         for (RelayDefinitionCommand relayDefinitionCommand : relayDefinitionCommands) {
-            Optional<RelayDefinitionCommand> first = relayDefinitionCommandMap.get(imei).stream().filter(r -> r.getId().equals(relayDefinitionCommand.getCommonId())).findFirst();
+            Optional<RelayDefinitionCommand> first = redisCacheService.getRelayDefinitionCommandByImei(imei).stream().filter(r -> r.getId().equals(relayDefinitionCommand.getCommonId())).findFirst();
             if (first.isPresent()) relayDefinitionCommandList.add(first.get());
         }
-        List<String> sendHexs = getSendHex(relayDataArrMap.get(imei), relayDefinitionCommandList);
+        List<String> sendHexs = getSendHex(redisCacheService.getRelayByImei(imei), relayDefinitionCommandList);
         try {
             Thread.sleep(relayDefinitionCommands.get(0).getProcessTheReturnValueTime());
         } catch (InterruptedException e) {
@@ -255,7 +248,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //配置各参数
         setDeviceInformation(imei);
         //注册信息后把时间加上30秒——目的是为了第一次获取有效的数据
-        endTimeMap.put(imei, LocalDateTime.now().minusSeconds(dtuInfoMap.get(imei).getGroupIntervalTime() + 30));
+        endTimeMap.put(imei, LocalDateTime.now().minusSeconds(redisCacheService.getDtuInfoByImei(imei).getGroupIntervalTime() + 30));
     }
 
     private int getReadableBytes(ByteBuf byteBuf) {
@@ -274,7 +267,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //截取有效值进行分析——不要imei值
         int useDataLength = getUseDataLength(bytes);
         byte[] useBytes = new byte[useDataLength];
-        System.arraycopy(bytes, dtuInfoMap.get(imei).getImeiLength(), useBytes, 0, useDataLength);
+        System.arraycopy(bytes, redisCacheService.getDtuInfoByImei(imei).getImeiLength(), useBytes, 0, useDataLength);
         return HexConvert.BinaryToHexString(useBytes).trim();
     }
 
@@ -286,7 +279,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      */
     private int getUseDataLength(byte[] bytes) {
         int useDataLength = 0;
-        DtuInfo dtuInfo = dtuInfoMap.get(calculationImei(bytes));
+        DtuInfo dtuInfo = redisCacheService.getDtuInfoByImei(calculationImei(bytes));
         if (bytes.length == (dtuInfo.getImeiLength() + dtuInfo.getSensorLength())) {
             useDataLength = dtuInfo.getSensorLength();
         }
@@ -304,13 +297,13 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      */
     private void collectSensorData(ChannelHandlerContext ctx, byte[] bytes) {
         String imei = calculationImei(bytes);
-        int sensorsLength = sensorDataArrMap.get(imei).size();
+        int sensorsLength = redisCacheService.getSensorByImei(imei).size();
         //计算当前时间与之前时间差值
         LocalDateTime end = endTimeMap.get(imei);
         Duration duration = Duration.between(end, LocalDateTime.now());
         long millis = duration.toMillis();
         List<byte[]> sensorDataByteList;
-        if (millis >= dtuInfoMap.get(imei).getGroupIntervalTime()) {
+        if (millis >= redisCacheService.getDtuInfoByImei(imei).getGroupIntervalTime()) {
             log.info("==========查询一组出数据===========");
             sensorDataByteList = new ArrayList<>(sensorsLength);
             sensorDataByteList.add(bytes);
@@ -359,7 +352,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         for (int i = 0; i < list.size(); i++) {
             Double aDouble = parseSensorOneData(list.get(i), i, ctx);
             String imei = calculationImei(list.get(0));
-            List<Sensor> sensors = sensorDataArrMap.get(imei);
+            List<Sensor> sensors = redisCacheService.getSensorByImei(imei);
             Sensor sensor = sensors.get(i);
             SensorData sensorData = new SensorData(i, sensor.getName(), aDouble, sensor.getUnit());
             doubleList.add(sensorData);
@@ -377,7 +370,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      */
     private void write(final String hex, ChannelHandlerContext ctx, String imei) {
         //重复指令一个轮询周期只发一次
-        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(hex, hex,Duration.ofMillis(dtuInfoMap.get(imei).getGroupIntervalTime()));
+        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(hex, hex, Duration.ofMillis(redisCacheService.getDtuInfoByImei(imei).getGroupIntervalTime()));
         if (!aBoolean) return;
         log.info("发送指令：{}", hex);
         //加锁，查询和继电指令相互交叉
@@ -416,12 +409,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             //获取数据值
             double d = Double.parseDouble(String.valueOf(x));
             String imei = calculationImei(bytes);
-            Sensor sensor = sensorDataArrMap.get(imei).get(arrayNumber);
+            Sensor sensor = redisCacheService.getSensorByImei(imei).get(arrayNumber);
             //经过公式计算得到实际结果
             Double actualResults = calculateActualData(sensor.getCalculationFormula(), d);
             log.info(" {} =====> {}  ====> {}  ====> {}", arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
             //开新建程——异步处理根据解析到数据大小判断是否产生事件
-            if (dtuInfoMap.get(calculationImei(bytes)).getAutomaticAdjustment()) {
+            if (redisCacheService.getDtuInfoByImei(calculationImei(bytes)).getAutomaticAdjustment()) {
                 new Thread(() -> {
                     criteria(sensor, actualResults, ctx);
                 }).start();
@@ -484,11 +477,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     private void relayCommandData(Sensor sensor, Long id, ChannelHandlerContext ctx) {
         if (id == null || id.equals("0")) return;
         //编辑继电器指令
-        Optional<RelayDefinitionCommand> first = relayDefinitionCommandMap.get(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(id)).findFirst();
+        Optional<RelayDefinitionCommand> first = redisCacheService.getRelayDefinitionCommandByImei(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(id)).findFirst();
         if (!first.isPresent()) return;
         String relayIds = first.get().getRelayIds();
         //根据imei查询所有继电器指令:
-        List<Relay> relayList = relayDataArrMap.get(sensor.getImei());
+        List<Relay> relayList = redisCacheService.getRelayByImei(sensor.getImei());
         //指令奇数表示对应的继电器id，偶数：1表示为使用闭合指令，0表示为断开指令
         String[] split = relayIds.split(",");
         for (String s : split) {

@@ -5,44 +5,92 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.time.Duration;
+
 /**
- * Redis的一些自定义配置.
+ * @author 何建哲
+ * @date 2018/12/19 8:31
  */
-@ConditionalOnClass(ObjectMapper.class)
-@Configuration(proxyBeanMethods = false)
-public class RedisConfiguration {
+@Configuration
+@EnableCaching
+public class RedisConfiguration extends CachingConfigurerSupport {
+
+
+    private Duration timeToLive = Duration.ZERO;
+    public void setTimeToLive(Duration timeToLive) {
+        this.timeToLive = timeToLive;
+    }
     /**
-     * Redis template redis template.
-     *
-     * @param redisConnectionFactory the redis connection factory
-     * @return the redis template
+     * 自定义生成key的规则
      */
-    @Bean("redisTemplate")
-    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate<Object, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory);
-        // 使用Jackson2JsonRedisSerialize 替换默认序列化
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = initJacksonSerializer();
-        // 设置value的序列化规则和 key的序列化规则
-        template.setValueSerializer(jackson2JsonRedisSerializer);
-        template.setKeySerializer(new StringRedisSerializer());
-        template.afterPropertiesSet();
-        return template;
+    @Override
+    public KeyGenerator keyGenerator() {
+        KeyGenerator keyGenerator = (o, method, objects) -> {
+            //格式化缓存key字符串
+            StringBuilder sb = new StringBuilder();
+            //追加类名
+            sb.append(o.getClass().getName());
+            //追加方法名
+            sb.append(method.getName());
+            //遍历参数并且追加
+            for (Object obj : objects) {
+                sb.append(obj.toString());
+            }
+            System.out.println("调用Redis缓存Key : " + sb.toString());
+            return sb.toString();
+        };
+        return keyGenerator;
     }
 
     /**
-     * 处理redis序列化问题
-     * @return Jackson2JsonRedisSerializer
+     * 采用RedisCacheManager作为缓存管理器
+     *
+     * @param factory
      */
-    private Jackson2JsonRedisSerializer<Object> initJacksonSerializer() {
+    @Bean
+    public CacheManager cacheManager(RedisConnectionFactory factory) {
+        RedisSerializer<String> redisSerializer = new StringRedisSerializer();
+        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+
+        //解决查询缓存转换异常的问题
+        ObjectMapper om = new ObjectMapper();
+        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        jackson2JsonRedisSerializer.setObjectMapper(om);
+
+        // 配置序列化（解决乱码的问题）
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(timeToLive)
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer))
+                .disableCachingNullValues();
+
+        RedisCacheManager cacheManager = RedisCacheManager.builder(factory)
+                .cacheDefaults(config)
+                .build();
+        return cacheManager;
+    }
+
+    @Bean
+    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {
+        ////解决键、值序列化问题
+        StringRedisTemplate template = new StringRedisTemplate(factory);
         Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
         ObjectMapper om = new ObjectMapper();
         om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
@@ -53,8 +101,8 @@ public class RedisConfiguration {
         // java8 时间支持
         om.registerModule(new JavaTimeModule());
         jackson2JsonRedisSerializer.setObjectMapper(om);
-        return jackson2JsonRedisSerializer;
+        template.setValueSerializer(jackson2JsonRedisSerializer);
+        template.afterPropertiesSet();
+        return template;
     }
-
 }
-
