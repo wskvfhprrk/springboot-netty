@@ -6,6 +6,8 @@ rm -rf springboot-netty
 #git拉取代码
 git clone git@github.com:wskvfhprrk/springboot-netty.git
 cd /root/springboot-netty/
+#先删除源文件再拷贝
+rm -rf /root/start.sh
 cp -rf start.sh /root/
 #进入目录中
 cd studay
