@@ -1,5 +1,7 @@
 #删除服务器
 ps -aux | grep studay | grep -v grep| awk '{print $2}' |xargs  kill -9
+#启动docker
+systemctl start docker
 cd ~
 #删除文件
 rm -rf springboot-netty
