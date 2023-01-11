@@ -76,19 +76,19 @@ public class RelayDefinitionCommand {
     private Long processTheReturnValueTime;
     //处理返回值要使用继电器ids
     @Column(
-            name = "ids",
+            name = "common_id",
             nullable = true,
-            columnDefinition="varchar(255)"+" COMMENT '处理返回值要使用继电器ids——在此类表中查询'"
+            columnDefinition="varchar(255) default 0"+" COMMENT '处理返回值要使用继电器ids——在此类表中查询,0表示没有'"
     )
-    private String ids;
+    private Long commonId =0L;
 
-    public RelayDefinitionCommand(String imei,String name, String remarks,String relayIds, boolean isProcessTheReturnValue, long processTheReturnValueTime, String ids) {
+    public RelayDefinitionCommand(String imei,String name, String remarks,String relayIds, boolean isProcessTheReturnValue, long processTheReturnValueTime, Long commonId) {
         this.imei=imei;
         this.name=name;
         this.remarks=remarks;
         this.relayIds=relayIds;
         this.isProcessTheReturnValue=isProcessTheReturnValue;
         this.processTheReturnValueTime=processTheReturnValueTime;
-        this.ids = ids;
+        this.commonId = commonId;
     }
 }

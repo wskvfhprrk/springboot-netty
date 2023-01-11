@@ -109,19 +109,19 @@ public class Sensor {
      * 超过最大值时的指令——控制器集的指领IDs，默认值为0不作处理，一般为双数字，第一个是继电器指令，第二个1代表是合，0代表是断开
      */
     @Column(
-            name = "max_contro_ids",
+            name = "max_relay_definition_command_id",
             nullable = true,
-            columnDefinition="varchar(255) default 0"+" COMMENT '超过最大值时的指令——控制器集的指领IDs，默认值为0不作处理，一般为双数字，第一个是继电器指令，第二个1代表是合，0代表是断开'"
+            columnDefinition="bigint default 0"+" COMMENT '超过最大值时的指令'"
     )
-    private String maxControIds = "0";
+    private Long maxRelayDefinitionCommandId = 0L;
     /**
      * 小于最小值时发出的指令——控制器集的指领IDs，默认值为0不作处理，一般为双数字，第一个是继电器指令，第二个1代表是合，0代表是断开
      */
     @Column(
-            name = "min_relay_ids",
+            name = "min_relay_definition_command_id",
             nullable = true,
-            columnDefinition="varchar(255) default 0"+" COMMENT '小于最小值时发出的指令——控制器集的指领IDs，默认值为0不作处理，一般为双数字，第一个是继电器指令，第二个1代表是合，0代表是断开'"
+            columnDefinition="bigint default 0"+" COMMENT '小于最小值时发出的指令'"
     )
-    private String minRelayIds = "0";
+    private Long minRelayDefinitionCommandId = 0L;
 
 }

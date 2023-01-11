@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.script.*;
@@ -44,6 +45,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     DtuInfoRepository dtuInfoRepository;
     @Autowired
     RelayDefinitionCommandRepository relayDefinitionCommandRepository;
+    @Autowired
+    RedisTemplate redisTemplate;
     //所有的连接
     public static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
@@ -65,10 +68,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     private static final Map<String, DtuInfo> dtuInfoMap = new HashMap<>();
     //继电器状态值记录
     private static final Map<Long, Integer> relayStatusMap = new HashMap<>();
-    //发出有效指令——需要发送反指令的
-    private static final Map<String, List<String>> validInstructionsMap = new HashMap<>();
     //处理器指令集
-    private static final Map<String,List<RelayDefinitionCommand>> relayDefinitionCommandMap=new HashMap<>();
+    private static final Map<String, List<RelayDefinitionCommand>> relayDefinitionCommandMap = new HashMap<>();
+
     /**
      * 设置设备信息——要使用数据固化和缓存
      *
@@ -80,14 +82,14 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         if (dtuInfos.isEmpty()) {
             DtuInfo dtuInfo = dtuInfoRepository.getDtuInfoByImei(imei);
             //感应器指令集
-            List<Sensor> sensors =  sensorRepository.getAllByImei(imei);
+            List<Sensor> sensors = sensorRepository.getAllByImei(imei);
             sensorDataArrMap.put(imei, sensors);
             //继电器指令集
             List<Relay> relays = relayRepository.getAllByImei(imei);
             relayDataArrMap.put(imei, relays);
             //
             List<RelayDefinitionCommand> relayDefinitionCommandList = relayDefinitionCommandRepository.getAllByImei(imei);
-            relayDefinitionCommandMap.put(imei,relayDefinitionCommandList);
+            relayDefinitionCommandMap.put(imei, relayDefinitionCommandList);
             dtuInfos.add(dtuInfo);
             dtuInfoMap.put(imei, dtuInfo);
             //todo 初始化relayStatusMap——查询继电器状态
@@ -153,29 +155,60 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      * @param bytes
      */
     private void processingRelayReturnValues(ChannelHandlerContext ctx, byte[] bytes) {
+        String imei = calculationImei(bytes);
         //把数据bytes转化为string
         String useData = sensorDataToString(bytes);
+        log.info("继电器返回值：{}", useData);
+        //在发送口加锁限定就行了
+//        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(useData, useData, Duration.ofMillis(dtuInfoMap.get(imei).getGroupIntervalTime()));
+//        if(!aBoolean)return;
         //只检查闭合的接收数据，不检查断开的接收数据
-        String imei = calculationImei(bytes);
-        //处理继电器与发送有效指令返回值
-        List<String> list = validInstructionsMap.get(imei);
-        boolean b = list.contains(useData);
-        if (!b) return;
+        //查询机电器指令与之相配
         Optional<Relay> relayOptional = relayDataArrMap.get(imei).stream().filter(relay -> relay.getOpneHex().equals(useData) || relay.getCloseHex().equals(useData)).findFirst();
-        if (relayOptional.isPresent()) {
-            log.info("继电器==={}==成功！", relayOptional.get().getName());
-            //如果不是自锁式的开关，则需要下面代码
-            try {
-                Thread.sleep(relayOptional.get().getAccessTime());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            String hex = relayOptional.get().getOpneHex().equals(useData) ? relayOptional.get().getCloseHex() : relayOptional.get().getOpneHex();
-            write(Arrays.asList(hex), ctx);
-            //移除指令后再放后去——如果使用缓存失效就不用了
-            list.remove(useData);
-            validInstructionsMap.put(imei, list);
+        if (!relayOptional.isPresent()) return;
+        int hexStatus = 0;
+        if (relayOptional.get().getOpneHex().equals(useData)) hexStatus = 1;
+        String ids = relayOptional.get().getId() + "-" + hexStatus;
+        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandMap.get(imei).stream().filter(r -> r.getRelayIds().indexOf(ids) >= 0 && r.getIsProcessTheReturnValue()).collect(Collectors.toList());
+        if (relayDefinitionCommands.isEmpty()) return;
+        LinkedHashSet<RelayDefinitionCommand> relayDefinitionCommandList = new LinkedHashSet<>();
+        for (RelayDefinitionCommand relayDefinitionCommand : relayDefinitionCommands) {
+            Optional<RelayDefinitionCommand> first = relayDefinitionCommandMap.get(imei).stream().filter(r -> r.getId().equals(relayDefinitionCommand.getCommonId())).findFirst();
+            if (first.isPresent()) relayDefinitionCommandList.add(first.get());
         }
+        List<String> sendHexs = getSendHex(relayDataArrMap.get(imei), relayDefinitionCommandList);
+        try {
+            Thread.sleep(relayDefinitionCommands.get(0).getProcessTheReturnValueTime());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        for (String sendHex : sendHexs) {
+            write(sendHex, ctx, imei);
+        }
+    }
+
+    /**
+     * 继电器指令返回数据处理
+     *
+     * @param relays
+     * @param relayDefinitionCommands
+     * @return
+     */
+    private List<String> getSendHex(List<Relay> relays, LinkedHashSet<RelayDefinitionCommand> relayDefinitionCommands) {
+        List<String> relayIds = relayDefinitionCommands.stream().map(RelayDefinitionCommand::getRelayIds).collect(Collectors.toList());
+        List<String> relayIdList = new ArrayList<>();
+        for (String relayId : relayIds) {
+            relayIdList.addAll(Arrays.asList(relayId.split(",")));
+        }
+        List result = new ArrayList();
+        for (String s : relayIdList) {
+            String[] strings = s.split("-");
+            List<String> list = relays.stream().filter(r -> r.getId().equals(Long.valueOf(strings[0])))
+                    .map(strings[1].equals("1") ? Relay::getOpneHex : Relay::getCloseHex)
+                    .collect(Collectors.toList());
+            result.addAll(list);
+        }
+        return result;
     }
 
     /**
@@ -338,10 +371,15 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     /**
      * 向dtu发送指令
      *
-     * @param hexs
+     * @param hex
      * @param ctx  通道上下文
+     * @param imei
      */
-    private void write(final List<String> hexs, ChannelHandlerContext ctx) {
+    private void write(final String hex, ChannelHandlerContext ctx, String imei) {
+        //重复指令一个轮询周期只发一次
+        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(hex, hex,Duration.ofMillis(dtuInfoMap.get(imei).getGroupIntervalTime()));
+        if (!aBoolean) return;
+        log.info("发送指令：{}", hex);
         //加锁，查询和继电指令相互交叉
         synchronized (this) {
             try {
@@ -349,15 +387,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            for (String hex : hexs) {
-                //netty需要用ByteBuf传输
-                ByteBuf bufff = Unpooled.buffer();
-                //对接需要16进制的byte[],不需要16进制字符串有空格
-                bufff.writeBytes(HexConvert.hexStringToBytes(hex.replaceAll(" ", "")));
-                ctx.writeAndFlush(bufff);
-            }
+            //netty需要用ByteBuf传输
+            ByteBuf bufff = Unpooled.buffer();
+            //对接需要16进制的byte[],不需要16进制字符串有空格
+            bufff.writeBytes(HexConvert.hexStringToBytes(hex.replaceAll(" ", "")));
+            ctx.writeAndFlush(bufff);
         }
-
     }
 
     /**
@@ -424,18 +459,18 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      * @param ctx    通道上下文
      */
     private void criteria(Sensor sensor, double data, ChannelHandlerContext ctx) {
-        String ids = "";
+        Long id = null;
         //根据结果值判断是否处理
         if (data > sensor.getMax()) {
             log.info("{} 结果值 {} 大于最大值 {}", sensor.getName(), data, sensor.getMax());
-            ids = sensor.getMaxControIds();
+            id = sensor.getMaxRelayDefinitionCommandId();
         } else if (data < sensor.getMin()) {
             log.info("{} 结果值 {} 小于最小值{}", sensor.getName(), data, sensor.getMin());
-            ids = sensor.getMinRelayIds();
+            id = sensor.getMinRelayDefinitionCommandId();
         } else {
             log.info("{} 结果值 {} 比较合理，不用处理！", sensor.getName(), data);
         }
-        relayCommandData(sensor, ids, ctx);
+        relayCommandData(sensor, id, ctx);
     }
 
 
@@ -443,28 +478,26 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      * 根据数据处理继电器指令处理
      *
      * @param sensor 串号
-     * @param ids    继电器指令——奇数表示对应的继电器id，偶数：1表示为使用闭合指令，0表示为断开指令
+     * @param id     继电器指令——奇数表示对应的继电器id，偶数：1表示为使用闭合指令，0表示为断开指令
      * @param ctx    通道上下文
      */
-    private void relayCommandData(Sensor sensor, String ids, ChannelHandlerContext ctx) {
-        if (ids.equals("0")) return;
+    private void relayCommandData(Sensor sensor, Long id, ChannelHandlerContext ctx) {
+        if (id == null || id.equals("0")) return;
+        //编辑继电器指令
+        Optional<RelayDefinitionCommand> first = relayDefinitionCommandMap.get(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(id)).findFirst();
+        if (!first.isPresent()) return;
+        String relayIds = first.get().getRelayIds();
         //根据imei查询所有继电器指令:
         List<Relay> relayList = relayDataArrMap.get(sensor.getImei());
         //指令奇数表示对应的继电器id，偶数：1表示为使用闭合指令，0表示为断开指令
-        String[] split = ids.split(",");
-        //排序
-//        Arrays.sort(split);
+        String[] split = relayIds.split(",");
         for (String s : split) {
             String[] split1 = s.split("-");
             for (Relay relay : relayList) {
                 if (String.valueOf(relay.getId()).equals(split1[0])) {
                     String sendHex = split1[1].equals("1") ? relay.getOpneHex() : relay.getCloseHex();
-                    log.info("发送imei值：{} ,继电器id：{}-{}，指令为：{}", sensor.getImei(),relay.getId(), split1[1].equals("1") ? "闭合指令" : "断开指令", sendHex);
-                    write(Arrays.asList(sendHex), ctx);
-                    //添加到要处理的有效指令中——在处理完后删除
-                    List<String> list = validInstructionsMap.get(sensor.getImei()) == null ? new ArrayList<>() : validInstructionsMap.get(sensor.getImei());
-                    list.add(sendHex);
-                    validInstructionsMap.put(sensor.getImei(), list);
+//                    log.info("发送imei值：{} ,继电器id：{}-{}，指令为：{}", sensor.getImei(),relay.getId(), split1[1].equals("1") ? "闭合指令" : "断开指令", sendHex);
+                    write(sendHex, ctx, sensor.getImei());
                     // TODO: 2023/1/4 处理url发出指令
                     break;
                 }

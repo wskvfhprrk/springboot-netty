@@ -73,15 +73,6 @@ public class Relay {
     )
     private String closeHex;
     /**
-     * 开关通路的时间毫秒——dtu每次轮询上报时间要大于此时间，至少大于10秒钟
-     */
-    @Column(
-            name = "access_time",
-            nullable = false,
-            columnDefinition="bigint"+" COMMENT '开关通路的时间毫秒——dtu每次轮询上报时间要大于此时间，至少大于10秒钟'"
-    )
-    private Long accessTime;
-    /**
      * 关联发出的链接
      */
     @Column(
