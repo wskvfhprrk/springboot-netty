@@ -16,4 +16,6 @@ java -jar /root/springboot-netty/studay/target/studay-0.0.1-SNAPSHOT.jar
 
 cd /root/springboot-netty/studay/target
 nohup java -jar -Dserver.port=8080 studay-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
+cd /root/springboot-netty/
+cp -rf start.sh /root/
 #nohup java -jar -Dserver.port=8080 /root/springboot-netty/studay/target/studay-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
