@@ -1,6 +1,6 @@
 cd ~
 #删除文件
-rm -rf /springboot-netty
+rm -rf springboot-netty
 #git拉取代码
 git clone git@github.com:wskvfhprrk/springboot-netty.git
 #进入目录中
