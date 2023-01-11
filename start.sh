@@ -1,9 +1,25 @@
 #删除服务器
+@echo OFF
+color 0a
+Title 小米球一键启动工具 by:刺球
+Mode con cols=109 lines=30
+:START
+ECHO.
+Echo                  ==========================================================================
+ECHO.
+Echo                                            netty服务器启动
+ECHO.
+Echo                  ==========================================================================
+Echo.
+echo.
+echo.  删除服务器
 ps -aux | grep studay | grep -v grep| awk '{print $2}' |xargs  kill -9
 #启动docker
+echo.  启动docker
 systemctl start docker
 cd ~
 #删除文件
+echo. 删除旧文件
 rm -rf springboot-netty
 #git拉取代码
 git clone git@github.com:wskvfhprrk/springboot-netty.git
