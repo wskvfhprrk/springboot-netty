@@ -1,9 +1,4 @@
 #删除服务器
-@echo OFF
-color 0a
-Title 小米球一键启动工具 by:刺球
-Mode con cols=109 lines=30
-:START
 ECHO.
 Echo                  ==========================================================================
 ECHO.
