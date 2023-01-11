@@ -82,19 +82,9 @@ public class DtuInfo {
     @Column(
             name = "group_interval_time",
             nullable = true,
-            columnDefinition="int(10)"+" COMMENT '每组发送接收间隔时间(毫秒)——略小于dtu每组间隔时间，大于每组中每个发送间隔时间'"
+            columnDefinition="int(10)"+" COMMENT '每组发送接收间隔时间(毫秒)——与dtu每组间隔时间要一致'"
     )
     private Integer groupIntervalTime;
-//    /**
-//     * 传感器指中指令参数
-//     */
-//    @Transient
-//    private List<Sensor> sensorList;
-//    /**
-//     * 控制器指令集
-//     */
-//    @Transient
-//    private List<Relay> relayList;
     /**
      * 是否自动控制——1是自动0是手动控制
      */

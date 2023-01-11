@@ -62,7 +62,7 @@ public class InitController {
         dtuInfo.setImeiLength(15);
         dtuInfo.setRelayLength(8);
         dtuInfo.setSensorLength(7);
-        dtuInfo.setGroupIntervalTime(5000);
+        dtuInfo.setGroupIntervalTime(50000);
         dtuInfo.setHeartbeatLength(2);
         dtuInfo.setRegistrationLength(89);
         dtuInfo.setAutomaticAdjustment(true);
