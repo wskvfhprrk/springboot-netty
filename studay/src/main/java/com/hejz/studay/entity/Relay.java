@@ -17,15 +17,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Relay {
     @Id
-    @SequenceGenerator(
-            name = "relay_sequence",
-            sequenceName = "relay_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "relay_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(
             name = "id",
             nullable = false,

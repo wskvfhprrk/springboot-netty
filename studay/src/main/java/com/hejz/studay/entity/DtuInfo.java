@@ -14,15 +14,7 @@ import java.util.List;
 @Entity(name = "dtu_info")
 public class DtuInfo {
     @Id
-    @SequenceGenerator(
-            name = "dtu_info_sequence",
-            sequenceName = "dtu_info_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "dtu_info_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(
             name = "id",
             nullable = false,

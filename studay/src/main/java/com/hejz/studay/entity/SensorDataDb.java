@@ -4,14 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * @author:hejz 75412985@qq.com
- * @create: 3023-01-09 10:00
+ * @create: 2023-01-09 10:00
  * @Description: 传感器数据存放进数据库
  */
 @Data
@@ -20,6 +18,13 @@ import java.util.Date;
 @AllArgsConstructor
 public class SensorDataDb {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(
+            name = "id",
+            nullable = false,
+            columnDefinition="bigint"+" COMMENT 'ID'"
+    )
+    private Long id;
     @Column(
             name = "create_date",
             nullable = false,
@@ -47,8 +52,15 @@ public class SensorDataDb {
     @Column(
             name = "units",
             nullable = false,
-            columnDefinition="varchar(30)"+" COMMENT '接收到数据的单位'"
+            columnDefinition="varchar(255)"+" COMMENT '接收到数据的单位'"
     )
     private String units;
 
+    public SensorDataDb(Date createDate, String imei, String names, String data, String units) {
+        this.createDate=createDate;
+        this.imei=imei;
+        this.names=names;
+        this.data=data;
+        this.units=units;
+    }
 }

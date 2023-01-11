@@ -14,19 +14,11 @@ import javax.persistence.*;
 public class Role implements Serializable{
 
     @Id
-    @SequenceGenerator(
-            name = "tb_role_sequence",
-            sequenceName = "tb_role_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "tb_role_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(
             name = "id",
             nullable = false,
-            columnDefinition="int"+" COMMENT 'id'"
+            columnDefinition="int"+" COMMENT 'ID'"
     )
     private Integer id;
 

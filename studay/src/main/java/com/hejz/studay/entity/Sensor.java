@@ -18,15 +18,7 @@ import javax.persistence.*;
 public class Sensor {
 
     @Id
-    @SequenceGenerator(
-            name = "sensor_sequence",
-            sequenceName = "sensor_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "sensor_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(
             name = "id",
             nullable = false,

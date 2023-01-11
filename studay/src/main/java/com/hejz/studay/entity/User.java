@@ -14,11 +14,7 @@ import javax.persistence.*;
 public class User implements Serializable{
 
     @Id
-    @Column(
-            name = "id",
-            nullable = false,
-            columnDefinition="int"+" COMMENT ''"
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @Column(

@@ -14,15 +14,7 @@ import javax.persistence.*;
 public class Dictionary implements Serializable{
 
     @Id
-    @SequenceGenerator(
-            name = "dictionary_sequence",
-            sequenceName = "dictionary_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "dictionary_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(
             name = "id",
             nullable = false,
