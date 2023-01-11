@@ -18,7 +18,15 @@ import java.util.Date;
 @AllArgsConstructor
 public class SensorDataDb {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+            name = "sensor_data_sequence",
+            sequenceName = "sensor_data_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "sensor_data_sequence"
+    )
     @Column(
             name = "id",
             nullable = false,

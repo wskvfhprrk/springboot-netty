@@ -14,7 +14,15 @@ import javax.persistence.*;
 public class Role implements Serializable{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+            name = "tb_role_sequence",
+            sequenceName = "tb_role_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "tb_role_sequence"
+    )
     @Column(
             name = "id",
             nullable = false,

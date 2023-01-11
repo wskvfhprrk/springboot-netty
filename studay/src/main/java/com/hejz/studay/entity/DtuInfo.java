@@ -14,7 +14,15 @@ import java.util.List;
 @Entity(name = "dtu_info")
 public class DtuInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+            name = "dtu_info_sequence",
+            sequenceName = "dtu_info_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "dtu_info_sequence"
+    )
     @Column(
             name = "id",
             nullable = false,
@@ -77,16 +85,16 @@ public class DtuInfo {
             columnDefinition="int(10)"+" COMMENT '每组发送接收间隔时间(毫秒)——略小于dtu每组间隔时间，大于每组中每个发送间隔时间'"
     )
     private Integer groupIntervalTime;
-    /**
-     * 传感器指中指令参数
-     */
-    @Transient
-    private List<Sensor> sensorList;
-    /**
-     * 控制器指令集
-     */
-    @Transient
-    private List<Relay> relayList;
+//    /**
+//     * 传感器指中指令参数
+//     */
+//    @Transient
+//    private List<Sensor> sensorList;
+//    /**
+//     * 控制器指令集
+//     */
+//    @Transient
+//    private List<Relay> relayList;
     /**
      * 是否自动控制——1是自动0是手动控制
      */

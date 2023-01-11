@@ -3,10 +3,7 @@ package com.hejz.studay.nettyserver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hejz.studay.entity.*;
-import com.hejz.studay.repository.DtuInfoRepository;
-import com.hejz.studay.repository.RelayRepository;
-import com.hejz.studay.repository.SensorDataDbRepository;
-import com.hejz.studay.repository.SensorRepository;
+import com.hejz.studay.repository.*;
 import com.hejz.studay.utils.CRC16;
 import com.hejz.studay.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
@@ -45,7 +42,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     SensorRepository sensorRepository;
     @Autowired
     DtuInfoRepository dtuInfoRepository;
-
+    @Autowired
+    RelayDefinitionCommandRepository relayDefinitionCommandRepository;
     //所有的连接
     public static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
@@ -69,7 +67,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     private static final Map<Long, Integer> relayStatusMap = new HashMap<>();
     //发出有效指令——需要发送反指令的
     private static final Map<String, List<String>> validInstructionsMap = new HashMap<>();
-
+    //处理器指令集
+    private static final Map<String,List<RelayDefinitionCommand>> relayDefinitionCommandMap=new HashMap<>();
     /**
      * 设置设备信息——要使用数据固化和缓存
      *
@@ -77,7 +76,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      */
     private List<Sensor> setDeviceInformation(String imei) {
         log.info("初始化缓存数据…………");
-        // TODO: 2023/1/5 改为从缓存和数据库中获取
+        // TODO: 2023/1/5 改为从缓存
         if (dtuInfos.isEmpty()) {
             DtuInfo dtuInfo = dtuInfoRepository.getDtuInfoByImei(imei);
             //感应器指令集
@@ -86,8 +85,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             //继电器指令集
             List<Relay> relays = relayRepository.getAllByImei(imei);
             relayDataArrMap.put(imei, relays);
-            dtuInfo.setRelayList(relays);
-            dtuInfo.setSensorList(sensors);
+            //
+            List<RelayDefinitionCommand> relayDefinitionCommandList = relayDefinitionCommandRepository.getAllByImei(imei);
+            relayDefinitionCommandMap.put(imei,relayDefinitionCommandList);
             dtuInfos.add(dtuInfo);
             dtuInfoMap.put(imei, dtuInfo);
             //todo 初始化relayStatusMap——查询继电器状态

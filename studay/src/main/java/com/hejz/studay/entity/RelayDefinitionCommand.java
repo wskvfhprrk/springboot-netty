@@ -17,7 +17,15 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class RelayDefinitionCommand {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+            name = "relay_definition_command_sequence",
+            sequenceName = "relay_definition_command_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "relay_definition_command_sequence"
+    )
     //ID
     @Column(
             name = "id",
@@ -26,6 +34,12 @@ public class RelayDefinitionCommand {
     )
     private Long id;
     //名称
+    @Column(
+            name = "imei",
+            nullable = false,
+            columnDefinition="varchar(15)"+" COMMENT 'imei'"
+    )
+    private String imei;
     @Column(
             name = "name",
             nullable = false,
@@ -43,7 +57,7 @@ public class RelayDefinitionCommand {
     @Column(
             name = "relay_ids",
             nullable = false,
-            columnDefinition="varchar(255)"+" COMMENT '继电器ids'"
+            columnDefinition="varchar(255)"+" COMMENT '继电器指令——以间隔号隔开，前面是继电器id值，后面则是1为闭合指令0为断开指令'"
     )
     private String relayIds;
     //是否处理返回值——false表示不用，true表示必须处理
@@ -62,18 +76,19 @@ public class RelayDefinitionCommand {
     private Long processTheReturnValueTime;
     //处理返回值要使用继电器ids
     @Column(
-            name = "return_relay_ids",
+            name = "ids",
             nullable = true,
-            columnDefinition="varchar(255)"+" COMMENT '处理返回值要使用继电器ids'"
+            columnDefinition="varchar(255)"+" COMMENT '处理返回值要使用继电器ids——在此类表中查询'"
     )
-    private String returnRelayIds;
+    private String ids;
 
-    public RelayDefinitionCommand(String name, String remarks,String relayIds, boolean isProcessTheReturnValue, long processTheReturnValueTime, String returnRelayIds) {
+    public RelayDefinitionCommand(String imei,String name, String remarks,String relayIds, boolean isProcessTheReturnValue, long processTheReturnValueTime, String ids) {
+        this.imei=imei;
         this.name=name;
         this.remarks=remarks;
         this.relayIds=relayIds;
         this.isProcessTheReturnValue=isProcessTheReturnValue;
         this.processTheReturnValueTime=processTheReturnValueTime;
-        this.returnRelayIds=returnRelayIds;
+        this.ids = ids;
     }
 }

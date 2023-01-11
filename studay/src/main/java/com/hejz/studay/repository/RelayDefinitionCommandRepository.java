@@ -13,4 +13,5 @@ import java.util.List;
  * data: 2022-5-9
  */
 public interface RelayDefinitionCommandRepository extends JpaRepository<RelayDefinitionCommand,Long>,JpaSpecificationExecutor<RelayDefinitionCommand> {
+    List<RelayDefinitionCommand> getAllByImei(String imei);
 }
