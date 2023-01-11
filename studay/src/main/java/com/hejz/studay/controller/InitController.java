@@ -2,11 +2,9 @@ package com.hejz.studay.controller;
 
 import com.hejz.studay.entity.DtuInfo;
 import com.hejz.studay.entity.Relay;
+import com.hejz.studay.entity.RelayDefinitionCommand;
 import com.hejz.studay.entity.Sensor;
-import com.hejz.studay.repository.DtuInfoRepository;
-import com.hejz.studay.repository.RelayRepository;
-import com.hejz.studay.repository.SensorDataDbRepository;
-import com.hejz.studay.repository.SensorRepository;
+import com.hejz.studay.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +23,8 @@ public class InitController {
     RelayRepository relayRepository;
     @Autowired
     DtuInfoRepository dtuInfoRepository;
+    @Autowired
+    RelayDefinitionCommandRepository relayDefinitionCommandRepository;
     @PostConstruct
     public void initData(){
         sensorRepository.save(new Sensor(1L, "865328063321359", 1, "空气温度 ", "01 03 03 00 00 01 84 4E", "D/10", "ºC", 25, 15, "2-1,1-1", "2-1,1-0"));
@@ -51,6 +51,7 @@ public class InitController {
         dtuInfo.setRegistrationLength(89);
         dtuInfo.setAutomaticAdjustment(true);
         dtuInfoRepository.save(dtuInfo);
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand("打开大棚","打开左右大棚","2-1,1-0",true,30000L,"2-0,1-0"));
     }
 
 }
