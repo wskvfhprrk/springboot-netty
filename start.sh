@@ -25,15 +25,18 @@ cd studay
 #跳过测试建jar包
 echo -e ======================6.跳过测试构建jar包======================
 mvn clean package -Dmaven.test.skip=true
-
 #重启服务
 echo -e ======================7.重启服务======================
 cd /root/springboot-netty/studay/target
 nohup java -jar -Dserver.port=8080 studay-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
 echo -e
+echo -e
 echo -e =================请自行打开小米球操作======================
+echo -e
 echo -e 开新窗口:输入screen -S xiaomiqiu
+echo -e
 echo -e 会弹出新的窗口,在里面输入启动指令
+echo -e
 echo -e 启动指令:    ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all
 echo -e
 echo -e
