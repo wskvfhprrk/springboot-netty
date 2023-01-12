@@ -1,11 +1,17 @@
+#!/bin/bash
+
 #删除服务器
+#echo -e  删除服务器
 ps -aux | grep studay | grep -v grep| awk '{print $2}' |xargs  kill -9
 #启动docker
+#echo -e 启动docker
 systemctl start docker
 cd ~
 #删除文件
+#echo -e 删除文件springboot-netty
 rm -rf springboot-netty
 #git拉取代码
+#echo -e git拉取代码
 git clone git@github.com:wskvfhprrk/springboot-netty.git
 cd /root/springboot-netty/
 #先删除源文件再拷贝
