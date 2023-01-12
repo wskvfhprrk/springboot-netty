@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo -e "\033[3${i};4${j}m文字色值 ${i}, 背景色值 ${j}\033[0m"
 #删除服务器
 echo -e  删除服务器
 ps -aux | grep studay | grep -v grep| awk '{print $2}' |xargs  kill -9
