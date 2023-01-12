@@ -1,5 +1,7 @@
 package com.hejz.studay.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +17,10 @@ import java.io.IOException;
 @RestController
 @RequestMapping("deployServer")
 @Slf4j
+@Api("部署服务器")
 public class DeployServerController {
     @GetMapping
+    @ApiOperation("部署服务器")
     public String deployServer(){
         //p = Runtime.getRuntime().exec(SHELL_FILE_DIR + RUNNING_SHELL_FILE + " "+param1+" "+param2+" "+param3);
         //p.waitFor();
