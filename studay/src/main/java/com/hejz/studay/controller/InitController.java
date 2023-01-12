@@ -1,9 +1,6 @@
 package com.hejz.studay.controller;
 
-import com.hejz.studay.entity.DtuInfo;
-import com.hejz.studay.entity.Relay;
-import com.hejz.studay.entity.RelayDefinitionCommand;
-import com.hejz.studay.entity.Sensor;
+import com.hejz.studay.entity.*;
 import com.hejz.studay.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,9 +24,22 @@ public class InitController {
     DtuInfoRepository dtuInfoRepository;
     @Autowired
     RelayDefinitionCommandRepository relayDefinitionCommandRepository;
+    @Autowired
+    DataCheckingRulesRepository dataCheckingRulesRepository;
+
     @PostConstruct
     public void initData(){
-        String imei = "865328063321359";
+        Long imei = 865328063321359L;
+        for (int i = 0; i < 10; i++) {
+            start(String.valueOf(imei));
+            imei++;
+        }
+        dataCheckingRulesRepository.save(new DataCheckingRules(1,"7位MODBUS协议普通温湿度计",7,1,1,1,2,2));
+        dataCheckingRulesRepository.save(new DataCheckingRules(1,"7位MODBUS协议土壤计",7,1,1,1,2,2));
+        dataCheckingRulesRepository.save(new DataCheckingRules(1,"8位MODBUS协议继电器指令",8,1,1,1,2,2));
+    }
+
+    private void start(String imei) {
         //处理继电器信息
         relayRepository.save(new Relay(1L, imei, 3, "第1个继电器", "03 05 00 00 FF 00 8D D8", "03 05 00 00 00 00 CC 28",  "lcaolhost:8080/hello", "大棚电机双锁开关"));
         relayRepository.save(new Relay(2L, imei, 3, "第2个继电器", "03 05 00 01 FF 00 DC 18", "03 05 00 01 00 00 9D E8",  "lcaolhost:8080/hello", "大棚电机总开关"));
@@ -40,13 +50,13 @@ public class InitController {
         Optional<RelayDefinitionCommand> relayDefinitionCommandOptional = relayDefinitionCommandRepository.getAllByImei(imei).stream().filter(r->r.getName().equals("关闭打开大棚指令")).findFirst();
         relayDefinitionCommandRepository.save(new RelayDefinitionCommand(imei,"打开大棚指令","打开左右大棚","2-1,1-0",true,30000L,relayDefinitionCommandOptional.get().getId()));
         relayDefinitionCommandRepository.save(new RelayDefinitionCommand(imei,"关闭大棚指令","关闭左右大棚","2-1,1-1",true,30000L,relayDefinitionCommandOptional.get().getId()));
-        if(!relayDefinitionCommandOptional.isPresent())return;
+        if(!relayDefinitionCommandOptional.isPresent()) return;
         //处理感应器信息
         List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandRepository.getAllByImei(imei);
         Optional<RelayDefinitionCommand> open = relayDefinitionCommands.stream().filter(r -> r.getName().equals("打开大棚指令")).findFirst();
-        if(!open.isPresent())return;
+        if(!open.isPresent()) return;
         Optional<RelayDefinitionCommand> close = relayDefinitionCommands.stream().filter(r -> r.getName().equals("关闭大棚指令")).findFirst();
-        sensorRepository.save(new Sensor(1L, imei, 1, "空气温度 ", "01 03 03 00 00 01 84 4E", "D/10", "ºC", 25, 20, open.get().getId(), close.get().getId()));
+        sensorRepository.save(new Sensor(1L, imei, 1, "空气温度 ", "01 03 03 00 00 01 84 4E", "D/10", "ºC", 25, 15, open.get().getId(), close.get().getId()));
         sensorRepository.save(new Sensor(2L, imei, 1, "空气湿度 ", "01 03 03 01 00 01 D5 8E", "D/10", "%", 90, 70, 0L, 0L));
         sensorRepository.save(new Sensor(3L, imei, 2, "土壤PH  ", "02 03 02 03 00 01 75 81", "D/10", "", 9, 6, 0L, 0L));
         sensorRepository.save(new Sensor(4L, imei, 2, "土壤温度 ", "02 03 02 00 00 01 85 81", "D/100+5", "ºC", 25, 25, 0L, 0L));
@@ -66,7 +76,10 @@ public class InitController {
         dtuInfo.setHeartbeatLength(2);
         dtuInfo.setRegistrationLength(89);
         dtuInfo.setAutomaticAdjustment(true);
+        dtuInfo.setAddrs("1,2,3");
         dtuInfoRepository.save(dtuInfo);
+        //数据校检规则
+
     }
 
 }

@@ -275,6 +275,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         Duration duration = Duration.between(end, LocalDateTime.now());
         long millis = duration.toMillis();
         List<byte[]> sensorDataByteList;
+        //必须检测是有用的数据才可以，如果不能够使用才不可以
+        if(testingData(bytes))return;
         if (millis >= dtuInfoService.getByImei(imei).getGroupIntervalTime()) {
             log.info("==========查询一组出数据===========");
             sensorDataByteList = new ArrayList<>(sensorsLength);
@@ -291,6 +293,20 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             //插入数据库
             insertDatabase(imei, sensorDataList);
         }
+    }
+
+    /**
+     * 必须检测是有用的数据才可以，如果不能够使用才不可以
+     * @param bytes
+     * @return
+     */
+    private boolean testingData(byte[] bytes) {
+        //1、必须注册过的imei值——查dtuInfo看有没有
+        String imei = calculationImei(bytes);
+        DtuInfo dtuInfo = dtuInfoService.getByImei(imei);
+        if(dtuInfo ==null)return false;
+        //todo 2、数据校检规则校验
+        return true;
     }
 
     /**
@@ -370,6 +386,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     private Double parseSensorOneData(byte[] bytes, int arrayNumber, ChannelHandlerContext ctx) {
         ////有用的bytes[]的值
         int useBytesLength = getUseDataLength(bytes);
+        log.info("收到16进制数据：{}",HexConvert.BinaryToHexString(bytes));
         byte[] useBytes = new byte[useBytesLength];
         System.arraycopy(bytes, IMEI_LENGTH, useBytes, 0, useBytesLength);  //数组截取
         //crc16校验

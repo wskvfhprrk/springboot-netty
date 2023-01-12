@@ -96,5 +96,9 @@ public class DtuInfo {
             columnDefinition="bit(1)"+" COMMENT '是否自动控制——1是自动0是手动控制'"
     )
     private Boolean automaticAdjustment = true;
+    /**
+     * 使用到的地址——接收和发送信号检测信号使用的，一般地址1-3使用就为1,2,3
+     */
+    private String addrs;
 
 }

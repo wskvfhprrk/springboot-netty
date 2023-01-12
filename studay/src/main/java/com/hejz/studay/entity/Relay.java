@@ -61,7 +61,7 @@ public class Relay {
      */
     @Column(
             name = "opne_hex",
-            nullable = false,
+            nullable = true,
             columnDefinition="varchar(255)"+" COMMENT '关联打开命令发出的指令'"
     )
     private String opneHex;
@@ -70,7 +70,7 @@ public class Relay {
      */
     @Column(
             name = "close_hex",
-            nullable = false,
+            nullable = true,
             columnDefinition="varchar(255)"+" COMMENT '关联关闭命令发出的指令'"
     )
     private String closeHex;

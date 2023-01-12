@@ -17,8 +17,8 @@ public class NettyServer {
      Logger log = LogManager.getLogger(NettyServer.class);
     @Autowired
     private NettyServerInitializer nettyServerInitializer;
-    @Value("${nettyport}")
-    private Integer nettyport;
+    @Value("${nettyPort}")
+    private Integer nettyPort;
 
     public void serverRun() {
         //循环组接收连接，不进行处理,转交给下面的线程组
@@ -31,7 +31,7 @@ public class NettyServer {
             //使用NIO模式，初始化器等等
             serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(nettyServerInitializer);
             //绑定端口
-            ChannelFuture channelFuture = serverBootstrap.bind(nettyport).sync();
+            ChannelFuture channelFuture = serverBootstrap.bind(nettyPort).sync();
             log.info("tcp服务器已经启动…………");
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {

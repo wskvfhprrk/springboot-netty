@@ -28,6 +28,7 @@ public class RelayServiceImpl implements RelayService {
     }
     @Override
     public Relay save(Relay selay) {
+        selay.setCloseHex(null);
         return selayRepository.save(selay);
     }
     @Override

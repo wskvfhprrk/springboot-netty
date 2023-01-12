@@ -32,9 +32,10 @@ spring:
   #jpa 测试
   jpa:
     hibernate:
-      ddl-auto: update # 新增数据库链接必须的参数
+      ddl-auto: create-drop # 新增数据库链接必须的参数
     # 控制台显示SQL
     show-sql: true
     properties:
       hibernate.format_sql: true
-nettyport: 9090
+#配置netty端口号
+nettyPort: 9090
