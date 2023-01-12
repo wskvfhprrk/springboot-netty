@@ -1,9 +1,13 @@
 package com.hejz.studay.service.impl;
 
+import com.hejz.studay.common.Constant;
 import com.hejz.studay.entity.DtuInfo;
 import com.hejz.studay.repository.DtuInfoRepository;
 import com.hejz.studay.service.DtuInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,31 +18,45 @@ import org.springframework.stereotype.Service;
 @Service
 public class DtuInfoServiceImpl implements DtuInfoService {
     @Autowired
-    private DtuInfoRepository selayRepository;
+    private DtuInfoRepository dtuInfoRepository;
+    @Autowired
+    RedisTemplate redisTemplate;
+
+    @Cacheable(value = Constant.DTU_INFO, key = "#p0")
     @Override
     public DtuInfo getByImei(String imei) {
-        return selayRepository.getAllByImei(imei);
+        return dtuInfoRepository.getAllByImei(imei);
     }
+
     @Override
     public DtuInfo getById(Long id) {
-        DtuInfo selay = selayRepository.getById(id);
-        return selay;
+        DtuInfo dtuInfo = dtuInfoRepository.getById(id);
+        return dtuInfo;
     }
+
+    @CacheEvict(value = Constant.DTU_INFO, key = "#result.imei")
     @Override
-    public DtuInfo save(DtuInfo selay) {
-        return selayRepository.save(selay);
+    public DtuInfo save(DtuInfo dtuInfo) {
+        return dtuInfoRepository.save(dtuInfo);
     }
+
+    @CacheEvict(value = Constant.DTU_INFO, key = "#result.imei")
     @Override
-    public DtuInfo update(DtuInfo selay) {
-        return selayRepository.save(selay);
+    public DtuInfo update(DtuInfo dtuInfo) {
+        return dtuInfoRepository.save(dtuInfo);
     }
+
     @Override
     public void delete(Long id) {
-         selayRepository.deleteById(id);
+        DtuInfo dtuInfo = dtuInfoRepository.getById(id);
+        redisTemplate.delete(Constant.DTU_INFO+"::"+dtuInfo.getImei());
+        dtuInfoRepository.deleteById(id);
     }
+
+    @CacheEvict(value = Constant.DTU_INFO, key = "#p0")
     @Override
     public void deleteByImei(String imei) {
-        selayRepository.deleteByImei(imei);
+        dtuInfoRepository.deleteByImei(imei);
     }
 
 }

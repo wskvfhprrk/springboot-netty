@@ -8,4 +8,8 @@ package com.hejz.studay.common;
 public class Constant {
     //数据检查规则redis缓存名称
     public static final String DATA_CHECKING_RULES = "dataCheckingRules";
+    public static final String RELAY = "relay";
+    public static final String SENSOR = "sensor";
+    public static final String RELAY_DEFINITION_COMMAND = "relayDefinitionCommand";
+    public static final String DTU_INFO = "dtuInfo";
 }

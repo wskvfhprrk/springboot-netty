@@ -1,9 +1,13 @@
 package com.hejz.studay.service.impl;
 
+import com.hejz.studay.common.Constant;
 import com.hejz.studay.entity.Sensor;
 import com.hejz.studay.repository.SensorRepository;
 import com.hejz.studay.service.SensorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +20,11 @@ import java.util.List;
 @Service
 public class SensorServiceImpl implements SensorService {
     @Autowired
+    RedisTemplate redisTemplate;
+    @Autowired
     private SensorRepository sensorRepository;
+
+    @Cacheable(value = Constant.SENSOR, key = "#p0")
     @Override
     public List<Sensor> getByImei(String imei) {
         return sensorRepository.getAllByImei(imei);
@@ -28,11 +36,13 @@ public class SensorServiceImpl implements SensorService {
         return sensor;
     }
 
+    @CacheEvict(value = Constant.SENSOR, key = "#result.imei")
     @Override
     public Sensor save(Sensor sensor) {
         return sensorRepository.save(sensor);
     }
 
+    @CacheEvict(value = Constant.SENSOR, key = "#result.imei")
     @Override
     public Sensor update(Sensor sensor) {
         return sensorRepository.save(sensor);
@@ -40,9 +50,12 @@ public class SensorServiceImpl implements SensorService {
 
     @Override
     public void delete(Long id) {
-         sensorRepository.deleteById(id);
+        Sensor sensor = sensorRepository.getById(id);
+        redisTemplate.delete(Constant.SENSOR + "::" + sensor.getImei());
+        sensorRepository.deleteById(id);
     }
 
+    @CacheEvict(value = Constant.SENSOR, key = "#p0")
     @Override
     public void deleteByImei(String imei) {
         sensorRepository.deleteByImei(imei);
