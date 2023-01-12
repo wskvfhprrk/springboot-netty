@@ -17,8 +17,6 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -57,13 +55,15 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     @Autowired
     RelayDefinitionCommandService relayDefinitionCommandService;
     @Autowired
+    DataCheckingRulesService dataCheckingRulesService;
+    @Autowired
     RedisTemplate redisTemplate;
     //所有的连接
     public static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private static final Map<String, LocalDateTime> endTimeMap = new HashMap<>();
-        //缓存每组dtu查询后返回的bytes值，够数量才解析，不够数量解析没有用
+    //缓存每组dtu查询后返回的bytes值，够数量才解析，不够数量解析没有用
     private static final Map<String, List<byte[]>> sensorDataByteListMap = new HashMap<>();
-        //记录当前iemi中的dtuInfo信息
+    //记录当前iemi中的dtuInfo信息
 //    private static final Map<String, DtuInfo> dtuInfoMap = new HashMap<>();
     //继电器状态值记录
     private static final Map<Long, Integer> relayStatusMap = new HashMap<>();
@@ -236,11 +236,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      * @return
      */
     private String sensorDataToString(byte[] bytes) {
-        String imei = calculationImei(bytes);
         //截取有效值进行分析——不要imei值
-        int useDataLength = getUseDataLength(bytes);
-        byte[] useBytes = new byte[useDataLength];
-        System.arraycopy(bytes, IMEI_LENGTH, useBytes, 0, useDataLength);
+        int useLength = getUseDataLength(bytes);
+        byte[] useBytes = getUseBytes(bytes,useLength);
         return HexConvert.BinaryToHexString(useBytes).trim();
     }
 
@@ -277,9 +275,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         long millis = duration.toMillis();
         List<byte[]> sensorDataByteList;
         //必须检测是有用的数据才可以，如果不能够使用才不可以
-        if(!testingData(bytes))return;
-        log.info("dtuInfoService.getByImei(imei).getGroupIntervalTime()={}",dtuInfoService.getByImei(imei).getGroupIntervalTime());
-        log.info("millis={}",millis);
+        if (!testingData(bytes)) return;
         if (millis >= dtuInfoService.getByImei(imei).getGroupIntervalTime()) {
             log.info("==========查询一组出数据===========");
             sensorDataByteList = new ArrayList<>(sensorsLength);
@@ -290,7 +286,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             sensorDataByteList.add(bytes);
             sensorDataByteListMap.put(imei, sensorDataByteList);
         }
-        log.info("sensorDataByteListMap.get(imei).size()={}",sensorDataByteListMap.get(imei).size());
         if (sensorDataByteListMap.get(imei).size() == sensorsLength) {
             log.info("==========解析一组传感器的有用数据===========");
             List<SensorData> sensorDataList = parseSensorListData(sensorDataByteListMap.get(imei), ctx);
@@ -301,6 +296,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
 
     /**
      * 必须检测是有用的数据才可以，如果不能够使用才不可以
+     *
      * @param bytes
      * @return
      */
@@ -308,9 +304,38 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //1、必须注册过的imei值——查dtuInfo看有没有
         String imei = calculationImei(bytes);
         DtuInfo dtuInfo = dtuInfoService.getByImei(imei);
-        if(dtuInfo ==null)return false;
+        if (dtuInfo == null) {
+            log.error("bytes：{}校验通不过——查无imei值：{}", HexConvert.BinaryToHexString(bytes), imei);
+            return false;
+        }
         //todo 2、数据校检规则校验
+        int bytesLength = bytes.length - IMEI_LENGTH;
+        //查出所有符合此长度的规则
+        List<DataCheckingRules> dataCheckingRules = dataCheckingRulesService.getByCommonLength(bytesLength);
+        for (DataCheckingRules dataCheckingRule : dataCheckingRules) {
+            //使用crc16校验——不需要imei值
+            Integer useLength = dataCheckingRule.getCommonLength();
+            byte[] useBytes = getUseBytes(bytes, useLength);
+            boolean b = validCRC16(useBytes, dataCheckingRule);
+            if (!b) {
+                log.error("bytes：{}校验通不过——crc16校验不过：{}", HexConvert.BinaryToHexString(bytes));
+                return false;
+            }
+            //todo 地址位不在dtuInfo中
+        }
         return true;
+    }
+
+    /**
+     * 截取有用的bytes——不含imei
+     * @param bytes
+     * @param useLength
+     * @return
+     */
+    private byte[] getUseBytes(byte[] bytes, Integer useLength) {
+        byte[] useBytes = new byte[useLength];
+        System.arraycopy(bytes, IMEI_LENGTH, useBytes, 0, useLength);  //数组截取
+        return useBytes;
     }
 
     /**
@@ -362,7 +387,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      */
     private void write(final String hex, ChannelHandlerContext ctx, String imei) {
         //重复指令一个轮询周期只发一次
-        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(imei+":"+hex, hex, Duration.ofMillis(dtuInfoService.getByImei(imei).getGroupIntervalTime()));
+        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(imei + ":" + hex, hex, Duration.ofMillis(dtuInfoService.getByImei(imei).getGroupIntervalTime()));
         if (!aBoolean) return;
         log.info("发送指令：{}", hex);
         //加锁，查询和继电指令相互交叉
@@ -389,52 +414,48 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      */
     private Double parseSensorOneData(byte[] bytes, int arrayNumber, ChannelHandlerContext ctx) {
         ////有用的bytes[]的值
-        int useBytesLength = getUseDataLength(bytes);
-        log.info("收到16进制数据：{}",HexConvert.BinaryToHexString(bytes));
-        byte[] useBytes = new byte[useBytesLength];
-        System.arraycopy(bytes, IMEI_LENGTH, useBytes, 0, useBytesLength);  //数组截取
-        //crc16校验
-        boolean validCrc = validCRC16(useBytes);
-        //CRC16验证通过数据才可以使用
-        if (validCrc) {
-            String hex = "0x" + HexConvert.BinaryToHexString(useBytes).substring(9, 14).replace(" ", "");
-            Integer x = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
-            //获取数据值
-            double d = Double.parseDouble(String.valueOf(x));
-            String imei = calculationImei(bytes);
-            Sensor sensor = sensorService.getByImei(imei).get(arrayNumber);
-            //经过公式计算得到实际结果
-            Double actualResults = calculateActualData(sensor.getCalculationFormula(), d);
-            log.info(" {} =====> {}  ====> {}  ====> {}", arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
-            //开新建程——异步处理根据解析到数据大小判断是否产生事件
-            if (dtuInfoService.getByImei(calculationImei(bytes)).getAutomaticAdjustment()) {
-                new Thread(() -> {
-                    criteria(sensor, actualResults, ctx);
-                }).start();
-            }
-            return actualResults;
+        int useLength = getUseDataLength(bytes);
+        log.info("收到16进制数据：{}", HexConvert.BinaryToHexString(bytes));
+        byte[] useBytes = getUseBytes(bytes,useLength);
+        String hex = "0x" + HexConvert.BinaryToHexString(useBytes).substring(9, 14).replace(" ", "");
+        Integer x = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
+        //获取数据值
+        double d = Double.parseDouble(String.valueOf(x));
+        String imei = calculationImei(bytes);
+        Sensor sensor = sensorService.getByImei(imei).get(arrayNumber);
+        //经过公式计算得到实际结果
+        Double actualResults = calculateActualData(sensor.getCalculationFormula(), d);
+        log.info(" {} =====> {}  ====> {}  ====> {}", arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
+        //开新建程——异步处理根据解析到数据大小判断是否产生事件
+        if (dtuInfoService.getByImei(calculationImei(bytes)).getAutomaticAdjustment()) {
+            new Thread(() -> {
+                criteria(sensor, actualResults, ctx);
+            }).start();
         }
-        return null;
+        return actualResults;
     }
 
 
     /**
      * crc16校验——校验7位bytes,最后两位为校验为
      *
-     * @param bytes 收到byte[]信息
+     * @param bytes            收到byte[]信息
+     * @param dataCheckingRule
      * @return
      */
-    private boolean validCRC16(byte[] bytes) {
+    private boolean validCRC16(byte[] bytes, DataCheckingRules dataCheckingRule) {
         //传感器地址
         String[] s = HexConvert.BinaryToHexString(bytes).split(" ");
-        String str = "";
-        for (int i = 5; i < s.length; i++) {
-            str = str + s[i];
+        //校验位字符
+        String checkDigitStr = "";
+        ////有效字符串长度
+        int useLength = dataCheckingRule.getCommonLength() - dataCheckingRule.getCrc16CheckDigitLength();
+        for (int i = useLength; i < s.length; i++) {
+            checkDigitStr = checkDigitStr + s[i];
         }
         //有效字符串
-        byte[] bytes2 = new byte[5];
-        System.arraycopy(bytes, 0, bytes2, 0, 5);  //数组截取
-        return CRC16.getCRC3(bytes2).equalsIgnoreCase(str);
+        byte[] useBytes = getUseBytes(bytes,useLength);
+        return CRC16.getCRC3(useBytes).equalsIgnoreCase(checkDigitStr);
     }
 
     /**

@@ -77,19 +77,19 @@ public class DataCheckingRules {
     private Integer DataValue;
     //crc16校验位数
     @Column(
-            name = "crc16_check_digit",
+            name = "crc16_check_digit_length",
             nullable = false,
             columnDefinition="int(2)"+" COMMENT 'crc16校验位数'"
     )
-    private Integer crc16CheckDigit;
+    private Integer crc16CheckDigitLength;
 
-    public DataCheckingRules(String name, Integer commonLength, Integer addressBit, Integer functionCode, Integer dataBits, Integer dataValue, Integer crc16CheckDigit) {
+    public DataCheckingRules(String name, Integer commonLength, Integer addressBit, Integer functionCode, Integer dataBits, Integer dataValue, Integer crc16CheckDigitLength) {
         this.name = name;
         this.commonLength = commonLength;
         AddressBit = addressBit;
         this.functionCode = functionCode;
         DataBits = dataBits;
         DataValue = dataValue;
-        this.crc16CheckDigit = crc16CheckDigit;
+        this.crc16CheckDigitLength = crc16CheckDigitLength;
     }
 }

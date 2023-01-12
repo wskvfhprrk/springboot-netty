@@ -129,8 +129,8 @@ public class CRC16 {
     }
 
     public static void main(String[] args) {
-        //字符串转16进制byte数组
-        String str16 = encode("aabb");
+        //字符串转16进制byte数组_79FC
+        String str16 = encode("01030200A1");
         byte[] bytes = str16.getBytes();
         System.out.println("str16:" + str16);
 
