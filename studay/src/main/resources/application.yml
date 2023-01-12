@@ -34,7 +34,7 @@ spring:
     hibernate:
       ddl-auto: create-drop # 新增数据库链接必须的参数
     # 控制台显示SQL
-    show-sql: true
+#    show-sql: true
     properties:
       hibernate.format_sql: true
 #配置netty端口号

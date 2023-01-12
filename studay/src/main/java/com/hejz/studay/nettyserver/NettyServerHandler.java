@@ -15,6 +15,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 
 @Component
 @ChannelHandler.Sharable
+@Slf4j
 public class NettyServerHandler extends SimpleChannelInboundHandler {
     //IMEI长度
     public static final int IMEI_LENGTH = 15;
@@ -42,7 +44,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     public static final int RELAY_RETURN_VALUES_LENGTH = 23;
     //间隔时间
     public static final int INTERVAL_TIME = 50;
-    private Logger log = LogManager.getLogger(NettyServerHandler.class);
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -276,7 +277,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         long millis = duration.toMillis();
         List<byte[]> sensorDataByteList;
         //必须检测是有用的数据才可以，如果不能够使用才不可以
-        if(testingData(bytes))return;
+        if(!testingData(bytes))return;
+        log.info("dtuInfoService.getByImei(imei).getGroupIntervalTime()={}",dtuInfoService.getByImei(imei).getGroupIntervalTime());
+        log.info("millis={}",millis);
         if (millis >= dtuInfoService.getByImei(imei).getGroupIntervalTime()) {
             log.info("==========查询一组出数据===========");
             sensorDataByteList = new ArrayList<>(sensorsLength);
@@ -287,6 +290,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             sensorDataByteList.add(bytes);
             sensorDataByteListMap.put(imei, sensorDataByteList);
         }
+        log.info("sensorDataByteListMap.get(imei).size()={}",sensorDataByteListMap.get(imei).size());
         if (sensorDataByteListMap.get(imei).size() == sensorsLength) {
             log.info("==========解析一组传感器的有用数据===========");
             List<SensorData> sensorDataList = parseSensorListData(sensorDataByteListMap.get(imei), ctx);

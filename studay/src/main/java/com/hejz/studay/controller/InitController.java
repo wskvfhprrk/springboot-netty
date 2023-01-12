@@ -3,11 +3,13 @@ package com.hejz.studay.controller;
 import com.hejz.studay.entity.*;
 import com.hejz.studay.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -26,6 +28,8 @@ public class InitController {
     RelayDefinitionCommandRepository relayDefinitionCommandRepository;
     @Autowired
     DataCheckingRulesRepository dataCheckingRulesRepository;
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @PostConstruct
     public void initData(){
@@ -37,6 +41,15 @@ public class InitController {
             start(String.valueOf(imei));
             imei++;
         }
+        //清除所有缓存
+        Set<String> keys = redisTemplate.keys("relay:*");
+        redisTemplate.delete(keys);
+        keys = redisTemplate.keys("densorDataDb:*");
+        redisTemplate.delete(keys);
+        keys = redisTemplate.keys("dtuInfo:*");
+        redisTemplate.delete(keys);
+        keys = redisTemplate.keys("sensor:*");
+        redisTemplate.delete(keys);
     }
 
     private void start(String imei) {
@@ -66,7 +79,7 @@ public class InitController {
         sensorRepository.save(new Sensor( imei, 2, "土壤钾   ", "02 03 02 06 00 01 65 80", "D/1", "mg/L", 100, 50, 0L, 0L));
         sensorRepository.save(new Sensor( imei, 2, "土壤电导率", "02 03 02 02 00 01 24 41", "D/1", "us/cm", 250, 80, 0L, 0L));
         //处理dtu信息
-        dtuInfoRepository.save(new DtuInfo(imei,15,8,7,50000,2,89,true,"1,2,3"));
+        dtuInfoRepository.save(new DtuInfo(imei,89,15,7,7,2,50000,true,"1,2,3"));
         //数据校检规则
 
     }
