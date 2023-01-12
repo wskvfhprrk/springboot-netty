@@ -18,12 +18,12 @@ public class SensorServiceImpl implements SensorService {
     @Autowired
     private SensorRepository sensorRepository;
     @Override
-    public List<Sensor> getSensorByImei(String imei) {
+    public List<Sensor> getByImei(String imei) {
         return sensorRepository.getAllByImei(imei);
     }
 
     @Override
-    public Sensor getSensorById(Long id) {
+    public Sensor getById(Long id) {
         Sensor sensor = sensorRepository.getById(id);
         return sensor;
     }

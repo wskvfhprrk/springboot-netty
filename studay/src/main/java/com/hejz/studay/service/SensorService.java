@@ -10,9 +10,9 @@ import java.util.List;
  * @Description:
  */
 public interface SensorService {
-    List<Sensor> getSensorByImei(String imei);
+    List<Sensor> getByImei(String imei);
 
-    Sensor getSensorById(Long id);
+    Sensor getById(Long id);
 
     Sensor save(Sensor sensor);
 

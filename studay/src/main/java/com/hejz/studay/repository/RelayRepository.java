@@ -13,4 +13,6 @@ import java.util.List;
  */
 public interface RelayRepository extends JpaRepository<Relay,Long>,JpaSpecificationExecutor<Relay> {
     List<Relay> getAllByImei(String imei);
+
+    void deleteByImei(String imei);
 }

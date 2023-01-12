@@ -14,4 +14,6 @@ import java.util.List;
  */
 public interface RelayDefinitionCommandRepository extends JpaRepository<RelayDefinitionCommand,Long>,JpaSpecificationExecutor<RelayDefinitionCommand> {
     List<RelayDefinitionCommand> getAllByImei(String imei);
+
+    void deleteByImei(String imei);
 }

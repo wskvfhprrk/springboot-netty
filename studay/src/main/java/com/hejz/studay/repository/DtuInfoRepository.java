@@ -1,7 +1,6 @@
 package com.hejz.studay.repository;
 
 import com.hejz.studay.entity.DtuInfo;
-import com.hejz.studay.entity.Relay;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -12,4 +11,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  */
 public interface DtuInfoRepository extends JpaRepository<DtuInfo,Long>,JpaSpecificationExecutor<DtuInfo> {
     DtuInfo getDtuInfoByImei(String imei);
+
+    DtuInfo getAllByImei(String imei);
+
+    void deleteByImei(String imei);
 }
