@@ -31,13 +31,14 @@ echo -e ======================7.重启服务======================
 cd /root/springboot-netty/studay/target
 nohup java -jar -Dserver.port=8080 studay-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
 echo -e
-echo -e=================请自行打开小米球操作======================
+echo -e =================请自行打开小米球操作======================
+echo -e 开新窗口：输入screen -S xiaomiqiu
+echo -e 会弹出新的窗口，在里面输入启动指令
+echo -e 启动指令：./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all
 echo -e
 echo -e
 echo -e
-echo -e
-echo -e
-sleep 3
+sleep 10
 echo -e ======================7.打开日志======================
 tail -f /home/logs/dtu/logback_info.log
 #接下来在服务器上安装screen
