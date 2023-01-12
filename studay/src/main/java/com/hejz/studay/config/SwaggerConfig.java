@@ -26,7 +26,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
                         .version("1.0")
                         .contact(new Contact("hejz", "https://github.com/yutils", "75412985@qq.com"))
                         .license("我的首页")
-                        .licenseUrl("https://weibo.com/32005200")
+                        .licenseUrl("https://baidu.com")
                         .build();
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo)

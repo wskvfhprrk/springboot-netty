@@ -1,7 +1,6 @@
 package com.hejz.studay.repository;
 
 import com.hejz.studay.entity.Sensor;
-import com.hejz.studay.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -14,4 +13,8 @@ import java.util.List;
  */
 public interface SensorRepository extends JpaRepository<Sensor,Long>,JpaSpecificationExecutor<Sensor> {
     List<Sensor> getAllByImei(String imei);
+
+    void deleteById(Long id);
+
+    void deleteByImei(String imei);
 }
