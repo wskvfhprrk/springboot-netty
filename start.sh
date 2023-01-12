@@ -33,11 +33,11 @@ echo -e
 echo -e
 echo -e =================请自行打开小米球操作======================
 echo -e
-echo -e 开新窗口:输入screen -S xiaomiqiu
+echo -e "开新窗口:输入screen -S xiaomiqiu"
 echo -e
-echo -e 会弹出新的窗口,在里面输入启动指令
+echo -e "会弹出新的窗口,在里面输入启动指令"
 echo -e
-echo -e 启动指令:    ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all
+echo -e "启动指令:    ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all"
 echo -e
 echo -e
 echo -e
