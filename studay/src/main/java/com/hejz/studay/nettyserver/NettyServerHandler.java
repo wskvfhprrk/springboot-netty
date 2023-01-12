@@ -477,7 +477,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //编辑继电器指令
         Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(id)).findFirst();
         if (!first.isPresent()) return;
-        log.info("正在执行指令：{}",first.get().getName());
+        log.info("===============正在执行指令：{}",first.get().getName());
         String relayIds = first.get().getRelayIds();
         //根据imei查询所有继电器指令:
         List<Relay> relayList = relayService.getByImei(sensor.getImei());
