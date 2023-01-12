@@ -398,7 +398,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     private Double parseSensorOneData(byte[] bytes, int arrayNumber, ChannelHandlerContext ctx) {
         ////有用的bytes[]的值
         int useLength = bytes.length-IMEI_LENGTH;
-        log.info("收到16进制数据：{}", HexConvert.BinaryToHexString(bytes));
         byte[] useBytes = getUseBytes(bytes,useLength);
         String hex = "0x" + HexConvert.BinaryToHexString(useBytes).substring(9, 14).replace(" ", "");
         Integer x = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
