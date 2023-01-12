@@ -115,18 +115,18 @@ public static String  convertStringToHex(String str){
     }
 
 public static void main(String[] args) {
-//    System.out.println("======ASCII码转换为16进制======");
-//    String str = "*00007VERSION\\n1$";
-//    System.out.println("字符串: " + str);
-//    String hex = HexConvert.convertStringToHex(str);
-//    System.out.println("====转换为16进制=====" + hex);
-//
-//    System.out.println("======16进制转换为ASCII======");
-//    System.out.println("Hex : " + hex);
-//    System.out.println("ASCII : " + HexConvert.convertHexToString(hex));
-//
-//    byte[] bytes = HexConvert.hexStringToBytes( hex );
-//
-//    System.out.println(HexConvert.BinaryToHexString( bytes ));
+    System.out.println("======ASCII码转换为16进制======");
+    String str = "865328063321359";
+    System.out.println("字符串: " + str);
+    String hex = HexConvert.convertStringToHex(str);
+    System.out.println("====转换为16进制=====" + hex);
+
+    System.out.println("======16进制转换为ASCII======");
+    System.out.println("Hex : " + hex);
+    System.out.println("ASCII : " + HexConvert.convertHexToString(hex));
+
+    byte[] bytes = HexConvert.hexStringToBytes( hex );
+
+    System.out.println(HexConvert.BinaryToHexString( bytes ));
 }
 }

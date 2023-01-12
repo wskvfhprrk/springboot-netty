@@ -126,9 +126,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         String imei = calculationImei(bytes);
         //把数据bytes转化为string
         String useData = sensorDataToString(bytes);
-        log.info("继电器返回值：{}", useData);
-        if(!testingData(bytes)){
-            log.error("继电器返回值：{}校验不通过！",HexConvert.BinaryToHexString(bytes));
+        log.info("imei={}  继电器返回值：{}", imei, useData);
+        if (!testingData(bytes)) {
+            log.error("继电器返回值：{}校验不通过！", HexConvert.BinaryToHexString(bytes));
         }
         //只检查闭合的接收数据，不检查断开的接收数据
         //查询机电器指令与之相配
@@ -202,6 +202,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     private String calculationImei(byte[] bytes) {
         byte[] imeiBytes = new byte[IMEI_LENGTH];
         System.arraycopy(bytes, 0, imeiBytes, 0, IMEI_LENGTH);
+        // TODO: 2023/1/13 BinaryToHexString要改为convertHexToString无空格的ASCII码
         return HexConvert.hexStringToString(HexConvert.BinaryToHexString(imeiBytes).replaceAll(" ", ""));
     }
 
@@ -237,8 +238,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      */
     private String sensorDataToString(byte[] bytes) {
         //截取有效值进行分析——不要imei值
-        int useLength = bytes.length-IMEI_LENGTH;
-        byte[] useBytes = getUseBytes(bytes,useLength);
+        int useLength = bytes.length - IMEI_LENGTH;
+        byte[] useBytes = getUseBytes(bytes, useLength);
         return HexConvert.BinaryToHexString(useBytes).trim();
     }
 
@@ -311,6 +312,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
 
     /**
      * 截取有用的bytes——不含imei
+     *
      * @param bytes
      * @param useLength
      * @return
@@ -372,7 +374,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //重复指令一个轮询周期只发一次
         Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(imei + ":" + hex, hex, Duration.ofMillis(dtuInfoService.getByImei(imei).getGroupIntervalTime()));
         if (!aBoolean) return;
-        log.info("发送指令：{}", hex);
+        log.info("imei==>{} 发送指令：{}",imei, hex);
         //加锁，查询和继电指令相互交叉
         synchronized (this) {
             try {
@@ -383,6 +385,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             //netty需要用ByteBuf传输
             ByteBuf bufff = Unpooled.buffer();
             //对接需要16进制的byte[],不需要16进制字符串有空格
+            // TODO: 2023/1/13 BinaryToHexString要改为convertHexToString无空格的ASCII码
             bufff.writeBytes(HexConvert.hexStringToBytes(hex.replaceAll(" ", "")));
             ctx.writeAndFlush(bufff);
         }
@@ -397,8 +400,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      */
     private Double parseSensorOneData(byte[] bytes, int arrayNumber, ChannelHandlerContext ctx) {
         ////有用的bytes[]的值
-        int useLength = bytes.length-IMEI_LENGTH;
-        byte[] useBytes = getUseBytes(bytes,useLength);
+        int useLength = bytes.length - IMEI_LENGTH;
+        byte[] useBytes = getUseBytes(bytes, useLength);
+        // TODO: 2023/1/13 BinaryToHexString要改为convertHexToString无空格的ASCII码
         String hex = "0x" + HexConvert.BinaryToHexString(useBytes).substring(9, 14).replace(" ", "");
         Integer x = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
         //获取数据值
@@ -407,7 +411,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         Sensor sensor = sensorService.getByImei(imei).get(arrayNumber);
         //经过公式计算得到实际结果
         Double actualResults = calculateActualData(sensor.getCalculationFormula(), d);
-        log.info(" {} =====> {}  ====> {}  ====> {}", arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
+        log.info(" imei==>{},{} =====> {}  ====> {}  ====> {}", imei, arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
         //开新建程——异步处理根据解析到数据大小判断是否产生事件
         if (dtuInfoService.getByImei(calculationImei(bytes)).getAutomaticAdjustment()) {
             new Thread(() -> {
@@ -476,7 +480,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //编辑继电器指令
         Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(id)).findFirst();
         if (!first.isPresent()) return;
-        log.info("===============正在执行指令：{}",first.get().getName());
+        log.info("===============正在执行指令：{}", first.get().getName());
         String relayIds = first.get().getRelayIds();
         //根据imei查询所有继电器指令:
         List<Relay> relayList = relayService.getByImei(sensor.getImei());
