@@ -6,16 +6,16 @@
 echo -e  ======================1.删除运行的服务器======================
 ps -aux | grep studay | grep -v grep| awk '{print $2}' |xargs  kill -9
 #启动docker
-echo -e ======================2.启动docker======================
+echo -e ======================2.启动docker:为了启动mysql和redis======================
 systemctl start docker
 cd ~
 #删除文件
-echo -e ======================3.删除文件springboot-netty======================
+echo -e ======================3.删除旧的项目文件springboot-netty======================
 rm -rf springboot-netty
 #git拉取代码
 echo -e ======================4.git拉取代码======================
 git clone git@github.com:wskvfhprrk/springboot-netty.git
-echo -e ======================5.先删除源文件再拷贝======================
+echo -e ======================5.先删除start.sh源文件再拷贝======================
 cd /root/springboot-netty/
 #先删除源文件再拷贝
 rm -rf /root/start.sh
