@@ -39,7 +39,7 @@ echo -e
 echo -e
 echo -e
 sleep 10
-echo -e ======================7.打开日志======================
+echo -e ======================8.自动打开日志======================
 tail -f /home/logs/dtu/logback_info.log
 #接下来在服务器上安装screen
 #yum install screen
