@@ -342,7 +342,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      */
     private void write(final String hex, ChannelHandlerContext ctx, String imei) {
         //重复指令一个轮询周期只发一次
-        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(hex, hex, Duration.ofMillis(dtuInfoService.getByImei(imei).getGroupIntervalTime()));
+        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(imei+":"+hex, hex, Duration.ofMillis(dtuInfoService.getByImei(imei).getGroupIntervalTime()));
         if (!aBoolean) return;
         log.info("发送指令：{}", hex);
         //加锁，查询和继电指令相互交叉
