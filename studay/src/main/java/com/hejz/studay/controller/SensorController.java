@@ -29,38 +29,37 @@ public class SensorController {
 
     @ApiOperation("根据imei查询所有感器信息")
     @GetMapping("all/{imei}")
-    @Cacheable(value = "sensor",key = "#imei")
-    public List<Sensor> getSensorByImei(@PathVariable String imei){
+    public List<Sensor> getSensorByImei(@PathVariable String imei) {
         return sensorService.getByImei(imei);
     }
+
     @ApiOperation("根据id查询感器信息")
     @GetMapping("{id}")
-    public Sensor getSensorById(@PathVariable("id") Long id){
+    public Sensor getSensorById(@PathVariable("id") Long id) {
         return sensorService.getById(id);
     }
+
     @ApiOperation("添加感器信息")
     @PostMapping
-    @CacheEvict(value = "sensor",key = "#result.imei")
-    public Sensor save(@RequestBody Sensor sensor){
+    public Sensor save(@RequestBody Sensor sensor) {
         return sensorService.save(sensor);
     }
+
     @ApiOperation("更新感应器信息")
     @PutMapping
-    @CacheEvict(value = "sensor",key = "#result.imei")
-    public Sensor update(@RequestBody Sensor sensor){
+    public Sensor update(@RequestBody Sensor sensor) {
         return sensorService.update(sensor);
     }
+
     @ApiOperation("根据id删除感器信息")
     @DeleteMapping("{id}")
-    public void delete(@PathVariable("id") Long id){
-        Sensor sensor = sensorService.getById(id);
+    public void delete(@PathVariable("id") Long id) {
         sensorService.delete(id);
-        //删除缓存，缓存要同步
-        redisTemplate.opsForValue().decrement("sensor::"+sensor.getName());
     }
+
     @ApiOperation("根据imei删除所有感器信息")
     @DeleteMapping("deleteByImei/{imei}")
-    public void deleteByImei(@PathVariable("imei") String imei){
+    public void deleteByImei(@PathVariable("imei") String imei) {
         sensorService.deleteByImei(imei);
     }
 }

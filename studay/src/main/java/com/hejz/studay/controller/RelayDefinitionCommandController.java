@@ -53,10 +53,7 @@ public class RelayDefinitionCommandController {
     @ApiOperation("根据id删除感器信息")
     @DeleteMapping("{id}")
     public void delete(@PathVariable("id") Long id){
-        RelayDefinitionCommand relayDefinitionCommand = relayDefinitionCommandService.getById(id);
         relayDefinitionCommandService.delete(id);
-        //删除缓存，缓存要同步
-        redisTemplate.opsForValue().decrement("relayDefinitionCommand::"+relayDefinitionCommand.getImei());
     }
     @ApiOperation("根据imei删除所有感器信息")
     @DeleteMapping("deleteByImei/{imei}")

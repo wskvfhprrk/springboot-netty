@@ -50,6 +50,8 @@ public class InitController {
         redisTemplate.delete(keys);
         keys = redisTemplate.keys("sensor:*");
         redisTemplate.delete(keys);
+        keys = redisTemplate.keys("relayDefinitionCommand:*");
+        redisTemplate.delete(keys);
     }
 
     private void start(String imei) {

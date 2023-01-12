@@ -29,7 +29,6 @@ public class SensroDataDbController {
 
     @ApiOperation("根据imei查询所有dtu信息")
     @GetMapping("all/{imei}")
-    @Cacheable(value = "densorDataDb",key = "#imei")
     public List<SensorDataDb> getSensorDataDbByImei(@PathVariable String imei){
         return densorDataDbService.getSensorDataDbByImei(imei);
     }
@@ -40,23 +39,18 @@ public class SensroDataDbController {
     }
     @ApiOperation("添加感器信息")
     @PostMapping
-    @CacheEvict(value = "densorDataDb",key = "#result.imei")
     public SensorDataDb save(@RequestBody SensorDataDb densorDataDb){
         return densorDataDbService.save(densorDataDb);
     }
     @ApiOperation("更新dtu信息")
     @PutMapping
-    @CacheEvict(value = "densorDataDb",key = "#result.imei")
     public SensorDataDb update(@RequestBody SensorDataDb densorDataDb){
         return densorDataDbService.update(densorDataDb);
     }
     @ApiOperation("根据id删除感器信息")
     @DeleteMapping("{id}")
     public void delete(@PathVariable("id") Long id){
-        SensorDataDb densorDataDb = densorDataDbService.getSensorDataDbById(id);
         densorDataDbService.delete(id);
-        //删除缓存，缓存要同步
-        redisTemplate.opsForValue().decrement("densorDataDb::"+densorDataDb.getImei());
     }
     @ApiOperation("根据imei删除所有感器信息")
     @DeleteMapping("deleteByImei/{imei}")
