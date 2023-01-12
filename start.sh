@@ -53,4 +53,6 @@ tail -f /home/logs/dtu/logback_info.log
 #如何关闭？
 #ssh上主机
 #screen -r xiaomiqiu
+#删除screen
+#screen -S name -X quit
 #此时就会出现你刚才的端口
