@@ -127,9 +127,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //把数据bytes转化为string
         String useData = sensorDataToString(bytes);
         log.info("继电器返回值：{}", useData);
-        //在发送口加锁限定就行了
-//        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(useData, useData, Duration.ofMillis(redisCacheService.getDtuInfoByImei(imei).getGroupIntervalTime()));
-//        if(!aBoolean)return;
+        if(!testingData(bytes)){
+            log.error("继电器返回值：{}校验不通过！",HexConvert.BinaryToHexString(bytes));
+        }
         //只检查闭合的接收数据，不检查断开的接收数据
         //查询机电器指令与之相配
         Optional<Relay> relayOptional = relayService.getByImei(imei).stream().filter(relay -> relay.getOpneHex().equals(useData) || relay.getCloseHex().equals(useData)).findFirst();
@@ -237,28 +237,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      */
     private String sensorDataToString(byte[] bytes) {
         //截取有效值进行分析——不要imei值
-        int useLength = getUseDataLength(bytes);
+        int useLength = bytes.length-IMEI_LENGTH;
         byte[] useBytes = getUseBytes(bytes,useLength);
         return HexConvert.BinaryToHexString(useBytes).trim();
     }
 
-    /**
-     * 计算有用的长度
-     *
-     * @param bytes
-     * @return
-     */
-    private int getUseDataLength(byte[] bytes) {
-        int useDataLength = 0;
-        DtuInfo dtuInfo = dtuInfoService.getByImei(calculationImei(bytes));
-        if (bytes.length == (dtuInfo.getImeiLength() + dtuInfo.getSensorLength())) {
-            useDataLength = dtuInfo.getSensorLength();
-        }
-        if (bytes.length == (dtuInfo.getImeiLength() + dtuInfo.getRelayLength())) {
-            useDataLength = dtuInfo.getRelayLength();
-        }
-        return useDataLength;
-    }
 
     /**
      * 收集感应器数据
@@ -414,7 +397,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      */
     private Double parseSensorOneData(byte[] bytes, int arrayNumber, ChannelHandlerContext ctx) {
         ////有用的bytes[]的值
-        int useLength = getUseDataLength(bytes);
+        int useLength = bytes.length-IMEI_LENGTH;
         log.info("收到16进制数据：{}", HexConvert.BinaryToHexString(bytes));
         byte[] useBytes = getUseBytes(bytes,useLength);
         String hex = "0x" + HexConvert.BinaryToHexString(useBytes).substring(9, 14).replace(" ", "");
@@ -454,7 +437,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             checkDigitStr = checkDigitStr + s[i];
         }
         //有效字符串
-        byte[] useBytes = getUseBytes(bytes,useLength);
+        byte[] useBytes = new byte[useLength];
+        System.arraycopy(bytes, 0, useBytes, 0, useLength);  //数组截取
         return CRC16.getCRC3(useBytes).equalsIgnoreCase(checkDigitStr);
     }
 
