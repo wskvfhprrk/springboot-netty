@@ -1,4 +1,4 @@
-package com.hejz.studay.client;
+package com.hejz.studay.nettyclient;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 

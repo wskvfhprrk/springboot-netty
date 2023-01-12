@@ -1,4 +1,4 @@
-package com.hejz.studay.client;
+package com.hejz.studay.nettyclient;
 
 import com.hejz.studay.utils.HexConvert;
 import io.netty.bootstrap.Bootstrap;
@@ -20,12 +20,12 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
-public class HrSystemClient {
+public class SystemClient {
 
     private String host;
     private int port;
 
-    public HrSystemClient(String host, int port) {
+    public SystemClient(String host, int port) {
         this.host = host;
         this.port = port;
     }
@@ -89,7 +89,7 @@ public class HrSystemClient {
     }
 
     public static void main(String[] args) {
-        HrSystemClient client = new HrSystemClient("127.0.0.1", 9090);
+        SystemClient client = new SystemClient("127.0.0.1", 9090);
         try {
             client.run();
         } catch (InterruptedException e) {
