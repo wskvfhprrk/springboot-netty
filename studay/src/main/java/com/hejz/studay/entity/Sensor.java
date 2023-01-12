@@ -126,4 +126,17 @@ public class Sensor {
     )
     private Long minRelayDefinitionCommandId = 0L;
 
+    public Sensor( String imei, Integer adrss, String name, String hex, String calculationFormula, String unit, Integer max, Integer min, Long maxRelayDefinitionCommandId, Long minRelayDefinitionCommandId) {
+        this.imei = imei;
+        this.adrss = adrss;
+        this.name = name;
+        this.hex = hex;
+        this.calculationFormula = calculationFormula;
+        this.unit = unit;
+        this.max = max;
+        this.min = min;
+        this.maxRelayDefinitionCommandId = maxRelayDefinitionCommandId;
+        this.minRelayDefinitionCommandId = minRelayDefinitionCommandId;
+    }
+
 }

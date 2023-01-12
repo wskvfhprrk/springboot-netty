@@ -101,4 +101,18 @@ public class DtuInfo {
      */
     private String addrs;
 
+    public DtuInfo() {
+    }
+
+    public DtuInfo(String imei, Integer registrationLength, Integer imeiLength, Integer relayLength, Integer sensorLength, Integer heartbeatLength, Integer groupIntervalTime, Boolean automaticAdjustment, String addrs) {
+        this.imei = imei;
+        this.registrationLength = registrationLength;
+        this.imeiLength = imeiLength;
+        this.relayLength = relayLength;
+        this.sensorLength = sensorLength;
+        this.heartbeatLength = heartbeatLength;
+        this.groupIntervalTime = groupIntervalTime;
+        this.automaticAdjustment = automaticAdjustment;
+        this.addrs = addrs;
+    }
 }

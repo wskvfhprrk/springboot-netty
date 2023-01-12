@@ -10,5 +10,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * author: hejz
  * data: 2022-5-9
  */
-public interface DataCheckingRulesRepository extends JpaRepository<DataCheckingRules,Integer>,JpaSpecificationExecutor<DataCheckingRules> {
+public interface DataCheckingRulesRepository extends JpaRepository<DataCheckingRules,Integer> ,JpaSpecificationExecutor<DataCheckingRules> {
 }

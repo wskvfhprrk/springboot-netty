@@ -18,13 +18,13 @@ import javax.persistence.*;
 public class DataCheckingRules {
     @Id
     @SequenceGenerator(
-            name = "Crc6 Detection Rules Sequence",
-            sequenceName = "crc6_detection_rules_sequence",
+            name = "detection_rules_sequence",
+            sequenceName = "detection_rules_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "crc6_detection_rules_sequence"
+            generator = "detection_rules_sequence"
     )
 
     @Column(
@@ -42,9 +42,9 @@ public class DataCheckingRules {
     private String name;
     //共有长度
     @Column(
-            name = "common length",
+            name = "common_length",
             nullable = false,
-            columnDefinition="int"+" COMMENT '共有长度'"
+            columnDefinition="int(2)"+" COMMENT '共有长度'"
     )
     private Integer commonLength;
     //地址位
@@ -72,14 +72,24 @@ public class DataCheckingRules {
     @Column(
             name = "data_value",
             nullable = false,
-            columnDefinition="bit"+" COMMENT '16进制数据值'"
+            columnDefinition="int(2)"+" COMMENT '16进制数据值'"
     )
     private Integer DataValue;
     //crc16校验位数
     @Column(
-            name = "crc16 check digit",
+            name = "crc16_check_digit",
             nullable = false,
-            columnDefinition="bit"+" COMMENT 'crc16校验位数'"
+            columnDefinition="int(2)"+" COMMENT 'crc16校验位数'"
     )
     private Integer crc16CheckDigit;
+
+    public DataCheckingRules(String name, Integer commonLength, Integer addressBit, Integer functionCode, Integer dataBits, Integer dataValue, Integer crc16CheckDigit) {
+        this.name = name;
+        this.commonLength = commonLength;
+        AddressBit = addressBit;
+        this.functionCode = functionCode;
+        DataBits = dataBits;
+        DataValue = dataValue;
+        this.crc16CheckDigit = crc16CheckDigit;
+    }
 }

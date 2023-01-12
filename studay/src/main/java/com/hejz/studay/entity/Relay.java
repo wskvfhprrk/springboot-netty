@@ -93,4 +93,13 @@ public class Relay {
     )
     private String remark;
 
+    public Relay( String imei, Integer adrss, String name, String opneHex, String closeHex, String url, String remark) {
+        this.imei = imei;
+        this.adrss = adrss;
+        this.name = name;
+        this.opneHex = opneHex;
+        this.closeHex = closeHex;
+        this.url = url;
+        this.remark = remark;
+    }
 }
