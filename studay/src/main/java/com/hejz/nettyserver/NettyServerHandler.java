@@ -356,7 +356,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //重复指令一个轮询周期只发一次
         Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + hex, hex, Duration.ofSeconds(Constant.INTERVAL_TIME));
         if (!aBoolean) return;
-        log.info("通道：{}  发送指令：{}",ctx.channel().id().toString(),  hex);
+        log.info("向通道：{} 发送指令：{}",ctx.channel().id().toString(),  hex);
         //加锁，查询和继电指令相互交叉
         synchronized (this) {
             try {
