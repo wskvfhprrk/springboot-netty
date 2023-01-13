@@ -26,7 +26,6 @@ public class SystemClient {
 
     private String host;
     private int port;
-    public static String imei;
 
     public SystemClient(String host, int port) {
         this.host = host;
