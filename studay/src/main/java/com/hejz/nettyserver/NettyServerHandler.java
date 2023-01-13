@@ -116,10 +116,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
                 e.printStackTrace();
             }
 
-            Boolean b = false;
-            while (!b) {
-                b = write("0000", ctx);
-            }
+            write("0000", ctx);
         }).start();
     }
 
@@ -159,10 +156,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             e.printStackTrace();
         }
         for (String sendHex : sendHexs) {
-            Boolean b = false;
-            while (!b) {
-                b = write(sendHex, ctx);
-            }
+            write(sendHex, ctx);
         }
     }
 
@@ -377,30 +371,28 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      * @param hex
      * @param ctx 通道上下文
      */
-    private Boolean write(final String hex, ChannelHandlerContext ctx) {
+    private void write(final String hex, ChannelHandlerContext ctx) {
         //重复指令一个轮询周期只发一次
         Boolean pollingPeriod = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + hex, hex, Duration.ofSeconds(Constant.INTERVAL_TIME));
-        if (!pollingPeriod) return false;
+        if (!pollingPeriod) return;
         log.info("向通道：{} 发送指令：{}", ctx.channel().id().toString(), hex);
         //加锁，查询和继电指令相互交叉
-//        synchronized (ctx.channel().id().toString()) {
-        //每个通道间隔一秒发送一条数据
-        Boolean channelSpacing = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + "1s", hex, Duration.ofSeconds(1));
-        if (!channelSpacing) return false;
-        try {
-            Thread.sleep(1000L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        //netty需要用ByteBuf传输
-        ByteBuf bufff = Unpooled.buffer();
-        //对接需要16进制的byte[],不需要16进制字符串有空格
-        // TODO: 2023/1/13 BinaryToHexString要改为convertHexToString无空格的ASCII码
-        bufff.writeBytes(HexConvert.hexStringToBytes(hex.replaceAll(" ", "")));
-        ctx.writeAndFlush(bufff);
-        return true;
+        synchronized (ctx.channel()) {
+            //每个通道间隔一秒发送一条数据
+//        Boolean channelSpacing = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + "1s", hex, Duration.ofSeconds(1));
+//        if (!channelSpacing) return ;
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //netty需要用ByteBuf传输
+            ByteBuf bufff = Unpooled.buffer();
+            //对接需要16进制的byte[],不需要16进制字符串有空格
+            bufff.writeBytes(HexConvert.hexStringToBytes(hex.replaceAll(" ", "")));
+            ctx.writeAndFlush(bufff);
 //            log.info("channelFuture.toString()==>{}",channelFuture.channel().id().toString());
-//        }
+        }
     }
 
     /**
@@ -527,10 +519,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
                 if (String.valueOf(relay.getId()).equals(split1[0])) {
                     String sendHex = split1[1].equals("1") ? relay.getOpneHex() : relay.getCloseHex();
 //                    log.info("发送imei值：{} ,继电器id：{}-{}，指令为：{}", sensor.getImei(),relay.getId(), split1[1].equals("1") ? "闭合指令" : "断开指令", sendHex);
-                    Boolean b = false;
-                    while (!b) {
-                        b = write(sendHex, ctx);
-                    }
+                    write(sendHex, ctx);
                     // TODO: 2023/1/4 处理url发出指令
                     break;
                 }
