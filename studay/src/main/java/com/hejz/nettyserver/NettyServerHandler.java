@@ -105,16 +105,17 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
 
     /**
      * 每间隔一段时间向客户端发心跳包
+     *
      * @param ctx
      */
     private void sendHeartbeatPacketsToClients(ChannelHandlerContext ctx) {
-        new Thread(()->{
+        new Thread(() -> {
             try {
                 Thread.sleep(Constant.INTERVAL_TIME);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            write("0000",ctx);
+            write("0000", ctx);
         }).start();
     }
 
@@ -129,7 +130,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         String imei = calculationImei(bytes);
         //把数据bytes转化为string
         String useData = sensorDataToString(bytes);
-        log.info("通道：{} imei={}  继电器返回值：{}", ctx.channel().id().toString(),imei, useData);
+        log.info("通道：{} imei={}  继电器返回值：{}", ctx.channel().id().toString(), imei, useData);
         if (!testingData(bytes)) {
             log.error("继电器返回值：{}校验不通过！", HexConvert.BinaryToHexString(bytes));
         }
@@ -224,7 +225,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             e.printStackTrace();
         }
         String imei = registerInfo.getImei().trim();
-        log.info("channel.id()={} imei======={}",ctx.channel().id().toString(), imei);
+        log.info("channel.id()={} imei======={}", ctx.channel().id().toString(), imei);
         //注册信息后把时间加上30秒——目的是为了第一次获取有效的数据
         endTimeMap.put(ctx.channel().id().toString(), LocalDateTime.now().minusSeconds(Constant.INTERVAL_TIME + 30));
     }
@@ -252,8 +253,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     private void collectSensorData(ChannelHandlerContext ctx, byte[] bytes) {
         String imei = calculationImei(bytes);
         int sensorsLength = sensorService.getByImei(imei).size();
-        //计算当前时间与之前时间差值
-        LocalDateTime end = endTimeMap.get(ctx.channel().id().toString());
+        //计算当前时间与之前时间差值——如果没有注册信息，第一个值要把它加上30秒
+        LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(Constant.INTERVAL_TIME + 30);
+        LocalDateTime end = endTimeMap.get(ctx.channel().id().toString()) == null ? dateIntervalTime : endTimeMap.get(ctx.channel().id().toString());
         Duration duration = Duration.between(end, LocalDateTime.now());
         long millis = duration.toMillis();
         List<byte[]> sensorDataByteList;
@@ -269,8 +271,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             sensorDataByteList.add(bytes);
             sensorDataByteListMap.put(ctx.channel().id().toString(), sensorDataByteList);
         }
+//        log.info("{}, sensorDataByteListMap长度==>{}", ctx.channel().id().toString(), sensorDataByteListMap.get(ctx.channel().id().toString()).size());
         if (sensorDataByteListMap.get(ctx.channel().id().toString()).size() == sensorsLength) {
-            log.info("==========解析一组传感器的有用数据===========");
+//            log.info("=========ctx.channel().id().toString()={}=解析一组传感器的有用数据===========", ctx.channel().id().toString());
             List<SensorData> sensorDataList = parseSensorListData(sensorDataByteListMap.get(ctx.channel().id().toString()), ctx);
             //插入数据库
             insertDatabase(imei, sensorDataList);
@@ -364,14 +367,15 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
 
     /**
      * 向dtu发送指令
-     *  @param hex
-     * @param ctx  通道上下文
+     *
+     * @param hex
+     * @param ctx 通道上下文
      */
     private void write(final String hex, ChannelHandlerContext ctx) {
         //重复指令一个轮询周期只发一次
         Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + hex, hex, Duration.ofSeconds(Constant.INTERVAL_TIME));
         if (!aBoolean) return;
-        log.info("向通道：{} 发送指令：{}",ctx.channel().id().toString(),  hex);
+        log.info("向通道：{} 发送指令：{}", ctx.channel().id().toString(), hex);
         //加锁，查询和继电指令相互交叉
         synchronized (this) {
             try {
@@ -409,7 +413,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         Sensor sensor = sensorService.getByImei(imei).get(arrayNumber);
         //经过公式计算得到实际结果
         Double actualResults = calculateActualData(sensor.getCalculationFormula(), d);
-        log.info(" 通道：{} imei==>{},{} =====> {}  ====> {}  ====> {}", ctx.channel().id().toString(),imei, arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
+        log.info(" 通道：{} imei==>{},{} =====> {}  ====> {}  ====> {}", ctx.channel().id().toString(), imei, arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
         //开新建程——异步处理根据解析到数据大小判断是否产生事件
         if (dtuInfoService.getByImei(calculationImei(bytes)).getAutomaticAdjustment()) {
             new Thread(() -> {
@@ -429,14 +433,14 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             return i;
         }).collect(Collectors.toList());
         //todo 此处有多个相同值时会问题
-        if(list.size()>1){
-            log.error("有多个相同的规则——总长度为：{}，此处还要开发！",checkingRules.get(0).getCommonLength());
+        if (list.size() > 1) {
+            log.error("有多个相同的规则——总长度为：{}，此处还要开发！", checkingRules.get(0).getCommonLength());
         }
         return list.get(0);
     }
 
     private Integer HexToInt(byte[] bytes) {
-        String dataHex =HexConvert.BinaryToHexString(bytes).replaceAll(" ","");
+        String dataHex = HexConvert.BinaryToHexString(bytes).replaceAll(" ", "");
         String hex = "0x" + dataHex;
         Integer x = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
         return x;

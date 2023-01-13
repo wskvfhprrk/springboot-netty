@@ -1,5 +1,6 @@
 package com.hejz.nettyclient;
 
+import com.hejz.common.Constant;
 import com.hejz.utils.HexConvert;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -17,6 +18,7 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,9 +69,14 @@ public class SystemClient {
         // TODO: 2023/1/13 向服务器发送数据
         String imei = br.readLine();
         //发送的指令
+        List<String> instructionsSent=new ArrayList<>();
+        //01 03 03 01 00 01 D5 8E
+        for (int j = 0; j < 9; j++) {
+            instructionsSent.add("0203020200FD24");
+        }
+//        List<String> instructionsSent = Arrays.asList("030500000000CC28", "0305000100009DE8", "0305000200006DE8", "0305000300003C28");
         for (int i = 0; i < 100; i++) {
-            List<String> instructions_sent = Arrays.asList("030500000000CC28", "0305000100009DE8", "0305000200006DE8", "0305000300003C28");
-            for (String s : instructions_sent) {
+            for (String s : instructionsSent) {
                 String hex = HexConvert.convertStringToHex(imei) + s;
                 try {
                     Thread.sleep(1000L);
@@ -81,6 +88,11 @@ public class SystemClient {
                 ByteBuf bufff = Unpooled.buffer();
                 ByteBuf byteBuf = bufff.writeBytes(HexConvert.hexStringToBytes(hex));
                 future.channel().writeAndFlush(bufff);
+            }
+            try {
+                Thread.sleep(Constant.INTERVAL_TIME * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
             br.close();
             is.close();
