@@ -117,7 +117,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
                 processingRelayReturnValues(ctx, bytes);
             }).start();
         } else {
-            log.error("获取的byte[]长度： {} ，不能解析数据,server received message：{}", readableBytes, HexConvert.BinaryToHexString(bytes));
+            log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}",ctx.channel().id(), readableBytes, HexConvert.BinaryToHexString(bytes));
         }
     }
 
