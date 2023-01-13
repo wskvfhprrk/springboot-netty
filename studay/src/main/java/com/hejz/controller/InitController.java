@@ -7,9 +7,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -61,11 +63,12 @@ public class InitController {
         relayRepository.save(new Relay( imei, 3, "第2个继电器", "03 05 00 01 FF 00 DC 18", "03 05 00 01 00 00 9D E8",  "lcaolhost:8080/hello", "大棚电机总开关"));
         relayRepository.save(new Relay( imei, 3, "第3个继电器", "03 05 00 02 FF 00 2C 18", "03 05 00 02 00 00 6D E8",  "lcaolhost:8080/hello", "浇水电阀开关"));
         relayRepository.save(new Relay( imei, 3, "第4个继电器", "03 05 00 03 FF 00 7D D8", "03 05 00 03 00 00 3C 28",  "lcaolhost:8080/hello", "备用"));
+        List<Relay> relays = relayRepository.getAllByImei(imei).stream().sorted(Comparator.comparing(Relay::getId)).collect(Collectors.toList());
         //处理编辑继电器命令的信息
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand(imei,"关闭打开大棚指令","停止大棚电机指令","2-0,1-0",false,0L,0L));
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand(imei,"关闭打开大棚指令","停止大棚电机指令",relays.get(1).getId()+"-0,"+relays.get(0).getId()+"-0",false,0L,0L));
         Optional<RelayDefinitionCommand> relayDefinitionCommandOptional = relayDefinitionCommandRepository.getAllByImei(imei).stream().filter(r->r.getName().equals("关闭打开大棚指令")).findFirst();
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand(imei,"打开大棚指令","打开左右大棚","2-1,1-0",true,30000L,relayDefinitionCommandOptional.get().getId()));
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand(imei,"关闭大棚指令","关闭左右大棚","2-1,1-1",true,30000L,relayDefinitionCommandOptional.get().getId()));
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand(imei,"打开大棚指令","打开左右大棚",relays.get(1).getId()+"-1,"+relays.get(0).getId()+"-0",true,30000L,relayDefinitionCommandOptional.get().getId()));
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand(imei,"关闭大棚指令","关闭左右大棚",relays.get(1).getId()+"-1,"+relays.get(0).getId()+"-1",true,30000L,relayDefinitionCommandOptional.get().getId()));
         if(!relayDefinitionCommandOptional.isPresent()) return;
         //处理感应器信息
         List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandRepository.getAllByImei(imei);
