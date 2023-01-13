@@ -79,7 +79,7 @@ public class DtuInfo {
     )
     private Integer heartbeatLength=2;
     /**
-     * 每组发送接收间隔时间(毫秒)——略小于dtu每组间隔时间，大于每组中每个发送间隔时间
+     * 每组发送接收间隔时间(毫秒)和心跳时间——略小于dtu每组间隔时间，大于每组中每个发送间隔时间
      */
     @Column(
             name = "group_interval_time",

@@ -84,6 +84,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     }
 
     private void start(ChannelHandlerContext ctx, ByteBuf msg) {
+        //向客户端发送心跳，否则dtu要重启
+        heartbeat(ctx);
         //当前数据个数
         ByteBuf byteBuf = msg;
         //获取缓冲区可读字节数
@@ -102,6 +104,21 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         } else {
             log.error("获取的byte[]长度： {} ，不能解析数据,server received message：{}", readableBytes, HexConvert.BinaryToHexString(bytes));
         }
+    }
+
+    /**
+     * 心跳——向客户端发送心跳
+     * @param ctx
+     */
+    private void heartbeat(ChannelHandlerContext ctx){
+        new Thread(()->{
+            try {
+                Thread.sleep(Constant.INTERVAL_TIME);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            write("0100",ctx);
+        }).start();
     }
 
     /**
