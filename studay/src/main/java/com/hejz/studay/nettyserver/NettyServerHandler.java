@@ -99,7 +99,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //当前数据个数
         ByteBuf byteBuf = msg;
         //获取缓冲区可读字节数
-        int readableBytes = getReadableBytes(byteBuf);
+        int readableBytes = byteBuf.readableBytes();
         byte[] bytes = new byte[readableBytes];
         byteBuf.readBytes(bytes);
         //dtu必须开通注册功能，开通注册才可以查询到信息
@@ -224,11 +224,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //注册信息后把时间加上30秒——目的是为了第一次获取有效的数据
         endTimeMap.put(imei, LocalDateTime.now().minusSeconds(INTERVAL_TIME + 30));
     }
-
-    private int getReadableBytes(ByteBuf byteBuf) {
-        return byteBuf.readableBytes();
-    }
-
 
     /**
      * 传感器数据转为字符串——没有imei值的有效数据
