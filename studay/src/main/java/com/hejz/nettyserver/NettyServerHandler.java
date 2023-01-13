@@ -81,8 +81,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     }
 
     private void start(ChannelHandlerContext ctx, ByteBuf msg) {
-        //每间隔一段时间向客户端发心跳包
-        sendHeartbeatPacketsToClients(ctx);
         //当前数据个数
         ByteBuf byteBuf = msg;
         //获取缓冲区可读字节数
@@ -192,8 +190,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      */
     private void ProcessDtuPollingReturnValue(ChannelHandlerContext ctx, byte[] bytes) {
         collectSensorData(ctx, bytes);
-        //计算imei
-        String imei = calculationImei(bytes);
         //有效的数据后把最后一个时间记录为当前时间，否则一组有效信息永远不够
         endTimeMap.put(ctx.channel().id().toString(), LocalDateTime.now());
     }
@@ -262,6 +258,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         List<byte[]> sensorDataByteList;
         //必须检测是有用的数据才可以，如果不能够使用才不可以
         if (!testingData(bytes)) return;
+        //每间隔一段时间向客户端发心跳包——只对发送有效数据的channel发送心跳
+        sendHeartbeatPacketsToClients(ctx);
         if (millis >= dtuInfoService.getByImei(imei).getGroupIntervalTime()) {
             log.info("==========查询一组出数据===========");
             sensorDataByteList = new ArrayList<>(sensorsLength);
@@ -372,15 +370,13 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      * @param ctx 通道上下文
      */
     private void write(final String hex, ChannelHandlerContext ctx) {
-        //加锁，查询和继电指令相互交叉
+        //加锁——根据通道加锁
         synchronized (ctx.channel()) {
             //重复指令一个轮询周期只发一次
             Boolean pollingPeriod = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + hex, hex, Duration.ofSeconds(Constant.INTERVAL_TIME));
             if (!pollingPeriod) return;
             log.info("向通道：{} 发送指令：{}", ctx.channel().id().toString(), hex);
             //每个通道间隔一秒发送一条数据
-//        Boolean channelSpacing = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + "1s", hex, Duration.ofSeconds(1));
-//        if (!channelSpacing) return ;
             try {
                 Thread.sleep(1000L);
             } catch (InterruptedException e) {
