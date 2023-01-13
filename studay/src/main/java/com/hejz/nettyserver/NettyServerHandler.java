@@ -261,7 +261,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //必须检测是有用的数据才可以，如果不能够使用才不可以
         if (!testingData(bytes)) return;
         if (millis >= dtuInfoService.getByImei(imei).getGroupIntervalTime()) {
-            log.info("==========查询一组出数据===========");
+            log.info("======={}===>查询一组出数据===========",ctx.channel().id().toString());
             sensorDataByteList = new ArrayList<>(sensorsLength);
             sensorDataByteList.add(bytes);
             sensorDataByteListMap.put(ctx.channel().id().toString(), sensorDataByteList);
