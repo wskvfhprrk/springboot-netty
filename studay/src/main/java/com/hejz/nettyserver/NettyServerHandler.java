@@ -372,12 +372,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      * @param ctx 通道上下文
      */
     private void write(final String hex, ChannelHandlerContext ctx) {
-        //重复指令一个轮询周期只发一次
-        Boolean pollingPeriod = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + hex, hex, Duration.ofSeconds(Constant.INTERVAL_TIME));
-        if (!pollingPeriod) return;
-        log.info("向通道：{} 发送指令：{}", ctx.channel().id().toString(), hex);
         //加锁，查询和继电指令相互交叉
         synchronized (ctx.channel()) {
+            //重复指令一个轮询周期只发一次
+            Boolean pollingPeriod = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + hex, hex, Duration.ofSeconds(Constant.INTERVAL_TIME));
+            if (!pollingPeriod) return;
+            log.info("向通道：{} 发送指令：{}", ctx.channel().id().toString(), hex);
             //每个通道间隔一秒发送一条数据
 //        Boolean channelSpacing = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + "1s", hex, Duration.ofSeconds(1));
 //        if (!channelSpacing) return ;
