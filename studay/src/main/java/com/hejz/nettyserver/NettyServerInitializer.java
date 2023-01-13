@@ -1,12 +1,16 @@
 package com.hejz.nettyserver;
 
+import com.hejz.common.Constant;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
@@ -23,6 +27,8 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         log.info("通道id:{}" , ch.id().toString());
         log.info("==================netty报告完毕==================");
         ChannelPipeline pipeline = ch.pipeline();
+        //一个周期之内 读事件 则断开连接
+        pipeline.addLast(new ReadTimeoutHandler(Constant.INTERVAL_TIME, TimeUnit.SECONDS));
         // 自定义解码器
 //        pipeline.addLast(new NettyMessageDecoder());
 

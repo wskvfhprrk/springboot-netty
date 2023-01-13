@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Component
@@ -64,6 +65,25 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     }
 
     @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        //客户端定时发送空包
+        scheduleSendHeartBeat(ctx);
+    }
+
+    private void scheduleSendHeartBeat(ChannelHandlerContext ctx) {
+        ctx.executor().schedule(() -> {
+            if (ctx.channel().isActive()) {
+                //发送空包（定义一个实体）
+                ByteBuf bufff = Unpooled.buffer();
+                //对接需要16进制的byte[],不需要16进制字符串有空格
+                log.info("向通道：{}发送了心跳包数据：00 00",ctx.channel().id().toString());
+                bufff.writeBytes(HexConvert.hexStringToBytes("0000"));
+                ctx.writeAndFlush(bufff);
+            }
+        }, Constant.INTERVAL_TIME, TimeUnit.SECONDS);
+    }
+
+    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.getCause();
         ctx.channel().close();
@@ -100,24 +120,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             log.error("获取的byte[]长度： {} ，不能解析数据,server received message：{}", readableBytes, HexConvert.BinaryToHexString(bytes));
         }
     }
-
-    /**
-     * 每间隔一段时间向客户端发心跳包
-     *
-     * @param ctx
-     */
-    private void sendHeartbeatPacketsToClients(ChannelHandlerContext ctx) {
-        new Thread(() -> {
-            try {
-                Thread.sleep(Constant.INTERVAL_TIME);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            write("0000", ctx);
-        }).start();
-    }
-
 
     /**
      * 处理继电器返回值
@@ -258,8 +260,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         List<byte[]> sensorDataByteList;
         //必须检测是有用的数据才可以，如果不能够使用才不可以
         if (!testingData(bytes)) return;
-        //每间隔一段时间向客户端发心跳包——只对发送有效数据的channel发送心跳
-        sendHeartbeatPacketsToClients(ctx);
         if (millis >= dtuInfoService.getByImei(imei).getGroupIntervalTime()) {
             log.info("==========查询一组出数据===========");
             sensorDataByteList = new ArrayList<>(sensorsLength);
