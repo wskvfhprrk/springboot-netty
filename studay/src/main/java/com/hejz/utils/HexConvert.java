@@ -121,12 +121,11 @@ public static void main(String[] args) {
     String hex = HexConvert.convertStringToHex(str);
     System.out.println("====转换为16进制=====" + hex);
 
-//    System.out.println("======16进制转换为ASCII======");
-//    System.out.println("Hex : " + hex);
-//    System.out.println("ASCII : " + HexConvert.convertHexToString(hex));
-//
-//    byte[] bytes = HexConvert.hexStringToBytes( hex );
-//
-//    System.out.println(HexConvert.BinaryToHexString( bytes ));
+    System.out.println("======16进制转换为ASCII======");
+    System.out.println("Hex : " + hex);
+    System.out.println("ASCII : " + HexConvert.convertHexToString(hex));
+
+    byte[] bytes = HexConvert.hexStringToBytes( hex );
+    System.out.println(HexConvert.BinaryToHexString( bytes ));
 }
 }

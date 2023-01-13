@@ -1,6 +1,6 @@
 package com.hejz.service;
 
-import com.hejz.entity.DataCheckingRules;
+import com.hejz.entity.CheckingRules;
 
 import java.util.List;
 
@@ -11,15 +11,15 @@ import java.util.List;
  */
 public interface CheckingRulesService {
 
-    DataCheckingRules getById(Integer id);
+    CheckingRules getById(Integer id);
 
-    List<DataCheckingRules> getAll();
+    List<CheckingRules> getAll();
 
-    List<DataCheckingRules> getByCommonLength(Integer commonLength);
+    List<CheckingRules> getByCommonLength(Integer commonLength);
 
-    DataCheckingRules save(DataCheckingRules relay);
+    CheckingRules save(CheckingRules relay);
 
-    DataCheckingRules update(DataCheckingRules relay);
+    CheckingRules update(CheckingRules relay);
 
     void delete(Integer id);
 }

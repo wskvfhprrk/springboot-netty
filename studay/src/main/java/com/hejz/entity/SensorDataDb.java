@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -16,7 +17,7 @@ import java.util.Date;
 @Entity(name = "sensor_data")
 @NoArgsConstructor
 @AllArgsConstructor
-public class SensorDataDb {
+public class SensorDataDb implements Serializable {
     @Id
     @SequenceGenerator(
             name = "sensor_data_sequence",

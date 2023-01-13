@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
 @Data
 @Entity(name = "dtu_info")
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
-public class DtuInfo {
+public class DtuInfo implements Serializable {
     @Id
     @SequenceGenerator(
             name = "dtu_info_sequence",

@@ -84,8 +84,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     }
 
     private void start(ChannelHandlerContext ctx, ByteBuf msg) {
-        //向客户端发送心跳，否则dtu要重启
-        heartbeat(ctx);
         //当前数据个数
         ByteBuf byteBuf = msg;
         //获取缓冲区可读字节数
@@ -106,20 +104,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         }
     }
 
-    /**
-     * 心跳——向客户端发送心跳
-     * @param ctx
-     */
-    private void heartbeat(ChannelHandlerContext ctx){
-        new Thread(()->{
-            try {
-                Thread.sleep(Constant.INTERVAL_TIME);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            write("0100",ctx);
-        }).start();
-    }
 
     /**
      * 处理继电器返回值
@@ -296,8 +280,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //todo 2、数据校检规则校验
         int bytesLength = bytes.length - Constant.IMEI_LENGTH;
         //查出所有符合此长度的规则
-        List<DataCheckingRules> dataCheckingRules = checkingRulesService.getByCommonLength(bytesLength);
-        for (DataCheckingRules dataCheckingRule : dataCheckingRules) {
+        List<CheckingRules> checkingRules = checkingRulesService.getByCommonLength(bytesLength);
+        for (CheckingRules dataCheckingRule : checkingRules) {
             //使用crc16校验——不需要imei值
             Integer useLength = dataCheckingRule.getCommonLength();
             byte[] useBytes = getUseBytes(bytes, useLength);
@@ -401,9 +385,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         ////有用的bytes[]的值
         int useLength = bytes.length - Constant.IMEI_LENGTH;
         byte[] useBytes = getUseBytes(bytes, useLength);
-        // TODO: 2023/1/13 BinaryToHexString要改为convertHexToString无空格的ASCII码
-        String hex = "0x" + HexConvert.BinaryToHexString(useBytes).substring(9, 14).replace(" ", "");
-        Integer x = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
+        // TODO: 2023/1/13 计算返回值
+//        String hex = "0x" + HexConvert.convertStringToHex(HexConvert.BinaryToHexString(useBytes));
+        Integer x = calculateReturnValue(useBytes);
         //获取数据值
         double d = Double.parseDouble(String.valueOf(x));
         String imei = calculationImei(bytes);
@@ -420,6 +404,27 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         return actualResults;
     }
 
+    private Integer calculateReturnValue(byte[] bytes) {
+        List<CheckingRules> checkingRules = checkingRulesService.getByCommonLength(bytes.length);
+        List<Integer> list = checkingRules.stream().map(checkingRule -> {
+            int dataBegin = checkingRule.getAddressBit() + checkingRule.getFunctionCode() + checkingRule.getDataBits();
+            byte[] dataLength = new byte[checkingRule.getDataBits()];
+            System.arraycopy(bytes, dataBegin, dataLength, 0, checkingRule.getDataValue());
+            int i = HexToInt(dataLength);
+            log.info("计算的10进制数据：{}", i);
+            return i;
+        }).collect(Collectors.toList());
+        //todo 此处有问题
+        return list.get(0);
+    }
+
+    private Integer HexToInt(byte[] bytes) {
+        String dataHex =HexConvert.BinaryToHexString(bytes);
+        String hex = "0x" + dataHex;
+        Integer x = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
+        return x;
+    }
+
 
     /**
      * crc16校验——校验7位bytes,最后两位为校验为
@@ -428,7 +433,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
      * @param dataCheckingRule
      * @return
      */
-    private boolean validCRC16(byte[] bytes, DataCheckingRules dataCheckingRule) {
+    private boolean validCRC16(byte[] bytes, CheckingRules dataCheckingRule) {
         //传感器地址
         String[] s = HexConvert.BinaryToHexString(bytes).split(" ");
         //校验位字符

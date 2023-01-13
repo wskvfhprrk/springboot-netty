@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -15,7 +16,7 @@ import javax.persistence.*;
 @Entity(name = "detection_rules")
 @NoArgsConstructor
 @AllArgsConstructor
-public class DataCheckingRules {
+public class CheckingRules implements Serializable {
     @Id
     @SequenceGenerator(
             name = "detection_rules_sequence",
@@ -83,7 +84,7 @@ public class DataCheckingRules {
     )
     private Integer crc16CheckDigitLength;
 
-    public DataCheckingRules(String name, Integer commonLength, Integer addressBit, Integer functionCode, Integer dataBits, Integer dataValue, Integer crc16CheckDigitLength) {
+    public CheckingRules(String name, Integer commonLength, Integer addressBit, Integer functionCode, Integer dataBits, Integer dataValue, Integer crc16CheckDigitLength) {
         this.name = name;
         this.commonLength = commonLength;
         AddressBit = addressBit;

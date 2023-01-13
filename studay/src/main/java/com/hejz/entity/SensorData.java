@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author:hejz 75412985@qq.com
  * @create: 2023-01-09 08:54
@@ -12,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SensorData {
+public class SensorData implements Serializable {
     private Integer id;
     private String name;
     private Double data;

@@ -3,6 +3,7 @@ package com.hejz.entity;
 import lombok.Data;
 
 import javax.persistence.Entity;
+import java.io.Serializable;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -10,7 +11,7 @@ import javax.persistence.Entity;
  * @Description: dtu注册时格式解析——{"fver":"YED_DTU_1.2.3","iccid":"89861122222045681451","imei":"865328063321359","csq":21}
  */
 @Data
-public class RegisterInfo {
+public class RegisterInfo implements Serializable {
     /**
      * dtu型号版本
      */

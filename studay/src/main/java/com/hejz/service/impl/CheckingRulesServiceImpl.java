@@ -1,7 +1,7 @@
 package com.hejz.service.impl;
 
 import com.hejz.common.Constant;
-import com.hejz.entity.DataCheckingRules;
+import com.hejz.entity.CheckingRules;
 import com.hejz.repository.DataCheckingRulesRepository;
 import com.hejz.service.CheckingRulesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,30 +22,30 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
     private DataCheckingRulesRepository dataCheckingRulesRepository;
 
     @Override
-    public DataCheckingRules getById(Integer id) {
-        DataCheckingRules dataCheckingRules = dataCheckingRulesRepository.getById(id);
-        return dataCheckingRules;
+    public CheckingRules getById(Integer id) {
+        CheckingRules checkingRules = dataCheckingRulesRepository.getById(id);
+        return checkingRules;
     }
 
     @Override
-    public List<DataCheckingRules> getAll() {
+    public List<CheckingRules> getAll() {
         return dataCheckingRulesRepository.findAll();
     }
 
     @Cacheable(value = Constant.CHECKING_RULES, key = "#p0")
     @Override
-    public List<DataCheckingRules> getByCommonLength(Integer commonLength) {
+    public List<CheckingRules> getByCommonLength(Integer commonLength) {
         return dataCheckingRulesRepository.findByCommonLength(commonLength);
     }
 
     @Override
-    public DataCheckingRules save(DataCheckingRules dataCheckingRules) {
-        return dataCheckingRulesRepository.save(dataCheckingRules);
+    public CheckingRules save(CheckingRules checkingRules) {
+        return dataCheckingRulesRepository.save(checkingRules);
     }
 
     @Override
-    public DataCheckingRules update(DataCheckingRules dataCheckingRules) {
-        return dataCheckingRulesRepository.save(dataCheckingRules);
+    public CheckingRules update(CheckingRules checkingRules) {
+        return dataCheckingRulesRepository.save(checkingRules);
     }
 
     @Override

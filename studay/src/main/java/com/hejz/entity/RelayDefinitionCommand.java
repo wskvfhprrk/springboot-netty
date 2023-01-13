@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -17,7 +18,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
-public class RelayDefinitionCommand {
+public class RelayDefinitionCommand implements Serializable {
     @Id
     @SequenceGenerator(
             name = "relay_definition_command_sequence",
