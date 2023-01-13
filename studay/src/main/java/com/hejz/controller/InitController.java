@@ -71,7 +71,7 @@ public class InitController {
         Optional<RelayDefinitionCommand> open = relayDefinitionCommands.stream().filter(r -> r.getName().equals("打开大棚指令")).findFirst();
         if(!open.isPresent()) return;
         Optional<RelayDefinitionCommand> close = relayDefinitionCommands.stream().filter(r -> r.getName().equals("关闭大棚指令")).findFirst();
-        sensorRepository.save(new Sensor( imei, 1, "空气温度 ", "01 03 03 00 00 01 84 4E", "D/10", "ºC", 25, 15, open.get().getId(), close.get().getId()));
+        sensorRepository.save(new Sensor( imei, 1, "空气温度 ", "01 03 03 00 00 01 84 4E", "D/10", "ºC", 25, 25, open.get().getId(), close.get().getId()));
         sensorRepository.save(new Sensor( imei, 1, "空气湿度 ", "01 03 03 01 00 01 D5 8E", "D/10", "%", 90, 70, 0L, 0L));
         sensorRepository.save(new Sensor( imei, 2, "土壤PH  ", "02 03 02 03 00 01 75 81", "D/10", "", 9, 6, 0L, 0L));
         sensorRepository.save(new Sensor( imei, 2, "土壤温度 ", "02 03 02 00 00 01 85 81", "D/100+5", "ºC", 25, 25, 0L, 0L));
