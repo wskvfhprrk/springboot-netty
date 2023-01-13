@@ -271,9 +271,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             sensorDataByteList.add(bytes);
             sensorDataByteListMap.put(ctx.channel().id().toString(), sensorDataByteList);
         }
-//        log.info("{}, sensorDataByteListMap长度==>{}", ctx.channel().id().toString(), sensorDataByteListMap.get(ctx.channel().id().toString()).size());
         if (sensorDataByteListMap.get(ctx.channel().id().toString()).size() == sensorsLength) {
-//            log.info("=========ctx.channel().id().toString()={}=解析一组传感器的有用数据===========", ctx.channel().id().toString());
+            log.info("========={}=>解析一组出数据===========",ctx.channel().id().toString());
             List<SensorData> sensorDataList = parseSensorListData(sensorDataByteListMap.get(ctx.channel().id().toString()), ctx);
             //插入数据库
             insertDatabase(imei, sensorDataList);
