@@ -24,7 +24,7 @@ public class SensorServiceImpl implements SensorService {
     @Autowired
     private SensorRepository sensorRepository;
 
-    @Cacheable(value = Constant.SENSOR, key = "#p0")
+    @Cacheable(value = Constant.SENSOR_CACHE_KEY, key = "#p0")
     @Override
     public List<Sensor> getByImei(String imei) {
         return sensorRepository.getAllByImei(imei);
@@ -36,13 +36,13 @@ public class SensorServiceImpl implements SensorService {
         return sensor;
     }
 
-    @CacheEvict(value = Constant.SENSOR, key = "#result.imei")
+    @CacheEvict(value = Constant.SENSOR_CACHE_KEY, key = "#result.imei")
     @Override
     public Sensor save(Sensor sensor) {
         return sensorRepository.save(sensor);
     }
 
-    @CacheEvict(value = Constant.SENSOR, key = "#result.imei")
+    @CacheEvict(value = Constant.SENSOR_CACHE_KEY, key = "#result.imei")
     @Override
     public Sensor update(Sensor sensor) {
         return sensorRepository.save(sensor);
@@ -51,11 +51,11 @@ public class SensorServiceImpl implements SensorService {
     @Override
     public void delete(Long id) {
         Sensor sensor = sensorRepository.getById(id);
-        redisTemplate.delete(Constant.SENSOR + "::" + sensor.getImei());
+        redisTemplate.delete(Constant.SENSOR_CACHE_KEY + "::" + sensor.getImei());
         sensorRepository.deleteById(id);
     }
 
-    @CacheEvict(value = Constant.SENSOR, key = "#p0")
+    @CacheEvict(value = Constant.SENSOR_CACHE_KEY, key = "#p0")
     @Override
     public void deleteByImei(String imei) {
         sensorRepository.deleteByImei(imei);

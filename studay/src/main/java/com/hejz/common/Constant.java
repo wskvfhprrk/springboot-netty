@@ -7,11 +7,11 @@ package com.hejz.common;
  */
 public class Constant {
     //数据检查规则redis缓存名称
-    public static final String CHECKING_RULES = "checkingRules";
-    public static final String RELAY = "relay";
-    public static final String SENSOR = "sensor";
-    public static final String RELAY_DEFINITION_COMMAND = "relayDefinitionCommand";
-    public static final String DTU_INFO = "dtuInfo";
+    public static final String CHECKING_RULES_CACHE_KEY = "checkingRules";
+    public static final String RELAY_CACHE_KEY = "relay";
+    public static final String SENSOR_CACHE_KEY = "sensor";
+    public static final String RELAY_DEFINITION_COMMAND_CACHE_KEY = "relayDefinitionCommand";
+    public static final String DTU_INFO_CACHE_KEY = "dtuInfo";
     //IMEI长度
     public static final int IMEI_LENGTH = 15;
     //dut注册bytes长度

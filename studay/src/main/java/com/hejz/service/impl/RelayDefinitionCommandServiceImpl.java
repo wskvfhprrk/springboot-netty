@@ -24,7 +24,7 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     @Autowired
     RedisTemplate redisTemplate;
 
-    @Cacheable(value = Constant.RELAY_DEFINITION_COMMAND, key = "#p0")
+    @Cacheable(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#p0")
     @Override
     public List<RelayDefinitionCommand> getByImei(String imei) {
         return relayDefinitionCommandRepository.getAllByImei(imei);
@@ -36,13 +36,13 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
         return relayDefinitionCommand;
     }
 
-    @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND, key = "#result.imei")
+    @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#result.imei")
     @Override
     public RelayDefinitionCommand save(RelayDefinitionCommand relayDefinitionCommand) {
         return relayDefinitionCommandRepository.save(relayDefinitionCommand);
     }
 
-    @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND, key = "#result.imei")
+    @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#result.imei")
     @Override
     public RelayDefinitionCommand update(RelayDefinitionCommand relayDefinitionCommand) {
         return relayDefinitionCommandRepository.save(relayDefinitionCommand);
@@ -51,11 +51,11 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     @Override
     public void delete(Long id) {
         RelayDefinitionCommand relayDefinitionCommand = relayDefinitionCommandRepository.getById(id);
-        redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND + "::" + relayDefinitionCommand.getImei());
+        redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + relayDefinitionCommand.getImei());
         relayDefinitionCommandRepository.deleteById(id);
     }
 
-    @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND, key = "#p0")
+    @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#p0")
     @Override
     public void deleteByImei(String imei) {
         relayDefinitionCommandRepository.deleteByImei(imei);

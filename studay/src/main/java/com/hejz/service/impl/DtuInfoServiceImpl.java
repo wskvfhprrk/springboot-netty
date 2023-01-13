@@ -22,7 +22,7 @@ public class DtuInfoServiceImpl implements DtuInfoService {
     @Autowired
     RedisTemplate redisTemplate;
 
-    @Cacheable(value = Constant.DTU_INFO, key = "#p0")
+    @Cacheable(value = Constant.DTU_INFO_CACHE_KEY, key = "#p0")
     @Override
     public DtuInfo getByImei(String imei) {
         return dtuInfoRepository.getAllByImei(imei);
@@ -34,13 +34,13 @@ public class DtuInfoServiceImpl implements DtuInfoService {
         return dtuInfo;
     }
 
-    @CacheEvict(value = Constant.DTU_INFO, key = "#result.imei")
+    @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#result.imei")
     @Override
     public DtuInfo save(DtuInfo dtuInfo) {
         return dtuInfoRepository.save(dtuInfo);
     }
 
-    @CacheEvict(value = Constant.DTU_INFO, key = "#result.imei")
+    @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#result.imei")
     @Override
     public DtuInfo update(DtuInfo dtuInfo) {
         return dtuInfoRepository.save(dtuInfo);
@@ -49,11 +49,11 @@ public class DtuInfoServiceImpl implements DtuInfoService {
     @Override
     public void delete(Long id) {
         DtuInfo dtuInfo = dtuInfoRepository.getById(id);
-        redisTemplate.delete(Constant.DTU_INFO+"::"+dtuInfo.getImei());
+        redisTemplate.delete(Constant.DTU_INFO_CACHE_KEY +"::"+dtuInfo.getImei());
         dtuInfoRepository.deleteById(id);
     }
 
-    @CacheEvict(value = Constant.DTU_INFO, key = "#p0")
+    @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#p0")
     @Override
     public void deleteByImei(String imei) {
         dtuInfoRepository.deleteByImei(imei);

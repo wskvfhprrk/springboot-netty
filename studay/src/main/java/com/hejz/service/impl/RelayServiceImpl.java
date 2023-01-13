@@ -23,7 +23,7 @@ public class RelayServiceImpl implements RelayService {
     private RelayRepository selayRepository;
     @Autowired
     RedisTemplate redisTemplate;
-    @Cacheable(value = Constant.RELAY,key = "#p0")
+    @Cacheable(value = Constant.RELAY_CACHE_KEY,key = "#p0")
     @Override
     public List<Relay> getByImei(String imei) {
         return selayRepository.getAllByImei(imei);
@@ -33,13 +33,13 @@ public class RelayServiceImpl implements RelayService {
         Relay selay = selayRepository.getById(id);
         return selay;
     }
-    @CacheEvict(value = Constant.RELAY,key = "#result.imei")
+    @CacheEvict(value = Constant.RELAY_CACHE_KEY,key = "#result.imei")
     @Override
     public Relay save(Relay selay) {
         selay.setCloseHex(null);
         return selayRepository.save(selay);
     }
-    @CacheEvict(value = Constant.RELAY,key = "#result.imei")
+    @CacheEvict(value = Constant.RELAY_CACHE_KEY,key = "#result.imei")
     @Override
     public Relay update(Relay selay) {
         return selayRepository.save(selay);
@@ -48,10 +48,10 @@ public class RelayServiceImpl implements RelayService {
     public void delete(Long id) {
         //缓存同步
         Relay relay = selayRepository.getById(id);
-        redisTemplate.delete(Constant.RELAY+"::"+relay.getImei());
+        redisTemplate.delete(Constant.RELAY_CACHE_KEY +"::"+relay.getImei());
         selayRepository.deleteById(id);
     }
-    @CacheEvict(value = Constant.RELAY,key = "#p0")
+    @CacheEvict(value = Constant.RELAY_CACHE_KEY,key = "#p0")
     @Override
     public void deleteByImei(String imei) {
         selayRepository.deleteByImei(imei);
