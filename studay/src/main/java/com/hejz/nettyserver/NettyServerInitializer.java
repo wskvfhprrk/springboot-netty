@@ -27,8 +27,8 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         log.info("通道id:{}" , ch.id().toString());
         log.info("==================netty报告完毕==================");
         ChannelPipeline pipeline = ch.pipeline();
-        //一个周期之内 读事件 则断开连接
-        pipeline.addLast(new ReadTimeoutHandler(Constant.INTERVAL_TIME, TimeUnit.SECONDS));
+        //一个周期3倍时间之内读事件 则断开连接
+        pipeline.addLast(new ReadTimeoutHandler(Constant.INTERVAL_TIME*3, TimeUnit.SECONDS));
         // 自定义解码器
 //        pipeline.addLast(new NettyMessageDecoder());
 
