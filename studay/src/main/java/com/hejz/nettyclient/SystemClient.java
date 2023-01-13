@@ -43,7 +43,6 @@ public class SystemClient {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
                             pipeline.addLast(new ObjectEncoder())
-                                    .addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)))
                                     .addLast(new ClientHandler());
                         }
                     });

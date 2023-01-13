@@ -20,6 +20,7 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         log.info("信息：有一客户端链接到本服务端");
         log.info("IP:{}" , ch.remoteAddress().getAddress());
         log.info("Port:{}" , ch.remoteAddress().getPort());
+        log.info("通道id:{}" , ch.id().toString());
         log.info("==================netty报告完毕==================");
         ChannelPipeline pipeline = ch.pipeline();
         // 自定义解码器

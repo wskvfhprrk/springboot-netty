@@ -23,7 +23,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.script.*;
-import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -115,7 +114,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         String imei = calculationImei(bytes);
         //把数据bytes转化为string
         String useData = sensorDataToString(bytes);
-        log.info("imei={}  继电器返回值：{}", imei, useData);
+        log.info("通道：{} imei={}  继电器返回值：{}", ctx.channel().id().toString(),imei, useData);
         if (!testingData(bytes)) {
             log.error("继电器返回值：{}校验不通过！", HexConvert.BinaryToHexString(bytes));
         }
@@ -140,7 +139,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             e.printStackTrace();
         }
         for (String sendHex : sendHexs) {
-            write(sendHex, ctx, imei);
+            write(sendHex, ctx);
         }
     }
 
@@ -350,16 +349,14 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
 
     /**
      * 向dtu发送指令
-     *
-     * @param hex
+     *  @param hex
      * @param ctx  通道上下文
-     * @param imei
      */
-    private void write(final String hex, ChannelHandlerContext ctx, String imei) {
+    private void write(final String hex, ChannelHandlerContext ctx) {
         //重复指令一个轮询周期只发一次
-        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(imei + ":" + hex, hex, Duration.ofMillis(dtuInfoService.getByImei(imei).getGroupIntervalTime()));
+        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + hex, hex, Duration.ofSeconds(Constant.INTERVAL_TIME));
         if (!aBoolean) return;
-        log.info("通道：{} imei==>{} 发送指令：{}",ctx.channel().id().toString(), imei, hex);
+        log.info("通道：{}  发送指令：{}",ctx.channel().id().toString(),  hex);
         //加锁，查询和继电指令相互交叉
         synchronized (this) {
             try {
@@ -477,7 +474,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
                 if (String.valueOf(relay.getId()).equals(split1[0])) {
                     String sendHex = split1[1].equals("1") ? relay.getOpneHex() : relay.getCloseHex();
 //                    log.info("发送imei值：{} ,继电器id：{}-{}，指令为：{}", sensor.getImei(),relay.getId(), split1[1].equals("1") ? "闭合指令" : "断开指令", sendHex);
-                    write(sendHex, ctx, sensor.getImei());
+                    write(sendHex, ctx);
                     // TODO: 2023/1/4 处理url发出指令
                     break;
                 }
