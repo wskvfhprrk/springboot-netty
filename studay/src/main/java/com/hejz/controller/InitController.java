@@ -33,9 +33,8 @@ public class InitController {
 
     @PostConstruct
     public void initData(){
-        dataCheckingRulesRepository.save(new CheckingRules("7位MODBUS协议普通温湿度计",7,1,1,1,2,2));
-        dataCheckingRulesRepository.save(new CheckingRules("7位MODBUS协议土壤计",7,1,1,1,2,2));
-        dataCheckingRulesRepository.save(new CheckingRules("8位MODBUS协议继电器指令",8,1,1,1,2,2));
+        dataCheckingRulesRepository.save(new CheckingRules("7位MODBUS协议111122",7,1,1,1,2,2));
+        dataCheckingRulesRepository.save(new CheckingRules("8位MODBUS协议1111122",8,1,1,1,2,2));
         Long imei = 865328063321359L;
         for (int i = 0; i < 10; i++) {
             start(String.valueOf(imei));
@@ -51,6 +50,8 @@ public class InitController {
         keys = redisTemplate.keys("sensor:*");
         redisTemplate.delete(keys);
         keys = redisTemplate.keys("relayDefinitionCommand:*");
+        redisTemplate.delete(keys);
+        keys = redisTemplate.keys("checkingRules:*");
         redisTemplate.delete(keys);
     }
 

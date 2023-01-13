@@ -9,10 +9,7 @@ import com.hejz.utils.CRC16;
 import com.hejz.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
@@ -84,6 +81,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     }
 
     private void start(ChannelHandlerContext ctx, ByteBuf msg) {
+        //每间隔一段时间向客户端发心跳包
+        sendHeartbeatPacketsToClients(ctx);
         //当前数据个数
         ByteBuf byteBuf = msg;
         //获取缓冲区可读字节数
@@ -102,6 +101,21 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         } else {
             log.error("获取的byte[]长度： {} ，不能解析数据,server received message：{}", readableBytes, HexConvert.BinaryToHexString(bytes));
         }
+    }
+
+    /**
+     * 每间隔一段时间向客户端发心跳包
+     * @param ctx
+     */
+    private void sendHeartbeatPacketsToClients(ChannelHandlerContext ctx) {
+        new Thread(()->{
+            try {
+                Thread.sleep(Constant.INTERVAL_TIME);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            write("0000",ctx);
+        }).start();
     }
 
 
@@ -371,6 +385,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             // TODO: 2023/1/13 BinaryToHexString要改为convertHexToString无空格的ASCII码
             bufff.writeBytes(HexConvert.hexStringToBytes(hex.replaceAll(" ", "")));
             ctx.writeAndFlush(bufff);
+//            log.info("channelFuture.toString()==>{}",channelFuture.channel().id().toString());
         }
     }
 
@@ -407,19 +422,21 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     private Integer calculateReturnValue(byte[] bytes) {
         List<CheckingRules> checkingRules = checkingRulesService.getByCommonLength(bytes.length);
         List<Integer> list = checkingRules.stream().map(checkingRule -> {
-            int dataBegin = checkingRule.getAddressBit() + checkingRule.getFunctionCode() + checkingRule.getDataBits();
-            byte[] dataLength = new byte[checkingRule.getDataBits()];
-            System.arraycopy(bytes, dataBegin, dataLength, 0, checkingRule.getDataValue());
+            int dataBegin = checkingRule.getAddressBitLength() + checkingRule.getFunctionCodeLength() + checkingRule.getDataBitsLength();
+            byte[] dataLength = new byte[checkingRule.getDataValueLength()];
+            System.arraycopy(bytes, dataBegin, dataLength, 0, checkingRule.getDataValueLength());
             int i = HexToInt(dataLength);
-            log.info("计算的10进制数据：{}", i);
             return i;
         }).collect(Collectors.toList());
-        //todo 此处有问题
+        //todo 此处有多个相同值时会问题
+        if(list.size()>1){
+            log.error("有多个相同的规则——总长度为：{}，此处还要开发！",checkingRules.get(0).getCommonLength());
+        }
         return list.get(0);
     }
 
     private Integer HexToInt(byte[] bytes) {
-        String dataHex =HexConvert.BinaryToHexString(bytes);
+        String dataHex =HexConvert.BinaryToHexString(bytes).replaceAll(" ","");
         String hex = "0x" + dataHex;
         Integer x = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
         return x;

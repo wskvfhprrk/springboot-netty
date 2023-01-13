@@ -50,32 +50,32 @@ public class CheckingRules implements Serializable {
     private Integer commonLength;
     //地址位
     @Column(
-            name = "address_bit",
+            name = "address_bit_length",
             nullable = false,
             columnDefinition="bit"+" COMMENT '地址位'"
     )
-    private Integer AddressBit;
+    private Integer AddressBitLength;
     //功能码
     @Column(
-            name = "function_code",
+            name = "function_code_length",
             nullable = false,
             columnDefinition="bit"+" COMMENT '功能码'"
     )
-    private Integer functionCode;
+    private Integer functionCodeLength;
     //数据位数
     @Column(
-            name = "data_bits",
+            name = "data_bits_length",
             nullable = false,
             columnDefinition="bit"+" COMMENT '数据位数'"
     )
-    private Integer DataBits;
+    private Integer DataBitsLength;
     //16进制数据值
     @Column(
-            name = "data_value",
+            name = "data_value_length",
             nullable = false,
             columnDefinition="int(2)"+" COMMENT '16进制数据值'"
     )
-    private Integer DataValue;
+    private Integer DataValueLength;
     //crc16校验位数
     @Column(
             name = "crc16_check_digit_length",
@@ -84,13 +84,13 @@ public class CheckingRules implements Serializable {
     )
     private Integer crc16CheckDigitLength;
 
-    public CheckingRules(String name, Integer commonLength, Integer addressBit, Integer functionCode, Integer dataBits, Integer dataValue, Integer crc16CheckDigitLength) {
+    public CheckingRules(String name, Integer commonLength, Integer addressBitLength, Integer functionCodeLength, Integer dataBitsLength, Integer dataValueLength, Integer crc16CheckDigitLength) {
         this.name = name;
         this.commonLength = commonLength;
-        AddressBit = addressBit;
-        this.functionCode = functionCode;
-        DataBits = dataBits;
-        DataValue = dataValue;
+        AddressBitLength = addressBitLength;
+        this.functionCodeLength = functionCodeLength;
+        DataBitsLength = dataBitsLength;
+        DataValueLength = dataValueLength;
         this.crc16CheckDigitLength = crc16CheckDigitLength;
     }
 }
