@@ -29,7 +29,7 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     public List<RelayDefinitionCommand> getByImei(String imei) {
         return relayDefinitionCommandRepository.getAllByImei(imei);
     }
-    @Cacheable(value = Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY, key = "#p0",cacheManager = "selfCacheManager")
+    @Cacheable(value = Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY, key = "#p0")
     @Override
     public RelayDefinitionCommand getById(Long id) {
         RelayDefinitionCommand relayDefinitionCommand = relayDefinitionCommandRepository.getById(id);
@@ -45,6 +45,7 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#result.imei")
     @Override
     public RelayDefinitionCommand update(RelayDefinitionCommand relayDefinitionCommand) {
+        redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY+"::"+relayDefinitionCommand.getId());
         return relayDefinitionCommandRepository.save(relayDefinitionCommand);
     }
 
@@ -52,6 +53,7 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     public void delete(Long id) {
         RelayDefinitionCommand relayDefinitionCommand = relayDefinitionCommandRepository.getById(id);
         redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + relayDefinitionCommand.getImei());
+        redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY+"::"+id);
         relayDefinitionCommandRepository.deleteById(id);
     }
 
@@ -59,6 +61,7 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     @Override
     public void deleteByImei(String imei) {
         relayDefinitionCommandRepository.deleteByImei(imei);
+
     }
 
 }
