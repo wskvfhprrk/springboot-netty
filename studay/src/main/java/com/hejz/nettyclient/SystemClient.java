@@ -12,8 +12,6 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.serialization.ClassResolvers;
-import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 
 import java.io.BufferedReader;
@@ -91,7 +89,7 @@ public class SystemClient {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println("发送给服务器的内容===" + hex);
+                System.out.println("发送给服务器的==" + i + "==内容======" + hex);
                 //netty需要用ByteBuf传输
                 ByteBuf bufff = Unpooled.buffer();
                 ByteBuf byteBuf = bufff.writeBytes(HexConvert.hexStringToBytes(hex));
@@ -134,8 +132,8 @@ public class SystemClient {
     }
 
     public static void main(String[] args) {
-//        SystemClient client = new SystemClient("192.168.0.106", 9090);
-        SystemClient client = new SystemClient("127.0.0.1", 9090);
+        SystemClient client = new SystemClient("192.168.0.106", 9090);
+//        SystemClient client = new SystemClient("127.0.0.1", 9090);
         try {
             client.run();
         } catch (InterruptedException e) {
