@@ -10,9 +10,6 @@ import com.hejz.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
-import io.netty.channel.group.ChannelGroup;
-import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,21 +44,13 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     CheckingRulesService checkingRulesService;
     @Autowired
     RedisTemplate redisTemplate;
-    //所有的连接
-    public static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    //最后时间——key为ctx.channel().id().toString()
-    private static final Map<String, LocalDateTime> endTimeMap = new HashMap<>();
-    //缓存每组dtu查询后返回的bytes值，够数量才解析，不够数量解析没有用——key为ctx.channel().id().toString()
-    private static final Map<String, List<byte[]>> sensorDataByteListMap = new HashMap<>();
-    //继电器状态值记录——key为ctx.channel().id().toString()
-    private static final Map<Long, Integer> relayStatusMap = new HashMap<>();
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         // 获取当前连接的客户端的 channel
         Channel incoming = ctx.channel();
         // 将客户端的 Channel 存入 ChannelGroup 列表中
-        channelGroup.add(incoming);
+        Constant.CHANNEL_GROUP.add(incoming);
     }
 
     @Override
@@ -92,7 +81,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
         Channel channel = ctx.channel();
-        channelGroup.forEach(channel1 -> {
+        Constant.CHANNEL_GROUP.forEach(channel1 -> {
             if (channel1 == channel) {//匹配当前连接对象
                 start(ctx, (ByteBuf) msg);
             }
@@ -193,7 +182,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     private void ProcessDtuPollingReturnValue(ChannelHandlerContext ctx, byte[] bytes) {
         collectSensorData(ctx, bytes);
         //有效的数据后把最后一个时间记录为当前时间，否则一组有效信息永远不够
-        endTimeMap.put(ctx.channel().id().toString(), LocalDateTime.now());
+        Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now());
     }
 
     /**
@@ -226,7 +215,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         String imei = registerInfo.getImei().trim();
         log.info("channel.id()={} imei======={}", ctx.channel().id().toString(), imei);
         //注册信息后把时间加上30秒——目的是为了第一次获取有效的数据
-        endTimeMap.put(ctx.channel().id().toString(), LocalDateTime.now().minusSeconds(Constant.INTERVAL_TIME + 30));
+        Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now().minusSeconds(Constant.INTERVAL_TIME + 30));
     }
 
     /**
@@ -254,7 +243,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         int sensorsLength = sensorService.getByImei(imei).size();
         //计算当前时间与之前时间差值——如果没有注册信息，第一个值要把它加上30秒
         LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(Constant.INTERVAL_TIME + 30);
-        LocalDateTime end = endTimeMap.get(ctx.channel().id().toString()) == null ? dateIntervalTime : endTimeMap.get(ctx.channel().id().toString());
+        LocalDateTime end = Constant.END_TIME_MAP.get(ctx.channel().id().toString()) == null ? dateIntervalTime : Constant.END_TIME_MAP.get(ctx.channel().id().toString());
         Duration duration = Duration.between(end, LocalDateTime.now());
         long millis = duration.toMillis();
         List<byte[]> sensorDataByteList;
@@ -264,15 +253,15 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             log.info("======={}=>{}==>查询一组出数据===========",ctx.channel().id().toString(),imei);
             sensorDataByteList = new ArrayList<>(sensorsLength);
             sensorDataByteList.add(bytes);
-            sensorDataByteListMap.put(ctx.channel().id().toString(), sensorDataByteList);
+            Constant.SENSOR_DATA_BYTE_LIST_MAP.put(ctx.channel().id().toString(), sensorDataByteList);
         } else {
-            sensorDataByteList = sensorDataByteListMap.get(ctx.channel().id().toString());
+            sensorDataByteList = Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString());
             sensorDataByteList.add(bytes);
-            sensorDataByteListMap.put(ctx.channel().id().toString(), sensorDataByteList);
+            Constant.SENSOR_DATA_BYTE_LIST_MAP.put(ctx.channel().id().toString(), sensorDataByteList);
         }
-        if (sensorDataByteListMap.get(ctx.channel().id().toString()).size() == sensorsLength) {
+        if (Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()).size() == sensorsLength) {
             log.info("========={}=>{}=>解析一组出数据===========", ctx.channel().id().toString(),imei);
-            List<SensorData> sensorDataList = parseSensorListData(sensorDataByteListMap.get(ctx.channel().id().toString()), ctx);
+            List<SensorData> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
             //插入数据库
             insertDatabase(imei, sensorDataList);
         }
