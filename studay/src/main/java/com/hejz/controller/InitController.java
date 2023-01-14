@@ -56,6 +56,8 @@ public class InitController {
         redisTemplate.delete(keys);
         keys = redisTemplate.keys(Constant.COMMAND_STATUS_CACHE_KEY+":*");
         redisTemplate.delete(keys);
+        keys = redisTemplate.keys(Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY+":*");
+        redisTemplate.delete(keys);
     }
 
     private void start(String imei) {

@@ -11,8 +11,10 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCache;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -20,6 +22,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 
@@ -33,9 +36,11 @@ public class RedisConfiguration extends CachingConfigurerSupport {
 
 
     private Duration timeToLive = Duration.ZERO;
+
     public void setTimeToLive(Duration timeToLive) {
         this.timeToLive = timeToLive;
     }
+
     /**
      * 自定义生成key的规则
      */
@@ -105,4 +110,34 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         template.afterPropertiesSet();
         return template;
     }
+
+    /**
+     * 自定义RedisCacheManager，用于在使用@Cacheable时设置ttl,[参考网站：](!https://blog.csdn.net/weixin_41860719/article/details/125226096)
+     */
+    @Bean
+    public RedisCacheManager selfCacheManager(RedisTemplate<String, Object> redisTemplate) {
+        RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisTemplate.getConnectionFactory());
+        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisTemplate.getValueSerializer()));
+        return new TtlRedisCacheManager(redisCacheWriter, redisCacheConfiguration);
+    }
+
+    public class TtlRedisCacheManager extends RedisCacheManager {
+        public TtlRedisCacheManager(RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfiguration) {
+            super(cacheWriter, defaultCacheConfiguration);
+        }
+
+        @Override
+        protected RedisCache createRedisCache(String name, RedisCacheConfiguration cacheConfig) {
+            String[] cells = StringUtils.delimitedListToStringArray(name, "=");
+            name = cells[0];
+            if (cells.length > 1) {
+                long ttl = Long.parseLong(cells[1]);
+                // 根据传参设置缓存失效时间——当前设置1小时
+                cacheConfig = cacheConfig.entryTtl(Duration.ofHours(1));
+            }
+            return super.createRedisCache(name, cacheConfig);
+        }
+    }
+
 }

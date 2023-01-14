@@ -29,7 +29,7 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     public List<RelayDefinitionCommand> getByImei(String imei) {
         return relayDefinitionCommandRepository.getAllByImei(imei);
     }
-
+    @Cacheable(value = Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY, key = "#p0",cacheManager = "selfCacheManager")
     @Override
     public RelayDefinitionCommand getById(Long id) {
         RelayDefinitionCommand relayDefinitionCommand = relayDefinitionCommandRepository.getById(id);
