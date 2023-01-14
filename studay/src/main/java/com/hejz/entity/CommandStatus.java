@@ -33,9 +33,9 @@ public class CommandStatus implements Serializable {
     )
     private Long id;
     @Column(
-            name = "id",
+            name = "imei",
             nullable = false,
-            columnDefinition="bigint"+" COMMENT 'ID'"
+            columnDefinition="varchar(15)"+" COMMENT 'imei'"
     )
     private String imei;
     @Column(
@@ -51,9 +51,9 @@ public class CommandStatus implements Serializable {
     )
     private Date createDate;
     @Column(
-            name = "create_date",
+            name = "status",
             nullable = false,
-            columnDefinition="datetime"+" COMMENT '当前状态——true是新的状态，flase是过期的状态'"
+            columnDefinition="bit"+" COMMENT '当前状态——true是新的状态，false是过期的状态'"
     )
     private Boolean status;
 }
