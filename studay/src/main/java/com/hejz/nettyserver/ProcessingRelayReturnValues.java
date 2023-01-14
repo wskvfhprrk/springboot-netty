@@ -77,12 +77,12 @@ public class ProcessingRelayReturnValues {
         log.info("通道：{} imei={}  继电器返回值：{}", ctx.channel().id().toString(), imei, useData);
         if (!NettyServiceCommon.testingData(bytes)) {
             log.error("继电器返回值：{}校验不通过！", HexConvert.BinaryToHexString(bytes));
+            return;
         }
         //只检查闭合的接收数据，不检查断开的接收数据
         //查询机电器指令与之相配
         Optional<Relay> relayOptional = relayService.getByImei(imei).stream().filter(relay -> relay.getOpneHex().equals(useData) || relay.getCloseHex().equals(useData)).findFirst();
         if (!relayOptional.isPresent()) {
-            log.error("查询不到继电器的命令imei:{} useData：{}",imei,useData);
             return;
         }
         int hexStatus = 0;
