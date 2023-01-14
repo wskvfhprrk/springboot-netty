@@ -46,23 +46,14 @@ public class ProcessSensorReturnValue {
     private RelayService relayService;
 
     /**
-     * 处理dtu轮询返回值
-     *  @param ctx
-     * @param bytes
-     */
-    public void start(ChannelHandlerContext ctx, byte[] bytes) {
-        collectSensorData(ctx, bytes);
-        //有效的数据后把最后一个时间记录为当前时间，否则一组有效信息永远不够
-        Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now());
-    }
-
-    /**
      * 收集感应器数据
      *
      * @param ctx                          通道上下文
      * @param bytes                        收到byte[]信息
      */
-    private void collectSensorData(ChannelHandlerContext ctx, byte[] bytes) {
+    public void start(ChannelHandlerContext ctx, byte[] bytes) {
+        //有效的数据后把最后一个时间记录为当前时间，否则一组有效信息永远不够
+        Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now());
         String imei = NettyServiceCommon.calculationImei(bytes);
         int sensorsLength = sensorService.getByImei(imei).size();
         //计算当前时间与之前时间差值——如果没有注册信息，第一个值要把它加上30秒
