@@ -52,16 +52,13 @@ public class ProcessSensorReturnValue {
      * @param bytes                        收到byte[]信息
      */
     public void start(ChannelHandlerContext ctx, byte[] bytes) throws Exception{
-        //有效的数据后把最后一个时间记录为当前时间，否则一组有效信息永远不够
-        Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now());
         String imei = NettyServiceCommon.calculationImei(bytes);
         int sensorsLength = sensorService.getByImei(imei).size();
         //计算当前时间与之前时间差值——如果没有注册信息，第一个值要把它加上30秒
         LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(dtuInfoService.getByImei(imei).getGroupIntervalTime()/1000+30);
-        log.info("dateIntervalTime={},now{}",dateIntervalTime,LocalDateTime.now());
         LocalDateTime end = Constant.END_TIME_MAP.get(ctx.channel().id().toString()) == null ? dateIntervalTime : Constant.END_TIME_MAP.get(ctx.channel().id().toString());
         Duration duration = Duration.between(end, LocalDateTime.now());
-        long millis = duration.toMillis()*1000;
+        long millis = duration.toMillis();
         List<byte[]> sensorDataByteList;
         //必须检测是有用的数据才可以，如果不能够使用才不可以
         if (!NettyServiceCommon.testingData(bytes)) return;
@@ -75,6 +72,7 @@ public class ProcessSensorReturnValue {
             sensorDataByteList.add(bytes);
             Constant.SENSOR_DATA_BYTE_LIST_MAP.put(ctx.channel().id().toString(), sensorDataByteList);
         }
+        log.info("size==={}",Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()).size());
         if (Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()).size() == sensorsLength) {
             log.info("========={}=>{}=>解析一组出数据===========", ctx.channel().id().toString(), imei);
             List<SensorData> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
