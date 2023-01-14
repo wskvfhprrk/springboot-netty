@@ -77,6 +77,7 @@ public class SystemClient {
         }
 //        List<String> instructionsSent = Arrays.asList("030500000000CC28", "0305000100009DE8", "0305000200006DE8", "0305000300003C28");
         for (int i = 0; i < 100; i++) {
+            System.out.println("=========================发送一组新数据===========================");
             for (String s : instructionsSent) {
                 String hex = HexConvert.convertStringToHex(imei) + s;
                 try {

@@ -88,14 +88,15 @@ public class ProcessingRelayReturnValues {
         int hexStatus = 0;
         if (relayOptional.get().getOpneHex().equals(useData)) hexStatus = 1;
         String ids = relayOptional.get().getId() + "-" + hexStatus;
-        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.getByImei(imei).stream().filter(r -> r.getRelayIds().indexOf(ids) >= 0 && r.getIsProcessTheReturnValue()).collect(Collectors.toList());
+        List<RelayDefinitionCommand> definitionCommandList = relayDefinitionCommandService.getByImei(imei);
+        List<RelayDefinitionCommand> relayDefinitionCommands = definitionCommandList.stream().filter(r -> r.getRelayIds().indexOf(ids) >= 0).collect(Collectors.toList());
         if (relayDefinitionCommands.isEmpty()) {
             log.error("查询不到继电器定义命令imei:{},ids：{}",imei,ids);
             return;
         }
         LinkedHashSet<RelayDefinitionCommand> relayDefinitionCommandList = new LinkedHashSet<>();
         for (RelayDefinitionCommand relayDefinitionCommand : relayDefinitionCommands) {
-            Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(imei).stream()
+            Optional<RelayDefinitionCommand> first = definitionCommandList.stream()
                     .filter(r -> r.getId().equals(relayDefinitionCommand.getCommonId())).findFirst();
             if (first.isPresent()) relayDefinitionCommandList.add(first.get());
         }
