@@ -25,6 +25,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.util.StringUtils;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author 何建哲
@@ -63,6 +65,7 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         return keyGenerator;
     }
 
+
     /**
      * 采用RedisCacheManager作为缓存管理器
      *
@@ -72,7 +75,6 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     public CacheManager cacheManager(RedisConnectionFactory factory) {
         RedisSerializer<String> redisSerializer = new StringRedisSerializer();
         Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-
         //解决查询缓存转换异常的问题
         ObjectMapper om = new ObjectMapper();
         om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
@@ -86,9 +88,7 @@ public class RedisConfiguration extends CachingConfigurerSupport {
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer))
                 .disableCachingNullValues();
 
-        RedisCacheManager cacheManager = RedisCacheManager.builder(factory)
-                .cacheDefaults(config)
-                .build();
+        RedisCacheManager cacheManager = RedisCacheManager.builder(factory).cacheDefaults(config).build();
         return cacheManager;
     }
 
@@ -109,35 +109,6 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         template.setValueSerializer(jackson2JsonRedisSerializer);
         template.afterPropertiesSet();
         return template;
-    }
-
-    /**
-     * 自定义RedisCacheManager，用于在使用@Cacheable时设置ttl,[参考网站：](!https://blog.csdn.net/weixin_41860719/article/details/125226096)
-     */
-    @Bean
-    public RedisCacheManager selfCacheManager(RedisTemplate<String, Object> redisTemplate) {
-        RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisTemplate.getConnectionFactory());
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisTemplate.getValueSerializer()));
-        return new TtlRedisCacheManager(redisCacheWriter, redisCacheConfiguration);
-    }
-
-    public class TtlRedisCacheManager extends RedisCacheManager {
-        public TtlRedisCacheManager(RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfiguration) {
-            super(cacheWriter, defaultCacheConfiguration);
-        }
-
-        @Override
-        protected RedisCache createRedisCache(String name, RedisCacheConfiguration cacheConfig) {
-            String[] cells = StringUtils.delimitedListToStringArray(name, "=");
-            name = cells[0];
-            if (cells.length > 1) {
-                long ttl = Long.parseLong(cells[1]);
-                // 根据传参设置缓存失效时间——当前设置1小时
-                cacheConfig = cacheConfig.entryTtl(Duration.ofHours(1));
-            }
-            return super.createRedisCache(name, cacheConfig);
-        }
     }
 
 }
