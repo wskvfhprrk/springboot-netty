@@ -18,7 +18,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     @Autowired
     DtuRegister dtuRegister;
     @Autowired
-    ProcessDtuPollingReturnValue processDtuPollingReturnValue;
+    ProcessSensorReturnValue processSensorReturnValue;
     @Autowired
     ProcessingRelayReturnValues processingRelayReturnValues;
 
@@ -77,7 +77,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         if (readableBytes == Constant.DUT_REGISTERED_BYTES_LENGTH) {
             dtuRegister.start(bytes, ctx);
         } else if (readableBytes == (Constant.DTU_POLLING_RETURN_LENGTH)) { //处理dtu轮询返回值
-            processDtuPollingReturnValue.start(ctx, bytes);
+            processSensorReturnValue.start(ctx, bytes);
         } else if (readableBytes == (Constant.RELAY_RETURN_VALUES_LENGTH)) { //处理继电器返回值
             new Thread(() -> {
                 processingRelayReturnValues.start(ctx, bytes);

@@ -23,11 +23,11 @@ import java.util.stream.Collectors;
 /**
  * @author:hejz 75412985@qq.com
  * @create: 2023-01-14 08:45
- * @Description: 进程Dtu轮询返回值处理
+ * @Description: 进程感应器返回值处理
  */
 @Component
 @Slf4j
-public class ProcessDtuPollingReturnValue {
+public class ProcessSensorReturnValue {
     @Autowired
     private SensorService sensorService;
     @Autowired
