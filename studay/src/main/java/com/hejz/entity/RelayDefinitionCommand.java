@@ -84,8 +84,14 @@ public class RelayDefinitionCommand implements Serializable {
             columnDefinition="varchar(255) default 0"+" COMMENT '处理返回值要使用继电器ids——在此类表中查询,0表示没有'"
     )
     private Long commonId =0L;
+    @Column(
+            name = "corresponding_command_id",
+            nullable = true,
+            columnDefinition="bigint default 0"+" COMMENT '相对应的命令id'"
+    )
+    private Long correspondingCommandId;
 
-    public RelayDefinitionCommand(String imei,String name, String remarks,String relayIds, boolean isProcessTheReturnValue, long processTheReturnValueTime, Long commonId) {
+    public RelayDefinitionCommand(String imei,String name, String remarks,String relayIds, boolean isProcessTheReturnValue, long processTheReturnValueTime, Long commonId, Long correspondingCommandId) {
         this.imei=imei;
         this.name=name;
         this.remarks=remarks;
@@ -93,5 +99,7 @@ public class RelayDefinitionCommand implements Serializable {
         this.isProcessTheReturnValue=isProcessTheReturnValue;
         this.processTheReturnValueTime=processTheReturnValueTime;
         this.commonId = commonId;
+        this.correspondingCommandId = correspondingCommandId;
+
     }
 }

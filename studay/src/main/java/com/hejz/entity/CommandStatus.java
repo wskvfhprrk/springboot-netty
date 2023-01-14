@@ -1,0 +1,59 @@
+package com.hejz.entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * @author:hejz 75412985@qq.com
+ * @create: 2023-01-14 07:46
+ * @Description: 继电器命令状态
+ */
+@Data
+@Entity(name = "command_status")
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
+public class CommandStatus implements Serializable {
+    @Id
+    @SequenceGenerator(
+            name = "command_status_sequence",
+            sequenceName = "command_status_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "command_status_sequence"
+    )
+    @Column(
+            name = "id",
+            nullable = false,
+            columnDefinition="bigint"+" COMMENT 'ID'"
+    )
+    private Long id;
+    @Column(
+            name = "id",
+            nullable = false,
+            columnDefinition="bigint"+" COMMENT 'ID'"
+    )
+    private String imei;
+    @Column(
+            name = "common_id",
+            nullable = false,
+            columnDefinition="bigint"+" COMMENT '继电器命令ID'"
+    )
+    private Long commonId;
+    @Column(
+            name = "create_date",
+            nullable = false,
+            columnDefinition="datetime"+" COMMENT '创建时间'"
+    )
+    private Date createDate;
+    @Column(
+            name = "create_date",
+            nullable = false,
+            columnDefinition="datetime"+" COMMENT '当前状态——true是新的状态，flase是过期的状态'"
+    )
+    private Boolean status;
+}
