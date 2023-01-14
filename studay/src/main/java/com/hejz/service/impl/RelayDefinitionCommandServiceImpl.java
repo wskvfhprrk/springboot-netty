@@ -4,6 +4,7 @@ import com.hejz.common.Constant;
 import com.hejz.entity.RelayDefinitionCommand;
 import com.hejz.repository.RelayDefinitionCommandRepository;
 import com.hejz.service.RelayDefinitionCommandService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,11 +30,14 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     public List<RelayDefinitionCommand> getByImei(String imei) {
         return relayDefinitionCommandRepository.getAllByImei(imei);
     }
+
     @Cacheable(value = Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY, key = "#p0")
     @Override
     public RelayDefinitionCommand getById(Long id) {
         RelayDefinitionCommand relayDefinitionCommand = relayDefinitionCommandRepository.getById(id);
-        return relayDefinitionCommand;
+        RelayDefinitionCommand relayDefinitionCommand1=new RelayDefinitionCommand();
+        BeanUtils.copyProperties(relayDefinitionCommand,relayDefinitionCommand1);
+        return relayDefinitionCommand1;
     }
 
     @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#result.imei")
@@ -45,7 +49,7 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#result.imei")
     @Override
     public RelayDefinitionCommand update(RelayDefinitionCommand relayDefinitionCommand) {
-        redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY+"::"+relayDefinitionCommand.getId());
+        redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY + "::" + relayDefinitionCommand.getId());
         return relayDefinitionCommandRepository.save(relayDefinitionCommand);
     }
 
@@ -53,7 +57,7 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     public void delete(Long id) {
         RelayDefinitionCommand relayDefinitionCommand = relayDefinitionCommandRepository.getById(id);
         redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + relayDefinitionCommand.getImei());
-        redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY+"::"+id);
+        redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY + "::" + id);
         relayDefinitionCommandRepository.deleteById(id);
     }
 

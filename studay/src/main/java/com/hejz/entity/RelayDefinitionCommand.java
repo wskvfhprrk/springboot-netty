@@ -17,7 +17,8 @@ import java.io.Serializable;
 @Entity(name = "relay_definition_command")
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
+//@JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
+@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 public class RelayDefinitionCommand implements Serializable {
     @Id
     @SequenceGenerator(
@@ -91,7 +92,8 @@ public class RelayDefinitionCommand implements Serializable {
     )
     private Long correspondingCommandId;
 
-    public RelayDefinitionCommand(String imei,String name, String remarks,String relayIds, boolean isProcessTheReturnValue, long processTheReturnValueTime, Long commonId, Long correspondingCommandId) {
+
+    public RelayDefinitionCommand(String imei, String name, String remarks, String relayIds, boolean isProcessTheReturnValue, long processTheReturnValueTime, Long commonId, Long correspondingCommandId) {
         this.imei=imei;
         this.name=name;
         this.remarks=remarks;
