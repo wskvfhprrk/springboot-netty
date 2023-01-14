@@ -130,13 +130,21 @@ public class CRC16 {
 
     public static void main(String[] args) {
         //字符串转16进制byte数组_79FC
-        String str16 = encode("01030200A1");
-        byte[] bytes = str16.getBytes();
-        System.out.println("str16:" + str16);
+        //0203020200FD24
+        int i=20;
+//        String hexString = Integer.toHexString(i);
+//        System.out.println("hex=="+hexString);
+//        String str16 = encode("0203020200");
+        byte[] bytes1 = HexConvert.hexStringToBytes("020302020A");
+        System.out.println(getCRC3(bytes1));
+//        byte[] bytes = str16.getBytes();
+//        System.out.println("str16:" + str16);
 
-        System.out.println(getCRC(bytes));
-        System.out.println(getCRC2(bytes));
-        System.out.println(getCRC3(bytes));
+//        System.out.println("str16:" + str16);
+//
+//        System.out.println(getCRC(bytes));
+//        System.out.println(getCRC2(bytes));
+//        System.out.println(getCRC3(bytes));
 
     }
 }

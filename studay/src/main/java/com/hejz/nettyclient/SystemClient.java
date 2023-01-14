@@ -70,7 +70,7 @@ public class SystemClient {
     private void start(ChannelFuture future) throws IOException {
         InputStreamReader is = new InputStreamReader(System.in, "UTF-8");
         BufferedReader br = new BufferedReader(is);
-//        System.out.println("请输入你的imei>>>");
+        System.out.println("请输入你的imei>>>");
         // TODO: 2023/1/13 向服务器发送数据
         String imei = br.readLine();
         SystemClient.imie = imei;
@@ -78,7 +78,7 @@ public class SystemClient {
         List<String> instructionsSent = new ArrayList<>();
         //01 03 03 01 00 01 D5 8E
         for (int i = 0; i < 9; i++) {
-            instructionsSent.add(calculateRrc16ValidatedData("02030202", i + 10));
+            instructionsSent.add(calculateRrc16ValidatedData("020302", i + 10));
         }
         for (int i = 0; i < 100; i++) {
 //            System.out.println("=========================发送一组新数据===========================");
@@ -89,7 +89,7 @@ public class SystemClient {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-//                System.out.println("发送给服务器的内容===" + hex);
+                System.out.println("发送给服务器的内容===" + hex);
                 //netty需要用ByteBuf传输
                 ByteBuf bufff = Unpooled.buffer();
                 ByteBuf byteBuf = bufff.writeBytes(HexConvert.hexStringToBytes(hex));

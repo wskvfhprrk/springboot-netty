@@ -51,16 +51,17 @@ public class ProcessSensorReturnValue {
      * @param ctx                          通道上下文
      * @param bytes                        收到byte[]信息
      */
-    public void start(ChannelHandlerContext ctx, byte[] bytes) {
+    public void start(ChannelHandlerContext ctx, byte[] bytes) throws Exception{
         //有效的数据后把最后一个时间记录为当前时间，否则一组有效信息永远不够
         Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now());
         String imei = NettyServiceCommon.calculationImei(bytes);
         int sensorsLength = sensorService.getByImei(imei).size();
         //计算当前时间与之前时间差值——如果没有注册信息，第一个值要把它加上30秒
-        LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(Constant.INTERVAL_TIME + 30);
+        LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(dtuInfoService.getByImei(imei).getGroupIntervalTime()/1000+30);
+        log.info("dateIntervalTime={},now{}",dateIntervalTime,LocalDateTime.now());
         LocalDateTime end = Constant.END_TIME_MAP.get(ctx.channel().id().toString()) == null ? dateIntervalTime : Constant.END_TIME_MAP.get(ctx.channel().id().toString());
         Duration duration = Duration.between(end, LocalDateTime.now());
-        long millis = duration.toMillis();
+        long millis = duration.toMillis()*1000;
         List<byte[]> sensorDataByteList;
         //必须检测是有用的数据才可以，如果不能够使用才不可以
         if (!NettyServiceCommon.testingData(bytes)) return;
@@ -79,7 +80,10 @@ public class ProcessSensorReturnValue {
             List<SensorData> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
             //插入数据库
             insertDatabase(imei, sensorDataList);
+            //需要重置数据
+            Constant.SENSOR_DATA_BYTE_LIST_MAP.remove(ctx.channel().id().toString());
         }
+        Constant.END_TIME_MAP.put(ctx.channel().id().toString(),LocalDateTime.now());
     }
     /**
      * 批量解析收到的数据
@@ -88,7 +92,7 @@ public class ProcessSensorReturnValue {
      * @param ctx  通道上下文
      * @return
      */
-    private List<SensorData> parseSensorListData(List<byte[]> list, ChannelHandlerContext ctx) {
+    private List<SensorData> parseSensorListData(List<byte[]> list, ChannelHandlerContext ctx) throws Exception{
         List<SensorData> doubleList = new ArrayList<>();
         //按顺序解析，根据sensor顺序解析找对应关系
         for (int i = 0; i < list.size(); i++) {
@@ -107,7 +111,7 @@ public class ProcessSensorReturnValue {
      * @param imei
      * @param sensorDataList
      */
-    private void insertDatabase(String imei, List<SensorData> sensorDataList) {
+    private void insertDatabase(String imei, List<SensorData> sensorDataList) throws Exception{
         List<String> nameList = sensorDataList.stream().map(sensorData -> sensorData.getName().trim()).collect(Collectors.toList());
         String names = StringUtils.join(nameList, ",");
         List<String> dataList = sensorDataList.stream().map(sensorData -> sensorData.getData().toString()).collect(Collectors.toList());
@@ -125,7 +129,7 @@ public class ProcessSensorReturnValue {
      * @param arrayNumber 数组编号
      * @param ctx         通道上下文
      */
-    private Double parseSensorOneData(byte[] bytes, int arrayNumber, ChannelHandlerContext ctx) {
+    private Double parseSensorOneData(byte[] bytes, int arrayNumber, ChannelHandlerContext ctx)throws Exception {
         ////有用的bytes[]的值
         int useLength = bytes.length - Constant.IMEI_LENGTH;
         byte[] useBytes = NettyServiceCommon.getUseBytes(bytes, useLength);
@@ -148,13 +152,18 @@ public class ProcessSensorReturnValue {
         return actualResults;
     }
 
-    private Integer calculateReturnValue(byte[] bytes) {
+    private Integer calculateReturnValue(byte[] bytes) throws Exception{
         List<CheckingRules> checkingRules = checkingRulesService.getByCommonLength(bytes.length);
         List<Integer> list = checkingRules.stream().map(checkingRule -> {
             int dataBegin = checkingRule.getAddressBitLength() + checkingRule.getFunctionCodeLength() + checkingRule.getDataBitsLength();
             byte[] dataLength = new byte[checkingRule.getDataValueLength()];
             System.arraycopy(bytes, dataBegin, dataLength, 0, checkingRule.getDataValueLength());
-            int i = HexToInt(dataLength);
+            int i = 0;
+            try {
+                i = HexToInt(dataLength);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
             return i;
         }).collect(Collectors.toList());
         //todo 此处有多个相同值时会问题
@@ -171,7 +180,7 @@ public class ProcessSensorReturnValue {
      * @param measureData 测量数据
      * @return
      */
-    private Double calculateActualData(String formula, double measureData) {
+    private Double calculateActualData(String formula, double measureData) throws Exception{
         ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
         Compilable compilable = (Compilable) engine;
         Bindings bindings = engine.createBindings(); //Local级别的Binding
@@ -188,7 +197,7 @@ public class ProcessSensorReturnValue {
         return null;
     }
 
-    private Integer HexToInt(byte[] bytes) {
+    private Integer HexToInt(byte[] bytes) throws Exception{
         String dataHex = HexConvert.BinaryToHexString(bytes).replaceAll(" ", "");
         String hex = "0x" + dataHex;
         Integer x = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取

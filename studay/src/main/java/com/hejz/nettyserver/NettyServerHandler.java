@@ -42,7 +42,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
                 //发送空包（定义一个实体）
                 ByteBuf bufff = Unpooled.buffer();
                 //对接需要16进制的byte[],不需要16进制字符串有空格
-                log.info("向通道：{}发送了心跳包数据：00 00",ctx.channel().id().toString());
+                log.info("向通道：{}发送了心跳包数据：00 00", ctx.channel().id().toString());
                 bufff.writeBytes(HexConvert.hexStringToBytes("0000"));
                 ctx.writeAndFlush(bufff);
             }
@@ -60,13 +60,17 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         Channel channel = ctx.channel();
         Constant.CHANNEL_GROUP.forEach(channel1 -> {
             if (channel1 == channel) {//匹配当前连接对象
-                start(ctx, (ByteBuf) msg);
+                try {
+                    start(ctx, (ByteBuf) msg);
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                }
             }
         });
 
     }
 
-    private void start(ChannelHandlerContext ctx, ByteBuf msg) {
+    private void start(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
         //当前数据个数
         ByteBuf byteBuf = msg;
         //获取缓冲区可读字节数
@@ -75,7 +79,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         byteBuf.readBytes(bytes);
         //dtu必须开通注册功能，开通注册才可以查询到信息
         if (readableBytes == Constant.DUT_REGISTERED_BYTES_LENGTH) {
-            dtuRegister.start(bytes, ctx);
+            dtuRegister.start(ctx);
         } else if (readableBytes == (Constant.DTU_POLLING_RETURN_LENGTH)) { //处理dtu轮询返回值
             processSensorReturnValue.start(ctx, bytes);
         } else if (readableBytes == (Constant.RELAY_RETURN_VALUES_LENGTH)) { //处理继电器返回值
@@ -83,7 +87,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
                 processingRelayReturnValues.start(ctx, bytes);
             }).start();
         } else {
-            log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}",ctx.channel().id(), readableBytes, HexConvert.BinaryToHexString(bytes));
+            log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), readableBytes, HexConvert.BinaryToHexString(bytes));
         }
     }
 
