@@ -3,7 +3,6 @@ package com.hejz.nettyserver;
 import com.hejz.common.Constant;
 import com.hejz.entity.CheckingRules;
 import com.hejz.entity.DtuInfo;
-import com.hejz.repository.CommandStatusRepository;
 import com.hejz.service.CheckingRulesService;
 import com.hejz.service.DtuInfoService;
 import com.hejz.utils.CRC16;
@@ -17,6 +16,8 @@ import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.time.Duration;
 import java.util.List;
 
@@ -30,22 +31,22 @@ import java.util.List;
 public class NettyServiceCommon {
 
     @Autowired
+    private DtuInfoService dtuInfoService1;
     private static DtuInfoService dtuInfoService;
     @Autowired
+    private CheckingRulesService checkingRulesService1;
     private static CheckingRulesService checkingRulesService;
-    @Autowired
-    private static RedisTemplate<Object, Object> redisTemplate;
+    private static RedisTemplate redisTemplate;
 
-    public static DtuInfoService getDtuInfoService() {
-        return dtuInfoService;
+    @PostConstruct
+    public void init(){
+        this.dtuInfoService=dtuInfoService1;
+        this.checkingRulesService=checkingRulesService1;
     }
 
-    public static CheckingRulesService getCheckingRulesService() {
-        return checkingRulesService;
-    }
-
-    public static RedisTemplate<Object, Object> getRedisTemplate() {
-        return redisTemplate;
+    @Resource(name="redisTemplate")
+    public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
     /**
@@ -60,6 +61,7 @@ public class NettyServiceCommon {
         // TODO: 2023/1/13 BinaryToHexString要改为convertHexToString无空格的ASCII码
         return HexConvert.hexStringToString(HexConvert.BinaryToHexString(imeiBytes).replaceAll(" ", ""));
     }
+
     /**
      * 必须检测是有用的数据才可以，如果不能够使用才不可以
      *
@@ -91,6 +93,7 @@ public class NettyServiceCommon {
         }
         return true;
     }
+
     /**
      * 截取有用的bytes——不含imei
      *
@@ -103,6 +106,7 @@ public class NettyServiceCommon {
         System.arraycopy(bytes, Constant.IMEI_LENGTH, useBytes, 0, useLength);  //数组截取
         return useBytes;
     }
+
     /**
      * crc16校验——校验7位bytes,最后两位为校验为
      *
