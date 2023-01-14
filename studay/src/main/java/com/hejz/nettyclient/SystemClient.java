@@ -1,6 +1,7 @@
 package com.hejz.nettyclient;
 
 import com.hejz.common.Constant;
+import com.hejz.utils.CRC16;
 import com.hejz.utils.HexConvert;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -21,12 +22,16 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+
+import static jdk.internal.dynalink.support.NameCodec.encode;
 
 public class SystemClient {
 
     private String host;
     private int port;
     public static String imie;
+
     public SystemClient(String host, int port) {
         this.host = host;
         this.port = port;
@@ -65,19 +70,18 @@ public class SystemClient {
     private void start(ChannelFuture future) throws IOException {
         InputStreamReader is = new InputStreamReader(System.in, "UTF-8");
         BufferedReader br = new BufferedReader(is);
-        System.out.println("请输入你的imei>>>");
+//        System.out.println("请输入你的imei>>>");
         // TODO: 2023/1/13 向服务器发送数据
         String imei = br.readLine();
-        SystemClient.imie=imei;
+        SystemClient.imie = imei;
         //发送的指令
-        List<String> instructionsSent=new ArrayList<>();
+        List<String> instructionsSent = new ArrayList<>();
         //01 03 03 01 00 01 D5 8E
-        for (int j = 0; j < 9; j++) {
-            instructionsSent.add("0203020200FD24");
+        for (int i = 0; i < 9; i++) {
+            instructionsSent.add(calculateRrc16ValidatedData("02030202", i + 10));
         }
-//        List<String> instructionsSent = Arrays.asList("030500000000CC28", "0305000100009DE8", "0305000200006DE8", "0305000300003C28");
         for (int i = 0; i < 100; i++) {
-            System.out.println("=========================发送一组新数据===========================");
+//            System.out.println("=========================发送一组新数据===========================");
             for (String s : instructionsSent) {
                 String hex = HexConvert.convertStringToHex(imei) + s;
                 try {
@@ -85,7 +89,7 @@ public class SystemClient {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println("发送给服务器的内容===" + hex);
+//                System.out.println("发送给服务器的内容===" + hex);
                 //netty需要用ByteBuf传输
                 ByteBuf bufff = Unpooled.buffer();
                 ByteBuf byteBuf = bufff.writeBytes(HexConvert.hexStringToBytes(hex));
@@ -99,6 +103,32 @@ public class SystemClient {
             br.close();
             is.close();
         }
+    }
+
+    /**
+     * 计算RRC16验证过的数据
+     *
+     * @param previousData 前面部分的数据：地址+功能码+数据位
+     * @param i            数据位——10进制数据
+     * @return
+     */
+    private String calculateRrc16ValidatedData(String previousData, Integer i) {
+        String hexString = Integer.toHexString(i).toUpperCase(Locale.ROOT);
+        if(hexString.length()==1){
+            hexString="000"+hexString;
+        }else if(hexString.length()==2){
+            hexString="00"+hexString;
+        }else if(hexString.length()==3){
+            hexString="0"+hexString;
+        }
+//        System.out.println("i==" + i);
+//        System.out.println("hexString==" + hexString);
+        byte[] bytes = HexConvert.hexStringToBytes(previousData+hexString);
+        String validatedData = CRC16.getCRC3(bytes);
+//        System.out.println("validatedData==" + validatedData);
+        String result = previousData + hexString + validatedData;
+//        System.out.println("result=" + result);
+        return result;
     }
 
     public static void main(String[] args) {
