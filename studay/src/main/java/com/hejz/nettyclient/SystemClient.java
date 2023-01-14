@@ -76,9 +76,11 @@ public class SystemClient {
         SystemClient.imie = imei;
         //发送的指令
         List<String> instructionsSent = new ArrayList<>();
-        //01 03 03 01 00 01 D5 8E
-        for (int i = 0; i < 9; i++) {
-            instructionsSent.add(calculateRrc16ValidatedData("020302", i + 10));
+        //空气温度,空气湿度,土壤PH,土壤温度,土壤湿度,土壤氮,土壤磷,土壤钾,土壤电导率
+        //一般缩小10倍是真实数据
+        List<Integer> data = Arrays.asList(150, 610, 1200, 70, 300, 30, 30, 170, 20);
+        for (int i = 0; i < data.size(); i++) {
+            instructionsSent.add(calculateRrc16ValidatedData("020302", data.get(i)));
         }
         for (int i = 0; i < 100; i++) {
 //            System.out.println("=========================发送一组新数据===========================");
@@ -114,16 +116,16 @@ public class SystemClient {
      */
     private String calculateRrc16ValidatedData(String previousData, Integer i) {
         String hexString = Integer.toHexString(i).toUpperCase(Locale.ROOT);
-        if(hexString.length()==1){
-            hexString="000"+hexString;
-        }else if(hexString.length()==2){
-            hexString="00"+hexString;
-        }else if(hexString.length()==3){
-            hexString="0"+hexString;
+        if (hexString.length() == 1) {
+            hexString = "000" + hexString;
+        } else if (hexString.length() == 2) {
+            hexString = "00" + hexString;
+        } else if (hexString.length() == 3) {
+            hexString = "0" + hexString;
         }
 //        System.out.println("i==" + i);
 //        System.out.println("hexString==" + hexString);
-        byte[] bytes = HexConvert.hexStringToBytes(previousData+hexString);
+        byte[] bytes = HexConvert.hexStringToBytes(previousData + hexString);
         String validatedData = CRC16.getCRC3(bytes);
 //        System.out.println("validatedData==" + validatedData);
         String result = previousData + hexString + validatedData;
