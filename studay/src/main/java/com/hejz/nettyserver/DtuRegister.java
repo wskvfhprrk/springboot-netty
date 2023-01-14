@@ -37,7 +37,7 @@ public class DtuRegister {
             e.printStackTrace();
         }
         String imei = registerInfo.getImei().trim();
-        log.info("channel.id()={} imei======={}", ctx.channel().id().toString(), imei);
+//        log.info("channel.id()={} imei======={}", ctx.channel().id().toString(), imei);
         //注册信息后把时间加上30秒——目的是为了第一次获取有效的数据
         Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now().minusSeconds(Constant.INTERVAL_TIME + 30));
     }
