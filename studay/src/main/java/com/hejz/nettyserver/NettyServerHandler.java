@@ -120,25 +120,32 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         //只检查闭合的接收数据，不检查断开的接收数据
         //查询机电器指令与之相配
         Optional<Relay> relayOptional = relayService.getByImei(imei).stream().filter(relay -> relay.getOpneHex().equals(useData) || relay.getCloseHex().equals(useData)).findFirst();
-        if (!relayOptional.isPresent()) return;
+        if (!relayOptional.isPresent()) {
+            log.error("查询不到继电器的命令imei:{} useData：{}",imei,useData);
+            return;
+        }
         int hexStatus = 0;
         if (relayOptional.get().getOpneHex().equals(useData)) hexStatus = 1;
         String ids = relayOptional.get().getId() + "-" + hexStatus;
         List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.getByImei(imei).stream().filter(r -> r.getRelayIds().indexOf(ids) >= 0 && r.getIsProcessTheReturnValue()).collect(Collectors.toList());
-        if (relayDefinitionCommands.isEmpty()) return;
+        if (relayDefinitionCommands.isEmpty()) {
+            log.error("查询不到继电器定义命令imei:{},ids：{}",imei,ids);
+            return;
+        }
         LinkedHashSet<RelayDefinitionCommand> relayDefinitionCommandList = new LinkedHashSet<>();
         for (RelayDefinitionCommand relayDefinitionCommand : relayDefinitionCommands) {
-            Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(imei).stream().filter(r -> r.getId().equals(relayDefinitionCommand.getCommonId())).findFirst();
+            Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(imei).stream()
+                    .filter(r -> r.getId().equals(relayDefinitionCommand.getCommonId())).findFirst();
             if (first.isPresent()) relayDefinitionCommandList.add(first.get());
         }
-        List<String> sendHexs = getSendHex(relayService.getByImei(imei), relayDefinitionCommandList);
+        List<String> sendHex = getSendHex(relayService.getByImei(imei), relayDefinitionCommandList);
         try {
             Thread.sleep(relayDefinitionCommands.get(0).getProcessTheReturnValueTime());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        for (String sendHex : sendHexs) {
-            NettyServiceCommon.write(sendHex, ctx);
+        for (String hex : sendHex) {
+            NettyServiceCommon.write(hex, ctx);
         }
     }
 
