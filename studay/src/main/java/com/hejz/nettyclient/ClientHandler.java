@@ -19,11 +19,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         byte[] bytes = new byte[readableBytes];
         byteBuf.readBytes(bytes);
         System.out.println("服务器响应的信息");
-        System.out.println(HexConvert.BinaryToHexString(bytes));
+        String hex = HexConvert.BinaryToHexString(bytes);
+        System.out.println(hex);
         //如果收到不是心跳信息返回给服务端
-        if(!HexConvert.BinaryToHexString(bytes).equals("00 00 ")){
+        if(!hex.equals("00 00 ")){
             ByteBuf bufff = Unpooled.buffer();
-            bufff.writeBytes(bytes);
+            String s = HexConvert.convertStringToHex(SystemClient.imie) + hex.replaceAll(" ","");
+            System.out.println("服务器响应数据返回给服务器=="+s);
+            bufff.writeBytes(HexConvert.hexStringToBytes(s));
             ctx.writeAndFlush(bufff);
         }
     }

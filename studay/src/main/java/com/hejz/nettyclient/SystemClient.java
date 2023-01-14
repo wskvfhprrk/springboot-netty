@@ -26,7 +26,7 @@ public class SystemClient {
 
     private String host;
     private int port;
-
+    public static String imie;
     public SystemClient(String host, int port) {
         this.host = host;
         this.port = port;
@@ -68,6 +68,7 @@ public class SystemClient {
         System.out.println("请输入你的imei>>>");
         // TODO: 2023/1/13 向服务器发送数据
         String imei = br.readLine();
+        SystemClient.imie=imei;
         //发送的指令
         List<String> instructionsSent=new ArrayList<>();
         //01 03 03 01 00 01 D5 8E
