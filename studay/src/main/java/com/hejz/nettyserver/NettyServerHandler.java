@@ -1,14 +1,12 @@
 package com.hejz.nettyserver;
 
 import com.hejz.common.Constant;
-import com.hejz.service.*;
 import com.hejz.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
@@ -17,18 +15,6 @@ import java.util.concurrent.TimeUnit;
 @ChannelHandler.Sharable
 @Slf4j
 public class NettyServerHandler extends SimpleChannelInboundHandler {
-    @Autowired
-    RelayService relayService;
-    @Autowired
-    SensorService sensorService;
-    @Autowired
-    DtuInfoService dtuInfoService;
-    @Autowired
-    RelayDefinitionCommandService relayDefinitionCommandService;
-    @Autowired
-    CheckingRulesService checkingRulesService;
-    @Autowired
-    RedisTemplate redisTemplate;
     @Autowired
     DtuRegister dtuRegister;
     @Autowired
