@@ -64,8 +64,10 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#p0")
     @Override
     public void deleteByImei(String imei) {
+        relayDefinitionCommandRepository.getAllByImei(imei).stream().forEach(r->{
+            redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY + "::" + r.getId());
+        });
         relayDefinitionCommandRepository.deleteByImei(imei);
-
     }
 
 }
