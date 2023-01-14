@@ -72,7 +72,6 @@ public class ProcessSensorReturnValue {
             sensorDataByteList.add(bytes);
             Constant.SENSOR_DATA_BYTE_LIST_MAP.put(ctx.channel().id().toString(), sensorDataByteList);
         }
-        log.info("size==={}",Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()).size());
         if (Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()).size() == sensorsLength) {
             log.info("========={}=>{}=>解析一组出数据===========", ctx.channel().id().toString(), imei);
             List<SensorData> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
