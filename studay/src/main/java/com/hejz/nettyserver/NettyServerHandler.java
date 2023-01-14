@@ -71,7 +71,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         ByteBuf byteBuf = msg;
         //获取缓冲区可读字节数
         int readableBytes = byteBuf.readableBytes();
-        log.info("readableBytes==>{}",readableBytes);
         byte[] bytes = new byte[readableBytes];
         byteBuf.readBytes(bytes);
         //dtu必须开通注册功能，开通注册才可以查询到信息

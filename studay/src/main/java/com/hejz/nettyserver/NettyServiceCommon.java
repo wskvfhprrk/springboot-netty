@@ -12,7 +12,6 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -36,18 +35,17 @@ public class NettyServiceCommon {
     @Autowired
     private CheckingRulesService checkingRulesService1;
     private static CheckingRulesService checkingRulesService;
+    @Resource(name="redisTemplate")
+    private RedisTemplate redisTemplate1;
     private static RedisTemplate redisTemplate;
 
     @PostConstruct
     public void init(){
         this.dtuInfoService=dtuInfoService1;
         this.checkingRulesService=checkingRulesService1;
+        this.redisTemplate=redisTemplate1;
     }
 
-    @Resource(name="redisTemplate")
-    public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     /**
      * 计算imei
