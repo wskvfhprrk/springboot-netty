@@ -35,8 +35,8 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     @Override
     public RelayDefinitionCommand getById(Long id) {
         RelayDefinitionCommand relayDefinitionCommand = relayDefinitionCommandRepository.getById(id);
-        RelayDefinitionCommand relayDefinitionCommand1=new RelayDefinitionCommand();
-        BeanUtils.copyProperties(relayDefinitionCommand,relayDefinitionCommand1);
+        RelayDefinitionCommand relayDefinitionCommand1 = new RelayDefinitionCommand();
+        BeanUtils.copyProperties(relayDefinitionCommand, relayDefinitionCommand1);
         return relayDefinitionCommand1;
     }
 
@@ -53,11 +53,11 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
         return relayDefinitionCommandRepository.save(relayDefinitionCommand);
     }
 
+    @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#p0")
     @Override
     public void delete(Long id) {
         RelayDefinitionCommand relayDefinitionCommand = relayDefinitionCommandRepository.getById(id);
         redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + relayDefinitionCommand.getImei());
-        redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY + "::" + id);
         relayDefinitionCommandRepository.deleteById(id);
     }
 
