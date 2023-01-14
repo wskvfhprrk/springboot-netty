@@ -1,7 +1,6 @@
 package com.hejz.nettyserver;
 
 import com.hejz.common.Constant;
-import com.hejz.entity.*;
 import com.hejz.service.*;
 import com.hejz.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
@@ -12,15 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Component
 @ChannelHandler.Sharable
 @Slf4j
 public class NettyServerHandler extends SimpleChannelInboundHandler {
-
     @Autowired
     RelayService relayService;
     @Autowired
@@ -37,6 +33,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     DtuRegister dtuRegister;
     @Autowired
     ProcessDtuPollingReturnValue processDtuPollingReturnValue;
+    @Autowired
+    ProcessingRelayReturnValues processingRelayReturnValues;
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
@@ -96,94 +94,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             processDtuPollingReturnValue.start(ctx, bytes);
         } else if (readableBytes == (Constant.RELAY_RETURN_VALUES_LENGTH)) { //处理继电器返回值
             new Thread(() -> {
-                processingRelayReturnValues(ctx, bytes);
+                processingRelayReturnValues.start(ctx, bytes);
             }).start();
         } else {
             log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}",ctx.channel().id(), readableBytes, HexConvert.BinaryToHexString(bytes));
         }
-    }
-
-    /**
-     * 处理继电器返回值
-     *
-     * @param ctx
-     * @param bytes
-     */
-    private void processingRelayReturnValues(ChannelHandlerContext ctx, byte[] bytes) {
-        String imei = NettyServiceCommon.calculationImei(bytes);
-        //把数据bytes转化为string
-        String useData = sensorDataToString(bytes);
-        log.info("通道：{} imei={}  继电器返回值：{}", ctx.channel().id().toString(), imei, useData);
-        if (!NettyServiceCommon.testingData(bytes)) {
-            log.error("继电器返回值：{}校验不通过！", HexConvert.BinaryToHexString(bytes));
-        }
-        //只检查闭合的接收数据，不检查断开的接收数据
-        //查询机电器指令与之相配
-        Optional<Relay> relayOptional = relayService.getByImei(imei).stream().filter(relay -> relay.getOpneHex().equals(useData) || relay.getCloseHex().equals(useData)).findFirst();
-        if (!relayOptional.isPresent()) {
-            log.error("查询不到继电器的命令imei:{} useData：{}",imei,useData);
-            return;
-        }
-        int hexStatus = 0;
-        if (relayOptional.get().getOpneHex().equals(useData)) hexStatus = 1;
-        String ids = relayOptional.get().getId() + "-" + hexStatus;
-        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.getByImei(imei).stream().filter(r -> r.getRelayIds().indexOf(ids) >= 0 && r.getIsProcessTheReturnValue()).collect(Collectors.toList());
-        if (relayDefinitionCommands.isEmpty()) {
-            log.error("查询不到继电器定义命令imei:{},ids：{}",imei,ids);
-            return;
-        }
-        LinkedHashSet<RelayDefinitionCommand> relayDefinitionCommandList = new LinkedHashSet<>();
-        for (RelayDefinitionCommand relayDefinitionCommand : relayDefinitionCommands) {
-            Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(imei).stream()
-                    .filter(r -> r.getId().equals(relayDefinitionCommand.getCommonId())).findFirst();
-            if (first.isPresent()) relayDefinitionCommandList.add(first.get());
-        }
-        List<String> sendHex = getSendHex(relayService.getByImei(imei), relayDefinitionCommandList);
-        try {
-            Thread.sleep(relayDefinitionCommands.get(0).getProcessTheReturnValueTime());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        for (String hex : sendHex) {
-            NettyServiceCommon.write(hex, ctx);
-        }
-    }
-
-    /**
-     * 继电器指令返回数据处理
-     *
-     * @param relays
-     * @param relayDefinitionCommands
-     * @return
-     */
-    private List<String> getSendHex(List<Relay> relays, LinkedHashSet<RelayDefinitionCommand> relayDefinitionCommands) {
-        List<String> relayIds = relayDefinitionCommands.stream().map(RelayDefinitionCommand::getRelayIds).collect(Collectors.toList());
-        List<String> relayIdList = new ArrayList<>();
-        for (String relayId : relayIds) {
-            relayIdList.addAll(Arrays.asList(relayId.split(",")));
-        }
-        List result = new ArrayList();
-        for (String s : relayIdList) {
-            String[] strings = s.split("-");
-            List<String> list = relays.stream().filter(r -> r.getId().equals(Long.valueOf(strings[0])))
-                    .map(strings[1].equals("1") ? Relay::getOpneHex : Relay::getCloseHex)
-                    .collect(Collectors.toList());
-            result.addAll(list);
-        }
-        return result;
-    }
-
-    /**
-     * 传感器数据转为字符串——没有imei值的有效数据
-     *
-     * @param bytes 收到byte[]信息
-     * @return
-     */
-    private String sensorDataToString(byte[] bytes) {
-        //截取有效值进行分析——不要imei值
-        int useLength = bytes.length - Constant.IMEI_LENGTH;
-        byte[] useBytes = NettyServiceCommon.getUseBytes(bytes, useLength);
-        return HexConvert.BinaryToHexString(useBytes).trim();
     }
 
 }
