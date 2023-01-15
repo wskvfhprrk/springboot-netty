@@ -92,13 +92,13 @@ public class SystemClient {
                 System.out.println("发送给服务器的==" + i + "==内容======" + hex);
                 //netty需要用ByteBuf传输
                 ByteBuf bufff = Unpooled.buffer();
-                ByteBuf byteBuf = bufff.writeBytes(HexConvert.hexStringToBytes(hex));
+//                ByteBuf byteBuf = bufff.writeBytes(HexConvert.hexStringToBytes(hex));
                 future.channel().writeAndFlush(bufff);
             }
             try {
                 //单位是毫秒
-                int time=10000;
-                System.out.println("time==="+time);
+                int time = 50000;
+                System.out.println("time===" + time);
                 Thread.sleep(time);
             } catch (InterruptedException e) {
                 e.printStackTrace();
