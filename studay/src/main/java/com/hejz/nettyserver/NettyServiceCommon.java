@@ -152,7 +152,6 @@ public class NettyServiceCommon {
             //对接需要16进制的byte[],不需要16进制字符串有空格
             bufff.writeBytes(HexConvert.hexStringToBytes(hex.replaceAll(" ", "")));
             ctx.writeAndFlush(bufff);
-//            log.info("channelFuture.toString()==>{}",channelFuture.channel().id().toString());
         }
     }
 }

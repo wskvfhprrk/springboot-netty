@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +43,8 @@ public class ProcessSensorReturnValue {
     DtuRegister dtuRegister;
     @Autowired
     private RelayService relayService;
+    @Autowired
+    private ProcessRelayCommands processRelayCommands;
 
     /**
      * 收集感应器数据
@@ -143,7 +144,7 @@ public class ProcessSensorReturnValue {
         //开新建程——异步处理根据解析到数据大小判断是否产生事件
         if (dtuInfoService.getByImei(NettyServiceCommon.calculationImei(bytes)).getAutomaticAdjustment()) {
             new Thread(() -> {
-                criteria(sensor, actualResults, ctx);
+                processRelayCommands.handleAccordingToRelayCommand(sensor, actualResults, ctx);
             }).start();
         }
         return actualResults;
@@ -201,55 +202,5 @@ public class ProcessSensorReturnValue {
         return x;
     }
 
-    /**
-     * 根据数据处理继电器指令处理
-     *  @param sensor 串号
-     * @param id     继电器指令——奇数表示对应的继电器id，偶数：1表示为使用闭合指令，0表示为断开指令
-     * @param ctx    通道上下文
-     */
-    void relayCommandData(Sensor sensor, Long id, ChannelHandlerContext ctx) {
-        if (id == null || id.equals("0")) return;
-        //编辑继电器指令
-        Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(id)).findFirst();
-        if (!first.isPresent()) return;
-        log.info("===============正在执行指令：{}", first.get().getName());
-        String relayIds = first.get().getRelayIds();
-        //根据imei查询所有继电器指令:
-        List<Relay> relayList = relayService.getByImei(sensor.getImei());
-        //指令奇数表示对应的继电器id，偶数：1表示为使用闭合指令，0表示为断开指令
-        String[] split = relayIds.split(",");
-        for (String s : split) {
-            String[] split1 = s.split("-");
-            for (Relay relay : relayList) {
-                if (String.valueOf(relay.getId()).equals(split1[0])) {
-                    String sendHex = split1[1].equals("1") ? relay.getOpneHex() : relay.getCloseHex();
-//                    log.info("发送imei值：{} ,继电器id：{}-{}，指令为：{}", sensor.getImei(),relay.getId(), split1[1].equals("1") ? "闭合指令" : "断开指令", sendHex);
-                    NettyServiceCommon.write(sendHex, ctx);
-                    // TODO: 2023/1/4 处理url发出指令
-                    break;
-                }
-            }
-        }
-    }
 
-    /**
-     * 判断处理
-     *  @param sensor 感应器指令
-     * @param data   测试结果值
-     * @param ctx    通道上下文
-     */
-    private void criteria(Sensor sensor, double data, ChannelHandlerContext ctx) {
-        Long id = null;
-        //根据结果值判断是否处理
-        if (data > sensor.getMax()) {
-            log.info("{} 结果值 {} 大于最大值 {}", sensor.getName(), data, sensor.getMax());
-            id = sensor.getMaxRelayDefinitionCommandId();
-        } else if (data < sensor.getMin()) {
-            log.info("{} 结果值 {} 小于最小值{}", sensor.getName(), data, sensor.getMin());
-            id = sensor.getMinRelayDefinitionCommandId();
-        } else {
-            log.info("{} 结果值 {} 比较合理，不用处理！", sensor.getName(), data);
-        }
-        relayCommandData(sensor, id, ctx);
-    }
 }

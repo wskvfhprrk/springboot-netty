@@ -20,7 +20,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     @Autowired
     ProcessSensorReturnValue processSensorReturnValue;
     @Autowired
-    ProcessingRelayReturnValues processingRelayReturnValues;
+    ProcessRelayCommands processRelayCommands;
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
@@ -84,7 +84,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             processSensorReturnValue.start(ctx, bytes);
         } else if (readableBytes == (Constant.RELAY_RETURN_VALUES_LENGTH)) { //处理继电器返回值
             new Thread(() -> {
-                processingRelayReturnValues.start(ctx, bytes);
+                processRelayCommands.start(ctx, bytes);
             }).start();
         } else {
             log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), readableBytes, HexConvert.BinaryToHexString(bytes));
