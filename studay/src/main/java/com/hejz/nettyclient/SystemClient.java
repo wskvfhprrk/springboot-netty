@@ -96,7 +96,9 @@ public class SystemClient {
                 future.channel().writeAndFlush(bufff);
             }
             try {
-                int time = Constant.INTERVAL_TIME_MAP.get(future.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(future.channel().id().toString());
+                //单位是毫秒
+                int time=10000;
+                System.out.println("time==="+time);
                 Thread.sleep(time);
             } catch (InterruptedException e) {
                 e.printStackTrace();
