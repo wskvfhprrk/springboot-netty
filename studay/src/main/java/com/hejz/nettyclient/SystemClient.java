@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static jdk.internal.dynalink.support.NameCodec.encode;
 
 public class SystemClient {
 
