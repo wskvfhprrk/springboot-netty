@@ -96,7 +96,8 @@ public class SystemClient {
                 future.channel().writeAndFlush(bufff);
             }
             try {
-                Thread.sleep(Constant.INTERVAL_TIME * 1000);
+                int time = Constant.INTERVAL_TIME_MAP.get(future.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(future.channel().id().toString());
+                Thread.sleep(time);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

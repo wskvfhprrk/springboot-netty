@@ -37,16 +37,17 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     }
 
     private void scheduleSendHeartBeat(ChannelHandlerContext ctx) {
+        int time = Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString());
         ctx.executor().schedule(() -> {
             if (ctx.channel().isActive()) {
                 //发送空包（定义一个实体）
-                ByteBuf bufff = Unpooled.buffer();
-                //对接需要16进制的byte[],不需要16进制字符串有空格
-                log.info("向通道：{}发送了心跳包数据：00 00", ctx.channel().id().toString());
-                bufff.writeBytes(HexConvert.hexStringToBytes("0000"));
-                ctx.writeAndFlush(bufff);
+//                ByteBuf bufff = Unpooled.buffer();
+//                //对接需要16进制的byte[],不需要16进制字符串有空格
+//                log.info("向通道：{}发送了心跳包数据：00 00", ctx.channel().id().toString());
+//                bufff.writeBytes(HexConvert.hexStringToBytes("0000"));
+                NettyServiceCommon.write("0000",ctx);
             }
-        }, Constant.INTERVAL_TIME, TimeUnit.SECONDS);
+        }, time, TimeUnit.SECONDS);
     }
 
     @Override
@@ -81,7 +82,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         if (readableBytes == Constant.DUT_REGISTERED_BYTES_LENGTH) {
             dtuRegister.start(ctx);
         } else if (readableBytes == (Constant.DTU_POLLING_RETURN_LENGTH)) { //处理dtu轮询返回值
-            processSensorReturnValue.start(ctx, bytes);
+            new Thread(() -> {
+                processSensorReturnValue.start(ctx, bytes);
+            }).start();
         } else if (readableBytes == (Constant.RELAY_RETURN_VALUES_LENGTH)) { //处理继电器返回值
             new Thread(() -> {
                 processRelayCommands.start(ctx, bytes);
