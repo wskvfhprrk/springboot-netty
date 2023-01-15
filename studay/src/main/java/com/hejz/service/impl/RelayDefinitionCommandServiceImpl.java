@@ -42,7 +42,7 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
             if (relayDefinitionCommand == null) return null;
             RelayDefinitionCommand relayDefinitionCommand1 = new RelayDefinitionCommand();
             BeanUtils.copyProperties(relayDefinitionCommand, relayDefinitionCommand1);
-            redisTemplate.opsForValue().set(key, relayDefinitionCommand1, Duration.ofHours(1));
+            redisTemplate.opsForValue().set(key, relayDefinitionCommand1);
             return relayDefinitionCommand;
         } else {
             return (RelayDefinitionCommand) o;
