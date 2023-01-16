@@ -94,7 +94,7 @@ public class SystemClient {
                 log.info("发送给服务器的==" + i + "==内容======" + hex);
                 //netty需要用ByteBuf传输
                 ByteBuf bufff = Unpooled.buffer();
-//                ByteBuf byteBuf = bufff.writeBytes(HexConvert.hexStringToBytes(hex));
+                bufff.writeBytes(HexConvert.hexStringToBytes(hex));
                 future.channel().writeAndFlush(bufff);
             }
             try {
