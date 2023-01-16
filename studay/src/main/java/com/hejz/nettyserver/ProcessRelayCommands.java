@@ -69,7 +69,6 @@ public class ProcessRelayCommands {
         //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand
         RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.getByImei(imei).stream()
                 .filter(r -> r.getId().equals(commonId)).findFirst().get();
-        //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand——BeanUtils.copyProperties防止jpa程序报错
         ctx.channel().eventLoop().schedule(() -> {
             log.info("通道==》{}开始延时任务，延时：{}", ctx.channel().id().toString(), relayDefinitionCommand1.getProcessingWaitingTime());
             sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand1);

@@ -3,7 +3,6 @@ package com.hejz.nettyserver;
 import com.hejz.common.Constant;
 import com.hejz.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -11,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.TimeUnit;
 
 @Component
 @ChannelHandler.Sharable
