@@ -34,7 +34,7 @@ public class Constant {
     //继电器返回值长度
     public static final int RELAY_RETURN_VALUES_LENGTH = 23;
     //每组间隔默认时间（毫秒）
-    public static final int INTERVAL_TIME = 50000;
+    public static final int INTERVAL_TIME = 30000;
     //按通道存储每组上报间隔时间——在接到据后会自传感器数据后动修改与dtu设置的每组间隔时间一致，否则会是默认时间。
     public static final  Map<String,Integer> INTERVAL_TIME_MAP = new HashMap() ;
     //需要继续处理缓存键的缓存指令失效时间（毫秒）
