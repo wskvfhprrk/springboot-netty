@@ -58,6 +58,10 @@ public class InitController {
         redisTemplate.delete(keys);
         keys = redisTemplate.keys(Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY+":*");
         redisTemplate.delete(keys);
+        keys = redisTemplate.keys(Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY+":*");
+        redisTemplate.delete(keys);
+        keys = redisTemplate.keys(Constant.DUT_INFO_ID_CACHE_KEY+":*");
+        redisTemplate.delete(keys);
     }
 
     private void start(String imei) {
@@ -68,8 +72,8 @@ public class InitController {
         relayRepository.save(new Relay( imei, 3, "第4个继电器", "03 05 00 03 FF 00 7D D8", "03 05 00 03 00 00 3C 28",  "lcaolhost:8080/hello", "备用"));
         List<Relay> relays = relayRepository.getAllByImei(imei).stream().sorted(Comparator.comparing(Relay::getId)).collect(Collectors.toList());
         //处理编辑继电器命令的信息
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand(imei,"关闭打开大棚指令","停止大棚电机指令",relays.get(1).getId()+"-0,"+relays.get(0).getId()+"-0",false,0L,0L,0L));
-        Optional<RelayDefinitionCommand> relayDefinitionCommandOptional = relayDefinitionCommandRepository.getAllByImei(imei).stream().filter(r->r.getName().equals("关闭打开大棚指令")).findFirst();
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand(imei,"重置大棚指令","停止大棚电机指令",relays.get(1).getId()+"-0,"+relays.get(0).getId()+"-0",false,0L,0L,0L));
+        Optional<RelayDefinitionCommand> relayDefinitionCommandOptional = relayDefinitionCommandRepository.getAllByImei(imei).stream().filter(r->r.getName().equals("重置大棚指令")).findFirst();
         relayDefinitionCommandRepository.save(new RelayDefinitionCommand(imei,"打开大棚指令","打开左右大棚",relays.get(1).getId()+"-1,"+relays.get(0).getId()+"-0",true,30000L,relayDefinitionCommandOptional.get().getId(),3L));
         relayDefinitionCommandRepository.save(new RelayDefinitionCommand(imei,"关闭大棚指令","关闭左右大棚",relays.get(1).getId()+"-1,"+relays.get(0).getId()+"-1",true,30000L,relayDefinitionCommandOptional.get().getId(),2L));
         if(!relayDefinitionCommandOptional.isPresent()) return;

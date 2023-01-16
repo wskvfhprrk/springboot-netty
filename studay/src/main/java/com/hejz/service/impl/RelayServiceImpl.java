@@ -23,7 +23,7 @@ public class RelayServiceImpl implements RelayService {
     private RelayRepository selayRepository;
     @Autowired
     RedisTemplate redisTemplate;
-    @Cacheable(value = Constant.RELAY_CACHE_KEY,key = "#p0")
+    @Cacheable(value = Constant.RELAY_CACHE_KEY,key = "#p0",unless="#result == null")
     @Override
     public List<Relay> getByImei(String imei) {
         return selayRepository.getAllByImei(imei);

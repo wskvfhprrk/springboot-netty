@@ -85,16 +85,49 @@ public class ProcessRelayCommands {
             log.error("继电器返回值：{}校验不通过！", HexConvert.BinaryToHexString(bytes));
             return;
         }
+        //只检查闭合的接收数据，不检查断开的接收数据
+        //查询机电器指令与之相配
+//        Optional<Relay> relayOptional = relayService.getByImei(imei).stream().filter(relay -> relay.getOpneHex().equals(useData) || relay.getCloseHex().equals(useData)).findFirst();
+//        if (!relayOptional.isPresent()) {
+//            return;
+//        }
+//        int hexStatus = 0;
+//        if (relayOptional.get().getOpneHex().equals(useData)) hexStatus = 1;
+//        String ids = relayOptional.get().getId() + "-" + hexStatus;
+//        List<RelayDefinitionCommand> definitionCommandList = relayDefinitionCommandService.getByImei(imei);
+//        //查询是否需要对其命令是否进行再次操作——防止循环执行命令
+//        List<RelayDefinitionCommand> relayDefinitionCommands = definitionCommandList.stream().filter(r -> r.getRelayIds().indexOf(ids) >= 0 && r.getIsProcessTheReturnValue()).collect(Collectors.toList());
+//        if (relayDefinitionCommands.isEmpty()) {
+//            return;
+//        }
         //从缓存中取指令
         String key = Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY + "::" + ctx.channel().id().toString() + "::" + useData;
         Object o = redisTemplate.opsForValue().get(key);
         if (o == null) return;
         RelayDefinitionCommand relayDefinitionCommand = (RelayDefinitionCommand) o;
-        Long correspondingCommandId = relayDefinitionCommand.getCorrespondingCommandId();
-        RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.getById(correspondingCommandId);
+//        LinkedHashSet<RelayDefinitionCommand> relayDefinitionCommandList = new LinkedHashSet<>();
+//        for (RelayDefinitionCommand relayDefinitionCommand : relayDefinitionCommands) {
+//            Optional<RelayDefinitionCommand> first = definitionCommandList.stream()
+//                    .filter(r -> r.getId().equals(relayDefinitionCommand.getCommonId())).findFirst();
+//            if (first.isPresent()) relayDefinitionCommandList.add(first.get());
+//        }
+        Long commonId = relayDefinitionCommand.getCommonId();
+        //赋值之前把停返回等待时间给查出来——原来的时间
+        Long processingWaitingTime = relayDefinitionCommand.getProcessingWaitingTime();
+        //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand
+        RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.getById(commonId);
         //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand——BeanUtils.copyProperties防止jpa程序报错
-        BeanUtils.copyProperties(relayDefinitionCommand1,relayDefinitionCommand);
-        sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand, relayDefinitionCommand.getRelayIds());
+        BeanUtils.copyProperties(relayDefinitionCommand1, relayDefinitionCommand);
+        sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand1, relayDefinitionCommand.getRelayIds());
+//        List<String> sendHex = getSendHex(relayService.getByImei(imei), relayDefinitionCommandList);
+//        try {
+//            Thread.sleep(processingWaitingTime);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        for (String hex : sendHex) {
+//            NettyServiceCommon.write(hex, ctx);
+//        }
     }
 
     /**
@@ -130,21 +163,25 @@ public class ProcessRelayCommands {
      * @param relayIds
      */
     private void sendRelayCommandAccordingToLayIds(ChannelHandlerContext ctx, RelayDefinitionCommand relayDefinitionCommand, String relayIds) {
-        String[] split1 = relayIds.split("-");
+        String[] r = relayIds.split(",");
         List<Relay> relayList = relayService.getByImei(relayDefinitionCommand.getImei());
-        for (Relay relay : relayList) {
-            if (String.valueOf(relay.getId()).equals(split1[0])) {
-                String sendHex = split1[1].equals("1") ? relay.getOpneHex() : relay.getCloseHex();
-//                    log.info("发送imei值：{} ,继电器id：{}-{}，指令为：{}", sensor.getImei(),relay.getId(), split1[1].equals("1") ? "闭合指令" : "断开指令", sendHex);
-                //缓存需要继续处理的指令，如果不再处理不缓存——为程序收到继电器信号（继电器发送什么信号接收到什么信号）能联系在一起
-                if (relayDefinitionCommand.getIsProcessTheReturnValue()) {
-                    cacheInstructionsThatNeedToContinueProcessing(ctx, sendHex, relayDefinitionCommand);
+        for (String s : r) {
+            String[] s1 = s.split("-");
+            loop:
+            for (Relay relay : relayList) {
+                if (String.valueOf(relay.getId()).equals(s1[0])) {
+                    String sendHex = s1[1].equals("1") ? relay.getOpneHex() : relay.getCloseHex();
+                    //缓存需要继续处理的指令，如果不再处理不缓存——为程序收到继电器信号（继电器发送什么信号接收到什么信号）能联系在一起
+                    if (relayDefinitionCommand.getIsProcessTheReturnValue()) {
+                        cacheInstructionsThatNeedToContinueProcessing(ctx, sendHex, relayDefinitionCommand);
+                    }
+                    NettyServiceCommon.write(sendHex, ctx);
+                    // TODO: 2023/1/4 处理url发出指令
+                    break loop;
                 }
-                NettyServiceCommon.write(sendHex, ctx);
-                // TODO: 2023/1/4 处理url发出指令
-                break;
             }
         }
+
     }
 
     /**
@@ -181,3 +218,4 @@ public class ProcessRelayCommands {
         relayCommandData(sensor, id, ctx);
     }
 }
+

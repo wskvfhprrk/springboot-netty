@@ -26,13 +26,13 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     @Autowired
     RedisTemplate redisTemplate;
 
-    @Cacheable(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#p0")
+    @Cacheable(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#p0",unless="#result == null")
     @Override
     public List<RelayDefinitionCommand> getByImei(String imei) {
         return relayDefinitionCommandRepository.getAllByImei(imei);
     }
 
-    //    @Cacheable(value = Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY, key = "#p0")
+    //    @Cacheable(value = Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY, key = "#p0",unless="#result == null")
     @Override
     public RelayDefinitionCommand getById(Long id) {
         String key = Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY + "::" + id;

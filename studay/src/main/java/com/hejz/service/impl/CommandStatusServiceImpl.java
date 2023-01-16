@@ -24,7 +24,7 @@ public class CommandStatusServiceImpl implements CommandStatusService {
     @Autowired
     RedisTemplate redisTemplate;
 
-    @Cacheable(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#p0")
+    @Cacheable(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#p0",unless="#result == null")
     @Override
     public List<CommandStatus> getByImei(String imei) {
         return commandStatusRepository.getByImei(imei);

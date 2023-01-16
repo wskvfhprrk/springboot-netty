@@ -138,7 +138,8 @@ public class NettyServiceCommon {
         //加锁——根据通道加锁
         synchronized (ctx.channel()) {
             //重复指令一个轮询周期只发一次
-            Boolean pollingPeriod = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + hex, hex, Duration.ofSeconds(Constant.INTERVAL_TIME));
+            int time = Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString());
+            Boolean pollingPeriod = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + hex, hex, Duration.ofMillis(time));
             if (!pollingPeriod) return;
             log.info("向通道：{} 发送指令：{}", ctx.channel().id().toString(), hex);
             //每个通道间隔一秒发送一条数据

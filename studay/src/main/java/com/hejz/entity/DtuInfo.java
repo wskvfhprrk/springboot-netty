@@ -5,7 +5,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -83,11 +82,11 @@ public class DtuInfo implements Serializable {
      * 每组发送接收间隔时间(毫秒)和心跳时间——略小于dtu每组间隔时间，大于每组中每个发送间隔时间
      */
     @Column(
-            name = "group_interval_time",
+            name = "interval_time",
             nullable = true,
             columnDefinition="int(10)"+" COMMENT '每组发送接收间隔时间(毫秒)——与dtu每组间隔时间要一致'"
     )
-    private Integer groupIntervalTime;
+    private Integer intervalTime;
     /**
      * 是否自动控制——1是自动0是手动控制
      */
@@ -105,14 +104,14 @@ public class DtuInfo implements Serializable {
     public DtuInfo() {
     }
 
-    public DtuInfo(String imei, Integer registrationLength, Integer imeiLength, Integer relayLength, Integer sensorLength, Integer heartbeatLength, Integer groupIntervalTime, Boolean automaticAdjustment, String addrs) {
+    public DtuInfo(String imei, Integer registrationLength, Integer imeiLength, Integer relayLength, Integer sensorLength, Integer heartbeatLength, Integer intervalTime, Boolean automaticAdjustment, String addrs) {
         this.imei = imei;
         this.registrationLength = registrationLength;
         this.imeiLength = imeiLength;
         this.relayLength = relayLength;
         this.sensorLength = sensorLength;
         this.heartbeatLength = heartbeatLength;
-        this.groupIntervalTime = groupIntervalTime;
+        this.intervalTime = intervalTime;
         this.automaticAdjustment = automaticAdjustment;
         this.addrs = addrs;
     }
