@@ -78,7 +78,7 @@ public class ProcessRelayCommands {
         RelayDefinitionCommand relayDefinitionCommand = (RelayDefinitionCommand) o;
         //添加修改命令状态
         List<CommandStatus> commandStatuses = commandStatusService.getByImei(relayDefinitionCommand.getImei());
-        if (!commandStatuses.isEmpty()) {
+        if (commandStatuses != null && !commandStatuses.isEmpty()) {
             //把其状态置为false——过去时的
             Optional<CommandStatus> commandStatusOptional = commandStatuses.stream().filter(commandStatus -> commandStatus.getCommonId().equals(relayDefinitionCommand.getId())).findFirst();
             if (commandStatusOptional.isPresent()) {
