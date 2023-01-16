@@ -15,4 +15,7 @@ public interface RelayDefinitionCommandRepository extends JpaRepository<RelayDef
     List<RelayDefinitionCommand> getAllByImei(String imei);
 
     void deleteByImei(String imei);
+
+    List<RelayDefinitionCommand> getByImei(String imei);
+
 }

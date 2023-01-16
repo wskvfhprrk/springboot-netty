@@ -4,7 +4,6 @@ import com.hejz.common.Constant;
 import com.hejz.entity.DtuInfo;
 import com.hejz.repository.DtuInfoRepository;
 import com.hejz.service.DtuInfoService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -48,6 +47,8 @@ public class DtuInfoServiceImpl implements DtuInfoService {
 
     @Override
     public void delete(Long id) {
+        DtuInfo dtuInfo = dtuInfoRepository.getById(id);
+        redisTemplate.delete(Constant.DTU_INFO_CACHE_KEY+"::"+dtuInfo.getImei());
         dtuInfoRepository.deleteById(id);
     }
 

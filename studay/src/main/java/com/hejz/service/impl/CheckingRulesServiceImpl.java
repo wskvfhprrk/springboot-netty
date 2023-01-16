@@ -6,6 +6,7 @@ import com.hejz.repository.DataCheckingRulesRepository;
 import com.hejz.service.CheckingRulesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,8 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
 
     @Autowired
     private DataCheckingRulesRepository dataCheckingRulesRepository;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public CheckingRules getById(Integer id) {
@@ -41,16 +44,20 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
 
     @Override
     public CheckingRules save(CheckingRules checkingRules) {
+        redisTemplate.delete(Constant.CHECKING_RULES_CACHE_KEY + "::" + checkingRules.getCommonLength());
         return dataCheckingRulesRepository.save(checkingRules);
     }
 
     @Override
     public CheckingRules update(CheckingRules checkingRules) {
+        redisTemplate.delete(Constant.CHECKING_RULES_CACHE_KEY + "::" + checkingRules.getCommonLength());
         return dataCheckingRulesRepository.save(checkingRules);
     }
 
     @Override
     public void delete(Integer id) {
+        CheckingRules checkingRules = dataCheckingRulesRepository.getById(id);
+        redisTemplate.delete(Constant.CHECKING_RULES_CACHE_KEY + "::" + checkingRules.getCommonLength());
         dataCheckingRulesRepository.deleteById(id);
     }
 }
