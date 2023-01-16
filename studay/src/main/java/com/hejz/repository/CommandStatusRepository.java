@@ -12,7 +12,11 @@ import java.util.List;
  * data: 2022-5-9
  */
 public interface CommandStatusRepository extends JpaRepository<CommandStatus,Long>,JpaSpecificationExecutor<CommandStatus> {
-    List<CommandStatus> getByImei(String imei);
+//    List<CommandStatus> getByImei(String imei);
 
-    void deleteByImeiAndStatus(String imei,Boolean b);
+    List<CommandStatus> getByIdAndStatus(String imei,Boolean b);
+
+    void deleteByImei(String imei);
+
+    List<CommandStatus> getByImei(String imei);
 }

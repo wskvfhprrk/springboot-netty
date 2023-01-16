@@ -115,7 +115,7 @@ public class ProcessRelayCommands {
         log.info("通道：{}，指令为：{},getRelayIds:{}", ctx.channel().id().toString(), relayDefinitionCommand.getName(), relayDefinitionCommand.getRelayIds());
         //判断当前状态是否一致，如果一致则不往继电器发送状态了；
         List<CommandStatus> commandStatuses = commandStatusService.getByImei(relayDefinitionCommand.getImei());
-        if (!commandStatuses.isEmpty()) {
+        if (commandStatuses != null && !commandStatuses.isEmpty()) {
             Optional<CommandStatus> optionalCommandStatus = commandStatuses.stream().filter(c -> c.getCommonId().equals(relayDefinitionCommand.getId())).findFirst();
             if (optionalCommandStatus.isPresent()) {
                 //如果状态存在，就不发送命令了

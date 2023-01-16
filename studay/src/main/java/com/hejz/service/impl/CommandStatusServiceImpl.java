@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -24,10 +25,16 @@ public class CommandStatusServiceImpl implements CommandStatusService {
     @Autowired
     RedisTemplate redisTemplate;
 
-    @Cacheable(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#p0",unless="#result == null")
+    @Cacheable(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
     public List<CommandStatus> getByImei(String imei) {
-        return commandStatusRepository.getByImei(imei);
+        List<CommandStatus> collect = commandStatusRepository.getByImei(imei).stream()
+                .filter(commandStatus -> commandStatus.getStatus()).collect(Collectors.toList());
+        if (collect.isEmpty()) {
+            return null;
+        } else {
+            return collect;
+        }
     }
 
     @Override
@@ -59,7 +66,7 @@ public class CommandStatusServiceImpl implements CommandStatusService {
     @Override
     public void deleteByImei(String imei) {
         //查询当前所有状态，历史的不用查询了
-        commandStatusRepository.deleteByImeiAndStatus(imei,true);
+        commandStatusRepository.deleteByImei(imei);
     }
 
 }
