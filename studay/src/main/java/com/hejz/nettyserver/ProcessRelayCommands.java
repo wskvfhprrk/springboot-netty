@@ -1,9 +1,14 @@
 package com.hejz.nettyserver;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hejz.common.Constant;
+import com.hejz.entity.CommandStatus;
 import com.hejz.entity.Relay;
 import com.hejz.entity.RelayDefinitionCommand;
 import com.hejz.entity.Sensor;
+import com.hejz.service.CommandStatusService;
 import com.hejz.service.RelayDefinitionCommandService;
 import com.hejz.service.RelayService;
 import com.hejz.utils.HexConvert;
@@ -13,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.rmi.CORBA.ValueHandler;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +38,10 @@ public class ProcessRelayCommands {
     private RelayDefinitionCommandService relayDefinitionCommandService;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private CommandStatusService commandStatusService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * 传感器数据转为字符串——没有imei值的有效数据
@@ -45,6 +55,7 @@ public class ProcessRelayCommands {
         byte[] useBytes = NettyServiceCommon.getUseBytes(bytes, useLength);
         return HexConvert.BinaryToHexString(useBytes).trim();
     }
+
     /**
      * 处理继电器返回值
      *
@@ -65,6 +76,19 @@ public class ProcessRelayCommands {
         Object o = redisTemplate.opsForValue().get(key);
         if (o == null) return;
         RelayDefinitionCommand relayDefinitionCommand = (RelayDefinitionCommand) o;
+        //添加修改命令状态
+        List<CommandStatus> commandStatuses = commandStatusService.getByImei(relayDefinitionCommand.getImei());
+        if (!commandStatuses.isEmpty()) {
+            //把其状态置为false——过去时的
+            Optional<CommandStatus> commandStatusOptional = commandStatuses.stream().filter(commandStatus -> commandStatus.getCommonId().equals(relayDefinitionCommand.getId())).findFirst();
+            if (commandStatusOptional.isPresent()) {
+                CommandStatus commandStatus = commandStatusOptional.get();
+                commandStatus.setStatus(false);
+                commandStatusService.update(commandStatus);
+            }
+        }
+        //保存当前状态
+        commandStatusService.save(new CommandStatus(relayDefinitionCommand.getImei(), relayDefinitionCommand.getId(), new Date(), true));
         Long commonId = relayDefinitionCommand.getCommonId();
         //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand
         RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.getByImei(imei).stream()
@@ -79,7 +103,7 @@ public class ProcessRelayCommands {
      * 根据数据处理继电器指令处理
      *
      * @param sensor 串号
-     * @param id    继电器指令——奇数表示对应的继电器命令的id
+     * @param id     继电器指令——奇数表示对应的继电器命令的id
      * @param ctx    通道上下文
      */
     void relayCommandData(Sensor sensor, Long id, ChannelHandlerContext ctx) {
@@ -88,15 +112,18 @@ public class ProcessRelayCommands {
         Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(id)).findFirst();
         if (!first.isPresent()) return;
         RelayDefinitionCommand relayDefinitionCommand = first.get();
-        log.info("通道：{}，指令为：{},getRelayIds:{}",ctx.channel().id().toString(),relayDefinitionCommand.getName(),relayDefinitionCommand.getRelayIds());
-        String relayIds = relayDefinitionCommand.getRelayIds();
-        //指令奇数表示对应的继电器id，偶数：1表示为使用闭合指令，0表示为断开指令
-        String[] relayIdsArr = relayIds.split(",");
-        for (String s : relayIdsArr) {
-            //根据layIds发送继电器指令
-            sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand);
-
+        log.info("通道：{}，指令为：{},getRelayIds:{}", ctx.channel().id().toString(), relayDefinitionCommand.getName(), relayDefinitionCommand.getRelayIds());
+        //判断当前状态是否一致，如果一致则不往继电器发送状态了；
+        List<CommandStatus> commandStatuses = commandStatusService.getByImei(relayDefinitionCommand.getImei());
+        if (!commandStatuses.isEmpty()) {
+            Optional<CommandStatus> optionalCommandStatus = commandStatuses.stream().filter(c -> c.getCommonId().equals(relayDefinitionCommand.getId())).findFirst();
+            if (optionalCommandStatus.isPresent()) {
+                //如果状态存在，就不发送命令了
+                log.info("imei:{} 当前状态已经存在，不需要重复发送指令：{}", relayDefinitionCommand.getImei(), relayDefinitionCommand);
+                return;
+            }
         }
+        sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand);
     }
 
     /**
@@ -105,7 +132,8 @@ public class ProcessRelayCommands {
      * @param ctx
      * @param relayDefinitionCommand
      */
-    private void sendRelayCommandAccordingToLayIds(ChannelHandlerContext ctx, RelayDefinitionCommand relayDefinitionCommand) {
+    private void sendRelayCommandAccordingToLayIds(ChannelHandlerContext ctx, RelayDefinitionCommand
+            relayDefinitionCommand) {
         String[] r = relayDefinitionCommand.getRelayIds().split(",");
         List<Relay> relayList = relayService.getByImei(relayDefinitionCommand.getImei());
         for (String s : r) {
@@ -134,7 +162,8 @@ public class ProcessRelayCommands {
      * @param sendHex
      * @param relayDefinitionCommand
      */
-    private void cacheInstructionsThatNeedToContinueProcessing(ChannelHandlerContext ctx, String sendHex, RelayDefinitionCommand relayDefinitionCommand) {
+    private void cacheInstructionsThatNeedToContinueProcessing(ChannelHandlerContext ctx, String
+            sendHex, RelayDefinitionCommand relayDefinitionCommand) {
         //设置10分钟
         redisTemplate.opsForValue().set(Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY + "::" + ctx.channel().id() + "::" + sendHex, relayDefinitionCommand, Duration.ofMillis(Constant.EXPIRATION_TIME_OF_CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEYS));
     }
@@ -151,7 +180,7 @@ public class ProcessRelayCommands {
         //根据结果值判断是否处理
         if (data - Double.parseDouble(sensor.getMax().toString()) > 0) {
             log.info("{} 结果值 {} 大于最大值 {}", sensor.getName(), data, sensor.getMax());
-            String key = ctx.channel().id().toString()+"max" + sensor.getId();
+            String key = ctx.channel().id().toString() + "max" + sensor.getId();
             if (Constant.THREE_RECORDS_MAP.get(key) == null) {
                 List<Double> l = new ArrayList<>();
                 l.add(data);
@@ -171,7 +200,7 @@ public class ProcessRelayCommands {
             }
         } else if (data - Double.parseDouble(sensor.getMin().toString()) < 0) {
             log.info("{} 结果值 {} 小于最小值{}", sensor.getName(), data, sensor.getMin());
-            String key = ctx.channel().id().toString()+"min" + sensor.getId();
+            String key = ctx.channel().id().toString() + "min" + sensor.getId();
             if (Constant.THREE_RECORDS_MAP.get(key) == null) {
                 List<Double> l = new ArrayList<>();
                 l.add(data);

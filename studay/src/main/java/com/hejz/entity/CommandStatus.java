@@ -56,4 +56,15 @@ public class CommandStatus implements Serializable {
             columnDefinition="bit"+" COMMENT '当前状态——true是新的状态，false是过期的状态'"
     )
     private Boolean status;
+
+    public CommandStatus(String imei, Long commonId, Date createDate, Boolean status) {
+        this.imei = imei;
+        this.commonId = commonId;
+        this.createDate = createDate;
+        this.status = status;
+    }
+
+    public CommandStatus() {
+
+    }
 }

@@ -14,5 +14,5 @@ import java.util.List;
 public interface CommandStatusRepository extends JpaRepository<CommandStatus,Long>,JpaSpecificationExecutor<CommandStatus> {
     List<CommandStatus> getByImei(String imei);
 
-    void deleteByImei(String imei);
+    void deleteByImeiAndStatus(String imei,Boolean b);
 }
