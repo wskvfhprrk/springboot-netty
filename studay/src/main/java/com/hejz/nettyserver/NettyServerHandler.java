@@ -34,7 +34,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-//        super.userEventTriggered(ctx, evt);
         //判断是否是空闲状态事件
         if (evt instanceof IdleStateEvent) {
             IdleState state = ((IdleStateEvent) evt).state();

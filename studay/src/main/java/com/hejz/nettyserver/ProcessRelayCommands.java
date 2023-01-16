@@ -185,7 +185,7 @@ public class ProcessRelayCommands {
             if (Constant.THREE_RECORDS_MAP.get(key).size() == 3) {
                 List<Double> collect = Constant.THREE_RECORDS_MAP.get(key).stream().sorted().collect(Collectors.toList());
                 if (collect.get(2) - Double.parseDouble(sensor.getMin().toString()) < 0) {
-                    id = sensor.getMaxRelayDefinitionCommandId();
+                    id = sensor.getMinRelayDefinitionCommandId();
                     relayCommandData(sensor, id, ctx);
                     Constant.THREE_RECORDS_MAP.remove(key);
                 }
