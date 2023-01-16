@@ -134,8 +134,8 @@ public class SystemClient {
     }
 
     public static void main(String[] args) {
-//        SystemClient client = new SystemClient("192.168.0.106", 9090);
-        SystemClient client = new SystemClient("127.0.0.1", 9090);
+        SystemClient client = new SystemClient("192.168.0.106", 9090);
+//        SystemClient client = new SystemClient("127.0.0.1", 9090);
         try {
             client.run();
         } catch (InterruptedException e) {

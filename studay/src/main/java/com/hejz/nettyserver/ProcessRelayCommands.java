@@ -193,7 +193,7 @@ public class ProcessRelayCommands {
      */
     private void cacheInstructionsThatNeedToContinueProcessing(ChannelHandlerContext ctx, String sendHex, RelayDefinitionCommand relayDefinitionCommand) {
         //设置10分钟
-        redisTemplate.opsForValue().set(Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY + "::" + ctx.channel().id() + "::" + sendHex, relayDefinitionCommand, Duration.ofSeconds(Constant.EXPIRATION_TIME_OF_CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEYS));
+        redisTemplate.opsForValue().set(Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY + "::" + ctx.channel().id() + "::" + sendHex, relayDefinitionCommand, Duration.ofMillis(Constant.EXPIRATION_TIME_OF_CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEYS));
     }
 
     /**
