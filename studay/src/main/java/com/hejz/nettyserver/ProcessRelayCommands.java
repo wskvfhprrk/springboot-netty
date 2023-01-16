@@ -93,10 +93,10 @@ public class ProcessRelayCommands {
         Long commonId = relayDefinitionCommand.getCommonId();
         //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand
         RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.getByImei(imei).stream()
-                .filter(r->r.getId().equals(commonId)).findFirst().get();
+                .filter(r -> r.getId().equals(commonId)).findFirst().get();
         //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand——BeanUtils.copyProperties防止jpa程序报错
         ctx.channel().eventLoop().schedule(() -> {
-            log.info("通道==》{}开始延时任务，延时：{}",ctx.channel().id().toString(),relayDefinitionCommand1.getProcessingWaitingTime());
+            log.info("通道==》{}开始延时任务，延时：{}", ctx.channel().id().toString(), relayDefinitionCommand1.getProcessingWaitingTime());
             sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand1);
         }, relayDefinitionCommand.getProcessingWaitingTime(), TimeUnit.MILLISECONDS);
     }
@@ -105,13 +105,13 @@ public class ProcessRelayCommands {
      * 根据数据处理继电器指令处理
      *
      * @param sensor 串号
-     * @param id     继电器指令——奇数表示对应的继电器id，偶数：1表示为使用闭合指令，0表示为断开指令
+     * @param ids    继电器指令——奇数表示对应的继电器命令的ids，偶数：1表示为使用闭合指令，0表示为断开指令
      * @param ctx    通道上下文
      */
-    void relayCommandData(Sensor sensor, Long id, ChannelHandlerContext ctx) {
-        if (id == null || id.equals("0")) return;
+    void relayCommandData(Sensor sensor, Long ids, ChannelHandlerContext ctx) {
+        if (ids == null || ids.equals("0")) return;
         //编辑继电器指令
-        Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(id)).findFirst();
+        Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(ids)).findFirst();
         if (!first.isPresent()) return;
         RelayDefinitionCommand relayDefinitionCommand = first.get();
         String relayIds = relayDefinitionCommand.getRelayIds();
@@ -126,7 +126,8 @@ public class ProcessRelayCommands {
 
     /**
      * 根据layIds发送继电器指令
-     *  @param ctx
+     *
+     * @param ctx
      * @param relayDefinitionCommand
      */
     private void sendRelayCommandAccordingToLayIds(ChannelHandlerContext ctx, RelayDefinitionCommand relayDefinitionCommand) {
@@ -173,16 +174,49 @@ public class ProcessRelayCommands {
     public void handleAccordingToRelayCommand(Sensor sensor, double data, ChannelHandlerContext ctx) {
         Long id = null;
         //根据结果值判断是否处理
-        if (data > sensor.getMax()) {
+        if (data - Double.parseDouble(sensor.getMax().toString()) > 0) {
             log.info("{} 结果值 {} 大于最大值 {}", sensor.getName(), data, sensor.getMax());
-            id = sensor.getMaxRelayDefinitionCommandId();
-        } else if (data < sensor.getMin()) {
+            String key = ctx.channel().id().toString()+"max" + sensor.getId();
+            if (Constant.THREE_RECORDS_MAP.get(key) == null) {
+                List<Double> l = new ArrayList<>();
+                l.add(data);
+                Constant.THREE_RECORDS_MAP.put(key, l);
+            } else {
+                List<Double> list = Constant.THREE_RECORDS_MAP.get(key);
+                list.add(data);
+                Constant.THREE_RECORDS_MAP.put(key, list);
+            }
+            if (Constant.THREE_RECORDS_MAP.get(key).size() == 3) {
+                List<Double> collect = Constant.THREE_RECORDS_MAP.get(key).stream().sorted().collect(Collectors.toList());
+                if (collect.get(2) - Double.parseDouble(sensor.getMax().toString()) > 0) {
+                    id = sensor.getMaxRelayDefinitionCommandId();
+                    relayCommandData(sensor, id, ctx);
+                    Constant.THREE_RECORDS_MAP.remove(key);
+                }
+            }
+        } else if (data - Double.parseDouble(sensor.getMin().toString()) < 0) {
             log.info("{} 结果值 {} 小于最小值{}", sensor.getName(), data, sensor.getMin());
-            id = sensor.getMinRelayDefinitionCommandId();
+            String key = ctx.channel().id().toString()+"min" + sensor.getId();
+            if (Constant.THREE_RECORDS_MAP.get(key) == null) {
+                List<Double> l = new ArrayList<>();
+                l.add(data);
+                Constant.THREE_RECORDS_MAP.put(key, l);
+            } else {
+                List<Double> list = Constant.THREE_RECORDS_MAP.get(key);
+                list.add(data);
+                Constant.THREE_RECORDS_MAP.put(key, list);
+            }
+            if (Constant.THREE_RECORDS_MAP.get(key).size() == 3) {
+                List<Double> collect = Constant.THREE_RECORDS_MAP.get(key).stream().sorted().collect(Collectors.toList());
+                if (collect.get(2) - Double.parseDouble(sensor.getMin().toString()) < 0) {
+                    id = sensor.getMaxRelayDefinitionCommandId();
+                    relayCommandData(sensor, id, ctx);
+                    Constant.THREE_RECORDS_MAP.remove(key);
+                }
+            }
         } else {
             log.info("{} 结果值 {} 比较合理，不用处理！", sensor.getName(), data);
         }
-        relayCommandData(sensor, id, ctx);
     }
 }
 
