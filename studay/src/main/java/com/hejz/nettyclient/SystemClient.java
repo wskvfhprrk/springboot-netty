@@ -13,6 +13,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,8 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static jdk.internal.dynalink.support.NameCodec.encode;
-
+@Slf4j
 public class SystemClient {
 
     private String host;
@@ -48,7 +49,8 @@ public class SystemClient {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
                             pipeline.addLast(new ObjectEncoder())
-                                    .addLast(new ClientHandler());
+                                    .addLast(new ClientHandler())
+                            .addLast(new IdleStateHandler(120,120,120));
                         }
                     });
 
@@ -68,7 +70,7 @@ public class SystemClient {
     private void start(ChannelFuture future) throws IOException {
         InputStreamReader is = new InputStreamReader(System.in, "UTF-8");
         BufferedReader br = new BufferedReader(is);
-        System.out.println("请输入你的imei>>>");
+        log.info("请输入你的imei>>>");
         //向服务器发送数据
         String imei = br.readLine();
         SystemClient.imie = imei;
@@ -81,7 +83,7 @@ public class SystemClient {
             instructionsSent.add(calculateRrc16ValidatedData("020302", data.get(i)));
         }
         for (int i = 0; i < 100; i++) {
-//            System.out.println("=========================发送一组新数据===========================");
+//            log.info();("=========================发送一组新数据===========================");
             for (String s : instructionsSent) {
                 String hex = HexConvert.convertStringToHex(imei) + s;
                 try {
@@ -89,10 +91,10 @@ public class SystemClient {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println("发送给服务器的==" + i + "==内容======" + hex);
+                log.info("发送给服务器的==" + i + "==内容======" + hex);
                 //netty需要用ByteBuf传输
                 ByteBuf bufff = Unpooled.buffer();
-                ByteBuf byteBuf = bufff.writeBytes(HexConvert.hexStringToBytes(hex));
+//                ByteBuf byteBuf = bufff.writeBytes(HexConvert.hexStringToBytes(hex));
                 future.channel().writeAndFlush(bufff);
             }
             try {
