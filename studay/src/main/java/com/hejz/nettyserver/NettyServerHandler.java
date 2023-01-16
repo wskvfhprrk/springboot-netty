@@ -5,6 +5,8 @@ import com.hejz.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,38 +33,59 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        //客户端定时发送空包
-        scheduleSendHeartBeat(ctx);
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+//        super.userEventTriggered(ctx, evt);
+        //判断是否是空闲状态事件
+        if (evt instanceof IdleStateEvent) {
+            IdleState state = ((IdleStateEvent) evt).state();
+            switch (state) {
+                case READER_IDLE:
+                    log.info("读空闲3分钟自动关闭通道！");
+                    ctx.channel().close();
+                    break;
+                case WRITER_IDLE:
+                    log.info("写空闲,发送心跳包给客户端：00 00");
+                    //根据检查频率和实际情况写空闲时发送心跳包给客户端——60秒,如果不存活的通道就不发送了
+                    if (ctx.channel().isActive()) {
+                        NettyServiceCommon.write("0000", ctx);
+                    }
+                    break;
+                case ALL_IDLE:
+//                    log.info("读写都空闲");
+                    break;
+            }
+        } else { //如果不是空闲状态，向后再传播
+            ctx.fireUserEventTriggered(evt);
+        }
     }
 
-    private void scheduleSendHeartBeat(ChannelHandlerContext ctx) {
-        int time = Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString());
-         //EventLoop 实现定时任务
-        ctx.channel().eventLoop().scheduleWithFixedDelay(new Runnable() {
-            // 因为线程中不能访问外部局部变量
-            // 这里所以采用在线程中创建属性、属性的赋值方法，然后在创建线程时，通过调用这个自身的方法，实现局部变量的方位。
-            ChannelHandlerContext ctx;
-            @Override
-            public void run() {
-                if (ctx.channel().isActive()) {
-                    //发送空包（定义一个实体）
-                    NettyServiceCommon.write("0000", ctx);
-                }
-            }
-            //对自身属性进行赋值
-            public Runnable accept(ChannelHandlerContext chct) {
-                this.ctx = chct;
-                return this;
-            }
-        }.accept(ctx), 0, time, TimeUnit.SECONDS);
-        ctx.executor().schedule(() -> {
-            if (ctx.channel().isActive()) {
-                //发送空包（定义一个实体）
-                NettyServiceCommon.write("0000",ctx);
-            }
-        }, time, TimeUnit.SECONDS);
-    }
+//    private void scheduleSendHeartBeat(ChannelHandlerContext ctx) {
+//        int time = Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString());
+//         //EventLoop 实现定时任务
+//        ctx.channel().eventLoop().scheduleWithFixedDelay(new Runnable() {
+//            // 因为线程中不能访问外部局部变量
+//            // 这里所以采用在线程中创建属性、属性的赋值方法，然后在创建线程时，通过调用这个自身的方法，实现局部变量的方位。
+//            ChannelHandlerContext ctx;
+//            @Override
+//            public void run() {
+//                if (ctx.channel().isActive()) {
+//                    //发送空包（定义一个实体）
+//                    NettyServiceCommon.write("0000", ctx);
+//                }
+//            }
+//            //对自身属性进行赋值
+//            public Runnable accept(ChannelHandlerContext chct) {
+//                this.ctx = chct;
+//                return this;
+//            }
+//        }.accept(ctx), 0, time, TimeUnit.SECONDS);
+//        ctx.executor().schedule(() -> {
+//            if (ctx.channel().isActive()) {
+//                //发送空包（定义一个实体）
+//                NettyServiceCommon.write("0000",ctx);
+//            }
+//        }, time, TimeUnit.SECONDS);
+//    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {

@@ -4,6 +4,7 @@ import com.hejz.common.Constant;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,14 +29,11 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         log.info("通道id:{}", ch.id().toString());
         log.info("==================netty报告完毕==================");
         ChannelPipeline pipeline = ch.pipeline();
-        //一个周期3倍时间之内读事件 则断开连接
-        int time = Constant.INTERVAL_TIME_MAP.get(ch.id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(ch.id().toString());
-        pipeline.addLast(new ReadTimeoutHandler(time * 3, TimeUnit.SECONDS));
+        //定义读写空闲时间——秒
+        pipeline.addLast(new IdleStateHandler(180, 60,180));
+//        pipeline.addLast(serverHeartBeatHandler);
         // 自定义解码器
 //        pipeline.addLast(new NettyMessageDecoder());
-
-        // 自定义编码器
-//        pipeline.addLast(new NettyMessageEncoder());
         pipeline.addLast(nettyServerHandler);
     }
 

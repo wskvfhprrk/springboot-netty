@@ -116,7 +116,7 @@ public static String  convertStringToHex(String str){
 
 public static void main(String[] args) {
     System.out.println("======ASCII码转换为16进制======");
-    String str = "865328063321359";
+    String str = HexConvert.convertHexToString("0000");
     System.out.println("字符串: " + str);
     String hex = HexConvert.convertStringToHex(str);
     System.out.println("====转换为16进制=====" + hex);
