@@ -145,11 +145,10 @@ public class ProcessRelayCommands {
         RelayDefinitionCommand relayDefinitionCommand = first.get();
         log.info("===============正在执行指令：{}", relayDefinitionCommand.getName());
         String relayIds = relayDefinitionCommand.getRelayIds();
-        //根据imei查询所有继电器指令:
-        List<Relay> relayList = relayService.getByImei(sensor.getImei());
         //指令奇数表示对应的继电器id，偶数：1表示为使用闭合指令，0表示为断开指令
         String[] relayIdsArr = relayIds.split(",");
         for (String s : relayIdsArr) {
+            // TODO: 2023/1/16 延时处理
             //根据layIds发送继电器指令
             sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand, s);
         }
