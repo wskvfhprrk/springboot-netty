@@ -56,7 +56,11 @@ public class ProcessSensorReturnValue {
         String imei = NettyServiceCommon.calculationImei(bytes);
         //同步每次轮询间隔时间
         DtuInfo dtuInfo = dtuInfoService.getByImei(imei);
-        if(dtuInfo==null)return;
+        if(dtuInfo==null){
+            log.error("imei值:{}查询不到或没有注册，关闭通道",imei);
+            ctx.channel().close();
+            return;
+        }
         Constant.INTERVAL_TIME_MAP.put(ctx.channel().id().toString(), dtuInfo.getIntervalTime());
         int sensorsLength = sensorService.getByImei(imei).size();
         //计算当前时间与之前时间差值——如果没有注册信息，第一个值要把它加上30秒
