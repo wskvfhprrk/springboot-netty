@@ -9,7 +9,6 @@ import com.hejz.service.RelayService;
 import com.hejz.utils.HexConvert;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -92,16 +91,14 @@ public class ProcessRelayCommands {
         if (o == null) return;
         RelayDefinitionCommand relayDefinitionCommand = (RelayDefinitionCommand) o;
         Long commonId = relayDefinitionCommand.getCommonId();
-        //赋值之前把停返回等待时间给查出来——原来的时间
-        Long processingWaitingTime = relayDefinitionCommand.getProcessingWaitingTime();
         //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand
-        RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.getById(commonId);
+        RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.getByImei(imei).stream()
+                .filter(r->r.getId().equals(commonId)).findFirst().get();
         //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand——BeanUtils.copyProperties防止jpa程序报错
-        BeanUtils.copyProperties(relayDefinitionCommand1, relayDefinitionCommand);
         ctx.channel().eventLoop().schedule(() -> {
             log.info("通道==》{}开始延时任务，延时：{}",ctx.channel().id().toString(),relayDefinitionCommand1.getProcessingWaitingTime());
-            sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand1, relayDefinitionCommand.getRelayIds());
-        }, relayDefinitionCommand1.getProcessingWaitingTime(), TimeUnit.MILLISECONDS);
+            sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand1);
+        }, relayDefinitionCommand.getProcessingWaitingTime(), TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -122,20 +119,18 @@ public class ProcessRelayCommands {
         String[] relayIdsArr = relayIds.split(",");
         for (String s : relayIdsArr) {
             //根据layIds发送继电器指令
-            sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand, s);
+            sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand);
 
         }
     }
 
     /**
      * 根据layIds发送继电器指令
-     *
-     * @param ctx
+     *  @param ctx
      * @param relayDefinitionCommand
-     * @param relayIds
      */
-    private void sendRelayCommandAccordingToLayIds(ChannelHandlerContext ctx, RelayDefinitionCommand relayDefinitionCommand, String relayIds) {
-        String[] r = relayIds.split(",");
+    private void sendRelayCommandAccordingToLayIds(ChannelHandlerContext ctx, RelayDefinitionCommand relayDefinitionCommand) {
+        String[] r = relayDefinitionCommand.getRelayIds().split(",");
         List<Relay> relayList = relayService.getByImei(relayDefinitionCommand.getImei());
         for (String s : r) {
             String[] s1 = s.split("-");

@@ -17,27 +17,33 @@ import java.util.List;
 public class SensorDataDbServiceImpl implements SensorDataDbService {
     @Autowired
     private SensorDataDbRepository selayRepository;
+
     @Override
     public List<SensorDataDb> getSensorDataDbByImei(String imei) {
         return selayRepository.getAllByImei(imei);
     }
+
     @Override
     public SensorDataDb getSensorDataDbById(Long id) {
         SensorDataDb selay = selayRepository.getById(id);
         return selay;
     }
+
     @Override
     public SensorDataDb save(SensorDataDb selay) {
         return selayRepository.save(selay);
     }
+
     @Override
     public SensorDataDb update(SensorDataDb selay) {
         return selayRepository.save(selay);
     }
+
     @Override
     public void delete(Long id) {
-         selayRepository.deleteById(id);
+        selayRepository.deleteById(id);
     }
+
     @Override
     public void deleteByImei(String imei) {
         selayRepository.deleteByImei(imei);

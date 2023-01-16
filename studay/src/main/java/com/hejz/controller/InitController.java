@@ -56,11 +56,7 @@ public class InitController {
         redisTemplate.delete(keys);
         keys = redisTemplate.keys(Constant.COMMAND_STATUS_CACHE_KEY+":*");
         redisTemplate.delete(keys);
-        keys = redisTemplate.keys(Constant.RELAY_DEFINITION_COMMAND_ID_CACHE_KEY+":*");
-        redisTemplate.delete(keys);
         keys = redisTemplate.keys(Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY+":*");
-        redisTemplate.delete(keys);
-        keys = redisTemplate.keys(Constant.DUT_INFO_ID_CACHE_KEY+":*");
         redisTemplate.delete(keys);
     }
 

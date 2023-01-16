@@ -21,10 +21,8 @@ public class Constant {
     public static final String SENSOR_CACHE_KEY = "sensorCacheKey";
     public static final String RELAY_DEFINITION_COMMAND_CACHE_KEY = "relayDefinitionCommandCacheKey";
     public static final String DTU_INFO_CACHE_KEY = "dtuInfoCacheKey";
-    public static final String COMMAND_STATUS_CACHE_KEY = "commandStatusCacheKey";
-    public static final String RELAY_DEFINITION_COMMAND_ID_CACHE_KEY = "relayDefinitionCommandIdCacheKey";
     public static final String CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY = "cacheInstructionsThatNeedToContinueProcessingCacheKey";
-    public static final String DUT_INFO_ID_CACHE_KEY = "dutInfoIdCacheKey";
+    public static final String COMMAND_STATUS_CACHE_KEY = "commandStatusCacheKey";
     //IMEI长度
     public static final int IMEI_LENGTH = 15;
     //dut注册bytes长度

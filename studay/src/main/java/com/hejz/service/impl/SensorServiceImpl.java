@@ -24,7 +24,7 @@ public class SensorServiceImpl implements SensorService {
     @Autowired
     private SensorRepository sensorRepository;
 
-    @Cacheable(value = Constant.SENSOR_CACHE_KEY, key = "#p0",unless="#result == null")
+    @Cacheable(value = Constant.SENSOR_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
     public List<Sensor> getByImei(String imei) {
         return sensorRepository.getAllByImei(imei);
