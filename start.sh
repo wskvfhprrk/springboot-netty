@@ -27,7 +27,7 @@ echo -e ======================6.跳过测试构建jar包======================
 mvn clean package -Dmaven.test.skip=true
 #重启服务
 echo -e ======================7.重启服务======================
-cd /root/springboot-netty/studay/target
+cd target
 nohup java -jar -Dserver.port=8080 studay-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
 echo -e
 echo -e
