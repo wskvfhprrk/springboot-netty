@@ -1,7 +1,11 @@
 spring:
+
   main:
     #当遇到同样名字的时候，是否允许覆盖注册——解决redisTemplate重名问题
     allow-bean-definition-overriding: true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
   datasource:
     url: jdbc:mysql://localhost:3306/dtu?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai
     username: root
@@ -36,6 +40,9 @@ spring:
     # 控制台显示SQL
 #    show-sql: true
     properties:
+      hibernate:
+        #每次初始化一个实体的关联就会创建一个临时的session来加载，请求的session是被立即关闭的，也就是在读取了基本属性后，session 已经close了，再进行 lazy loaiding 就会有异常
+        enable_lazy_load_no_trans: true
       hibernate.format_sql: true
 #配置netty端口号
 nettyPort: 9090

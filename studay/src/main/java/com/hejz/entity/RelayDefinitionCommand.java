@@ -17,7 +17,8 @@ import java.io.Serializable;
 @Entity(name = "relay_definition_command")
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
+//@JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
+@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 public class RelayDefinitionCommand implements Serializable {
     @Id
     @SequenceGenerator(
@@ -72,11 +73,11 @@ public class RelayDefinitionCommand implements Serializable {
     private Boolean isProcessTheReturnValue= false;
     //处理返回值间隔时间（毫秒）——对继电器命令进行归零操作
     @Column(
-            name = "process_the_return_value_time",
+            name = "processing_waiting_time",
             nullable = true,
-            columnDefinition="bigint"+" COMMENT '处理返回值间隔时间（毫秒）——对继电器命令进行归零操作'"
+            columnDefinition="bigint"+" COMMENT '处理等待时间（毫秒）——对继电器命令进行归零操作'"
     )
-    private Long processTheReturnValueTime;
+    private Long processingWaitingTime;
     //处理返回值要使用继电器ids
     @Column(
             name = "common_id",
@@ -91,13 +92,14 @@ public class RelayDefinitionCommand implements Serializable {
     )
     private Long correspondingCommandId;
 
-    public RelayDefinitionCommand(String imei,String name, String remarks,String relayIds, boolean isProcessTheReturnValue, long processTheReturnValueTime, Long commonId, Long correspondingCommandId) {
+
+    public RelayDefinitionCommand(String imei, String name, String remarks, String relayIds, boolean isProcessTheReturnValue, long processingWaitingTime, Long commonId, Long correspondingCommandId) {
         this.imei=imei;
         this.name=name;
         this.remarks=remarks;
         this.relayIds=relayIds;
         this.isProcessTheReturnValue=isProcessTheReturnValue;
-        this.processTheReturnValueTime=processTheReturnValueTime;
+        this.processingWaitingTime = processingWaitingTime;
         this.commonId = commonId;
         this.correspondingCommandId = correspondingCommandId;
 

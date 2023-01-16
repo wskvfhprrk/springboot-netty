@@ -29,7 +29,7 @@ public class RelayDefinitionCommandController {
 
     @ApiOperation("根据imei查询所有继电器定义命令信息")
     @GetMapping("all/{imei}")
-    @Cacheable(value = "relayDefinitionCommand",key = "#imei")
+    @Cacheable(value = "relayDefinitionCommand",key = "#imei",unless="#result == null")
     public List<RelayDefinitionCommand> getRelayDefinitionCommandByImei(@PathVariable String imei){
         return relayDefinitionCommandService.getByImei(imei);
     }

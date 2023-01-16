@@ -17,13 +17,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * @author:hejz 75412985@qq.com
  * @create: 2023-01-14 08:45
- * @Description: 进程感应器返回值处理
+ * @Description: 处理感应器返回值处理
  */
 @Component
 @Slf4j
@@ -44,25 +43,31 @@ public class ProcessSensorReturnValue {
     DtuRegister dtuRegister;
     @Autowired
     private RelayService relayService;
+    @Autowired
+    private ProcessRelayCommands processRelayCommands;
 
     /**
      * 收集感应器数据
      *
-     * @param ctx                          通道上下文
-     * @param bytes                        收到byte[]信息
+     * @param ctx   通道上下文
+     * @param bytes 收到byte[]信息
      */
-    public void start(ChannelHandlerContext ctx, byte[] bytes) throws Exception{
+    public void start(ChannelHandlerContext ctx, byte[] bytes) {
         String imei = NettyServiceCommon.calculationImei(bytes);
+        //同步每次轮询间隔时间
+        DtuInfo dtuInfo = dtuInfoService.getByImei(imei);
+        if(dtuInfo==null)return;
+        Constant.INTERVAL_TIME_MAP.put(ctx.channel().id().toString(), dtuInfo.getIntervalTime());
         int sensorsLength = sensorService.getByImei(imei).size();
         //计算当前时间与之前时间差值——如果没有注册信息，第一个值要把它加上30秒
-        LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(dtuInfoService.getByImei(imei).getGroupIntervalTime()/1000+30);
+        LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(dtuInfo.getIntervalTime() / 1000 + 30);
         LocalDateTime end = Constant.END_TIME_MAP.get(ctx.channel().id().toString()) == null ? dateIntervalTime : Constant.END_TIME_MAP.get(ctx.channel().id().toString());
         Duration duration = Duration.between(end, LocalDateTime.now());
         long millis = duration.toMillis();
         List<byte[]> sensorDataByteList;
         //必须检测是有用的数据才可以，如果不能够使用才不可以
         if (!NettyServiceCommon.testingData(bytes)) return;
-        if (millis >= dtuInfoService.getByImei(imei).getGroupIntervalTime()) {
+        if (millis >= dtuInfo.getIntervalTime()) {
             log.info("======={}=>{}==>查询一组出数据===========", ctx.channel().id().toString(), imei);
             sensorDataByteList = new ArrayList<>(sensorsLength);
             sensorDataByteList.add(bytes);
@@ -74,14 +79,20 @@ public class ProcessSensorReturnValue {
         }
         if (Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()).size() == sensorsLength) {
             log.info("========={}=>{}=>解析一组出数据===========", ctx.channel().id().toString(), imei);
-            List<SensorData> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
-            //插入数据库
-            insertDatabase(imei, sensorDataList);
+            try {
+                List<SensorData> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
+                //插入数据库
+                insertDatabase(imei, sensorDataList);
+            } catch (Exception e) {
+                log.info(e.toString());
+            }
             //需要重置数据
             Constant.SENSOR_DATA_BYTE_LIST_MAP.remove(ctx.channel().id().toString());
+//            Constant.END_TIME_MAP.remove(ctx.channel().id().toString());
         }
-        Constant.END_TIME_MAP.put(ctx.channel().id().toString(),LocalDateTime.now());
+        Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now());
     }
+
     /**
      * 批量解析收到的数据
      *
@@ -89,7 +100,7 @@ public class ProcessSensorReturnValue {
      * @param ctx  通道上下文
      * @return
      */
-    private List<SensorData> parseSensorListData(List<byte[]> list, ChannelHandlerContext ctx) throws Exception{
+    private List<SensorData> parseSensorListData(List<byte[]> list, ChannelHandlerContext ctx) throws Exception {
         List<SensorData> doubleList = new ArrayList<>();
         //按顺序解析，根据sensor顺序解析找对应关系
         for (int i = 0; i < list.size(); i++) {
@@ -102,13 +113,14 @@ public class ProcessSensorReturnValue {
         }
         return doubleList;
     }
+
     /**
      * 添加到数据库中
      *
      * @param imei
      * @param sensorDataList
      */
-    private void insertDatabase(String imei, List<SensorData> sensorDataList) throws Exception{
+    private void insertDatabase(String imei, List<SensorData> sensorDataList) throws Exception {
         List<String> nameList = sensorDataList.stream().map(sensorData -> sensorData.getName().trim()).collect(Collectors.toList());
         String names = StringUtils.join(nameList, ",");
         List<String> dataList = sensorDataList.stream().map(sensorData -> sensorData.getData().toString()).collect(Collectors.toList());
@@ -119,6 +131,7 @@ public class ProcessSensorReturnValue {
         SensorDataDb sensorDataDb = new SensorDataDb(new Date(), imei, names, data, units);
         sensorDataDbService.save(sensorDataDb);
     }
+
     /**
      * 传感器接收数据解析——温湿度和土壤一样规则
      *
@@ -126,7 +139,7 @@ public class ProcessSensorReturnValue {
      * @param arrayNumber 数组编号
      * @param ctx         通道上下文
      */
-    private Double parseSensorOneData(byte[] bytes, int arrayNumber, ChannelHandlerContext ctx)throws Exception {
+    private Double parseSensorOneData(byte[] bytes, int arrayNumber, ChannelHandlerContext ctx) throws Exception {
         ////有用的bytes[]的值
         int useLength = bytes.length - Constant.IMEI_LENGTH;
         byte[] useBytes = NettyServiceCommon.getUseBytes(bytes, useLength);
@@ -143,13 +156,13 @@ public class ProcessSensorReturnValue {
         //开新建程——异步处理根据解析到数据大小判断是否产生事件
         if (dtuInfoService.getByImei(NettyServiceCommon.calculationImei(bytes)).getAutomaticAdjustment()) {
             new Thread(() -> {
-                criteria(sensor, actualResults, ctx);
+                processRelayCommands.handleAccordingToRelayCommand(sensor, actualResults, ctx);
             }).start();
         }
         return actualResults;
     }
 
-    private Integer calculateReturnValue(byte[] bytes) throws Exception{
+    private Integer calculateReturnValue(byte[] bytes) throws Exception {
         List<CheckingRules> checkingRules = checkingRulesService.getByCommonLength(bytes.length);
         List<Integer> list = checkingRules.stream().map(checkingRule -> {
             int dataBegin = checkingRule.getAddressBitLength() + checkingRule.getFunctionCodeLength() + checkingRule.getDataBitsLength();
@@ -177,7 +190,7 @@ public class ProcessSensorReturnValue {
      * @param measureData 测量数据
      * @return
      */
-    private Double calculateActualData(String formula, double measureData) throws Exception{
+    private Double calculateActualData(String formula, double measureData) throws Exception {
         ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
         Compilable compilable = (Compilable) engine;
         Bindings bindings = engine.createBindings(); //Local级别的Binding
@@ -194,62 +207,12 @@ public class ProcessSensorReturnValue {
         return null;
     }
 
-    private Integer HexToInt(byte[] bytes) throws Exception{
+    private Integer HexToInt(byte[] bytes) throws Exception {
         String dataHex = HexConvert.BinaryToHexString(bytes).replaceAll(" ", "");
         String hex = "0x" + dataHex;
         Integer x = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
         return x;
     }
 
-    /**
-     * 根据数据处理继电器指令处理
-     *  @param sensor 串号
-     * @param id     继电器指令——奇数表示对应的继电器id，偶数：1表示为使用闭合指令，0表示为断开指令
-     * @param ctx    通道上下文
-     */
-    void relayCommandData(Sensor sensor, Long id, ChannelHandlerContext ctx) {
-        if (id == null || id.equals("0")) return;
-        //编辑继电器指令
-        Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(id)).findFirst();
-        if (!first.isPresent()) return;
-        log.info("===============正在执行指令：{}", first.get().getName());
-        String relayIds = first.get().getRelayIds();
-        //根据imei查询所有继电器指令:
-        List<Relay> relayList = relayService.getByImei(sensor.getImei());
-        //指令奇数表示对应的继电器id，偶数：1表示为使用闭合指令，0表示为断开指令
-        String[] split = relayIds.split(",");
-        for (String s : split) {
-            String[] split1 = s.split("-");
-            for (Relay relay : relayList) {
-                if (String.valueOf(relay.getId()).equals(split1[0])) {
-                    String sendHex = split1[1].equals("1") ? relay.getOpneHex() : relay.getCloseHex();
-//                    log.info("发送imei值：{} ,继电器id：{}-{}，指令为：{}", sensor.getImei(),relay.getId(), split1[1].equals("1") ? "闭合指令" : "断开指令", sendHex);
-                    NettyServiceCommon.write(sendHex, ctx);
-                    // TODO: 2023/1/4 处理url发出指令
-                    break;
-                }
-            }
-        }
-    }
 
-    /**
-     * 判断处理
-     *  @param sensor 感应器指令
-     * @param data   测试结果值
-     * @param ctx    通道上下文
-     */
-    private void criteria(Sensor sensor, double data, ChannelHandlerContext ctx) {
-        Long id = null;
-        //根据结果值判断是否处理
-        if (data > sensor.getMax()) {
-            log.info("{} 结果值 {} 大于最大值 {}", sensor.getName(), data, sensor.getMax());
-            id = sensor.getMaxRelayDefinitionCommandId();
-        } else if (data < sensor.getMin()) {
-            log.info("{} 结果值 {} 小于最小值{}", sensor.getName(), data, sensor.getMin());
-            id = sensor.getMinRelayDefinitionCommandId();
-        } else {
-            log.info("{} 结果值 {} 比较合理，不用处理！", sensor.getName(), data);
-        }
-        relayCommandData(sensor, id, ctx);
-    }
 }

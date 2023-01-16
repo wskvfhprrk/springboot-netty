@@ -32,7 +32,7 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
         return dataCheckingRulesRepository.findAll();
     }
 
-    @Cacheable(value = Constant.CHECKING_RULES_CACHE_KEY, key = "#p0")
+    @Cacheable(value = Constant.CHECKING_RULES_CACHE_KEY, key = "#p0",unless="#result == null")
     @Override
     public List<CheckingRules> getByCommonLength(Integer commonLength) {
         return dataCheckingRulesRepository.findByCommonLength(commonLength);

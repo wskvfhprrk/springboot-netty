@@ -69,7 +69,7 @@ public class SystemClient {
         InputStreamReader is = new InputStreamReader(System.in, "UTF-8");
         BufferedReader br = new BufferedReader(is);
         System.out.println("请输入你的imei>>>");
-        // TODO: 2023/1/13 向服务器发送数据
+        //向服务器发送数据
         String imei = br.readLine();
         SystemClient.imie = imei;
         //发送的指令
@@ -96,7 +96,8 @@ public class SystemClient {
                 future.channel().writeAndFlush(bufff);
             }
             try {
-                Thread.sleep(Constant.INTERVAL_TIME * 1000);
+                int time = Constant.INTERVAL_TIME_MAP.get(future.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(future.channel().id().toString());
+                Thread.sleep(time);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -121,19 +122,15 @@ public class SystemClient {
         } else if (hexString.length() == 3) {
             hexString = "0" + hexString;
         }
-//        System.out.println("i==" + i);
-//        System.out.println("hexString==" + hexString);
         byte[] bytes = HexConvert.hexStringToBytes(previousData + hexString);
         String validatedData = CRC16.getCRC3(bytes);
-//        System.out.println("validatedData==" + validatedData);
         String result = previousData + hexString + validatedData;
-//        System.out.println("result=" + result);
         return result;
     }
 
     public static void main(String[] args) {
-        SystemClient client = new SystemClient("192.168.0.106", 9090);
-//        SystemClient client = new SystemClient("127.0.0.1", 9090);
+//        SystemClient client = new SystemClient("192.168.0.106", 9090);
+        SystemClient client = new SystemClient("127.0.0.1", 9090);
         try {
             client.run();
         } catch (InterruptedException e) {
