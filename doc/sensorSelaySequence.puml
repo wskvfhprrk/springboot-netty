@@ -1,0 +1,11 @@
+@startuml
+autonumber
+
+客户端 -> 客户端注册: 注册
+服务端 --> 客户端: 返回一个空包——心跳包
+
+客户端 -> 服务端感应器ProcessSensorReturnValue: 发送感应器数据
+服务端感应器ProcessSensorReturnValue -> 服务端继电器ProcessRelayCommands : 如果有三次感器信息一致，向继电器发出指令，判断状态不重复
+客户端 <-- 服务端继电器ProcessRelayCommands : 发出继电器指令信号
+客户端 -> 服务端继电器ProcessRelayCommands : 接收到的指令信号并执行指令
+@enduml

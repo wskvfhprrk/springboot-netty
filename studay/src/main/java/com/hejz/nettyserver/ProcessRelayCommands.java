@@ -45,31 +45,6 @@ public class ProcessRelayCommands {
         byte[] useBytes = NettyServiceCommon.getUseBytes(bytes, useLength);
         return HexConvert.BinaryToHexString(useBytes).trim();
     }
-
-    /**
-     * 继电器指令返回数据处理
-     *
-     * @param relays
-     * @param relayDefinitionCommands
-     * @return
-     */
-    List<String> getSendHex(List<Relay> relays, LinkedHashSet<RelayDefinitionCommand> relayDefinitionCommands) {
-        List<String> relayIds = relayDefinitionCommands.stream().map(RelayDefinitionCommand::getRelayIds).collect(Collectors.toList());
-        List<String> relayIdList = new ArrayList<>();
-        for (String relayId : relayIds) {
-            relayIdList.addAll(Arrays.asList(relayId.split(",")));
-        }
-        List result = new ArrayList();
-        for (String s : relayIdList) {
-            String[] strings = s.split("-");
-            List<String> list = relays.stream().filter(r -> r.getId().equals(Long.valueOf(strings[0])))
-                    .map(strings[1].equals("1") ? Relay::getOpneHex : Relay::getCloseHex)
-                    .collect(Collectors.toList());
-            result.addAll(list);
-        }
-        return result;
-    }
-
     /**
      * 处理继电器返回值
      *
