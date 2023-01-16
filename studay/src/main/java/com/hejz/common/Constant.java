@@ -24,6 +24,7 @@ public class Constant {
     public static final String COMMAND_STATUS_CACHE_KEY = "commandStatusCacheKey";
     public static final String RELAY_DEFINITION_COMMAND_ID_CACHE_KEY = "relayDefinitionCommandIdCacheKey";
     public static final String CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY = "cacheInstructionsThatNeedToContinueProcessingCacheKey";
+    public static final String DUT_INFO_ID_CACHE_KEY = "dutInfoIdCacheKey";
     //IMEI长度
     public static final int IMEI_LENGTH = 15;
     //dut注册bytes长度
@@ -33,7 +34,7 @@ public class Constant {
     //继电器返回值长度
     public static final int RELAY_RETURN_VALUES_LENGTH = 23;
     //每组间隔默认时间（毫秒）
-    public static final int INTERVAL_TIME = 30000;
+    public static final int INTERVAL_TIME = 50000;
     //按通道存储每组上报间隔时间——在接到据后会自传感器数据后动修改与dtu设置的每组间隔时间一致，否则会是默认时间。
     public static final  Map<String,Integer> INTERVAL_TIME_MAP = new HashMap() ;
     //需要继续处理缓存键的缓存指令失效时间（毫秒）

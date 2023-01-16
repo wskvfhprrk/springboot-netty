@@ -38,16 +38,30 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
 
     private void scheduleSendHeartBeat(ChannelHandlerContext ctx) {
         int time = Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString());
-        ctx.executor().schedule(() -> {
-            if (ctx.channel().isActive()) {
-                //发送空包（定义一个实体）
-//                ByteBuf bufff = Unpooled.buffer();
-//                //对接需要16进制的byte[],不需要16进制字符串有空格
-//                log.info("向通道：{}发送了心跳包数据：00 00", ctx.channel().id().toString());
-//                bufff.writeBytes(HexConvert.hexStringToBytes("0000"));
-                NettyServiceCommon.write("0000",ctx);
+        // EventLoop 实现定时任务
+        ctx.channel().eventLoop().scheduleWithFixedDelay(new Runnable() {
+            // 因为线程中不能访问外部局部变量
+            // 这里所以采用在线程中创建属性、属性的赋值方法，然后在创建线程时，通过调用这个自身的方法，实现局部变量的方位。
+            ChannelHandlerContext ctx;
+            @Override
+            public void run() {
+                if (ctx.channel().isActive()) {
+                    //发送空包（定义一个实体）
+                    NettyServiceCommon.write("0000", ctx);
+                }
             }
-        }, time, TimeUnit.SECONDS);
+            //对自身属性进行赋值
+            public Runnable accept(ChannelHandlerContext chct) {
+                this.ctx = chct;
+                return this;
+            }
+        }.accept(ctx), 0, time, TimeUnit.SECONDS);
+//        ctx.executor().schedule(() -> {
+//            if (ctx.channel().isActive()) {
+//                //发送空包（定义一个实体）
+//                NettyServiceCommon.write("0000",ctx);
+//            }
+//        }, time, TimeUnit.SECONDS);
     }
 
     @Override
