@@ -38,7 +38,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
 
     private void scheduleSendHeartBeat(ChannelHandlerContext ctx) {
         int time = Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString());
-        // EventLoop 实现定时任务
+         //EventLoop 实现定时任务
         ctx.channel().eventLoop().scheduleWithFixedDelay(new Runnable() {
             // 因为线程中不能访问外部局部变量
             // 这里所以采用在线程中创建属性、属性的赋值方法，然后在创建线程时，通过调用这个自身的方法，实现局部变量的方位。
@@ -56,12 +56,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
                 return this;
             }
         }.accept(ctx), 0, time, TimeUnit.SECONDS);
-//        ctx.executor().schedule(() -> {
-//            if (ctx.channel().isActive()) {
-//                //发送空包（定义一个实体）
-//                NettyServiceCommon.write("0000",ctx);
-//            }
-//        }, time, TimeUnit.SECONDS);
+        ctx.executor().schedule(() -> {
+            if (ctx.channel().isActive()) {
+                //发送空包（定义一个实体）
+                NettyServiceCommon.write("0000",ctx);
+            }
+        }, time, TimeUnit.SECONDS);
     }
 
     @Override
