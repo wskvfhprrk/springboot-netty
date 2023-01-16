@@ -80,15 +80,16 @@ public class ProcessRelayCommands {
      * 根据数据处理继电器指令处理
      *
      * @param sensor 串号
-     * @param ids    继电器指令——奇数表示对应的继电器命令的ids，偶数：1表示为使用闭合指令，0表示为断开指令
+     * @param id    继电器指令——奇数表示对应的继电器命令的id
      * @param ctx    通道上下文
      */
-    void relayCommandData(Sensor sensor, Long ids, ChannelHandlerContext ctx) {
-        if (ids == null || ids.equals("0")) return;
+    void relayCommandData(Sensor sensor, Long id, ChannelHandlerContext ctx) {
+        if (id == null || id.equals("0")) return;
         //编辑继电器指令
-        Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(ids)).findFirst();
+        Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.getByImei(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(id)).findFirst();
         if (!first.isPresent()) return;
         RelayDefinitionCommand relayDefinitionCommand = first.get();
+        log.info("通道：{}，指令为：{},getRelayIds:{}",ctx.channel().id().toString(),relayDefinitionCommand.getName(),relayDefinitionCommand.getRelayIds());
         String relayIds = relayDefinitionCommand.getRelayIds();
         //指令奇数表示对应的继电器id，偶数：1表示为使用闭合指令，0表示为断开指令
         String[] relayIdsArr = relayIds.split(",");
