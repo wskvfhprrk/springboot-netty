@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class SystemClient {
@@ -38,30 +39,32 @@ public class SystemClient {
 
 
     public void run() throws InterruptedException {
+        //配置客户端的线程组，客户端只有一个线程组，服务端是EventLoopGroup bossGroup = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         NioEventLoopGroup group = new NioEventLoopGroup();
-
         try {
             bootstrap.group(group)
                     .channel(NioSocketChannel.class)
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            //放入自己的业务Handler
                             ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new ObjectEncoder())
-                                    .addLast(new ClientHandler())
-                            .addLast(new IdleStateHandler(120,120,120));
+                            pipeline.addLast(new IdleStateHandler(20, 2, 2, TimeUnit.SECONDS));
+                            pipeline.addLast(new ClientHandler());
                         }
                     });
-
+            //发起异步连接操作，同步阻等待结果
             ChannelFuture future = bootstrap.connect(host, port).sync();
             try {
                 start(future);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            //等待客户端链路关闭
             future.channel().closeFuture().sync();
         } finally {
+            //释放NIO线程组
             group.shutdownGracefully();
         }
     }

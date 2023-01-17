@@ -45,7 +45,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             IdleState state = ((IdleStateEvent) evt).state();
             switch (state){
                 case READER_IDLE:
-                    log.info("读取器空闲");
+                    log.info("读取器空闲,关闭通道");
+//                    ctx.close();
                     break;
                 case WRITER_IDLE:
                     log.info("写入程序空闲");
