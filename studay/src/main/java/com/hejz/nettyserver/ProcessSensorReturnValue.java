@@ -58,8 +58,8 @@ public class ProcessSensorReturnValue {
         DtuInfo dtuInfo = dtuInfoService.getByImei(imei);
         if(dtuInfo==null){
             log.error("imei值:{}查询不到或没有注册，关闭通道",imei);
-            Constant.CHANNEL_GROUP.remove(ctx);
             ctx.channel().close();
+            Constant.CHANNEL_GROUP.remove(ctx);
             return;
         }
         Constant.INTERVAL_TIME_MAP.put(ctx.channel().id().toString(), dtuInfo.getIntervalTime());
