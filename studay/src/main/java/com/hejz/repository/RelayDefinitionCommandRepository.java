@@ -3,6 +3,7 @@ package com.hejz.repository;
 import com.hejz.entity.RelayDefinitionCommand;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
@@ -11,11 +12,11 @@ import java.util.List;
  * author: hejz
  * data: 2022-5-9
  */
-public interface RelayDefinitionCommandRepository extends JpaRepository<RelayDefinitionCommand,Long>,JpaSpecificationExecutor<RelayDefinitionCommand> {
-    List<RelayDefinitionCommand> getAllByImei(String imei);
+public interface RelayDefinitionCommandRepository extends CrudRepository<RelayDefinitionCommand,Long>,JpaSpecificationExecutor<RelayDefinitionCommand> {
 
     void deleteByImei(String imei);
 
-    List<RelayDefinitionCommand> getByImei(String imei);
+    List<RelayDefinitionCommand> findByImei(String imei);
 
+    List<RelayDefinitionCommand> getByImei(String imei);
 }

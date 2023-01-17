@@ -50,7 +50,7 @@ public class SystemClient {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             //放入自己的业务Handler
                             ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new IdleStateHandler(20, 2, 2, TimeUnit.SECONDS));
+                            pipeline.addLast(new IdleStateHandler(120, 120, 120, TimeUnit.SECONDS));
                             pipeline.addLast(new ClientHandler());
                         }
                     });

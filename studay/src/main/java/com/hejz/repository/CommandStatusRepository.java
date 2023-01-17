@@ -1,8 +1,8 @@
 package com.hejz.repository;
 
 import com.hejz.entity.CommandStatus;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
@@ -11,12 +11,12 @@ import java.util.List;
  * author: hejz
  * data: 2022-5-9
  */
-public interface CommandStatusRepository extends JpaRepository<CommandStatus,Long>,JpaSpecificationExecutor<CommandStatus> {
-//    List<CommandStatus> getByImei(String imei);
-
-    List<CommandStatus> getByIdAndStatus(String imei,Boolean b);
+public interface CommandStatusRepository extends CrudRepository<CommandStatus,Long>,JpaSpecificationExecutor<CommandStatus> {
 
     void deleteByImei(String imei);
 
     List<CommandStatus> getByImei(String imei);
+
+
+//    CommandStatus update(CommandStatus commandStatus);
 }

@@ -1,7 +1,9 @@
 package com.hejz.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,6 +17,8 @@ import java.util.Date;
 @Data
 @Entity(name = "command_status")
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommandStatus implements Serializable {
     @Id
     @SequenceGenerator(
@@ -62,9 +66,5 @@ public class CommandStatus implements Serializable {
         this.commonId = commonId;
         this.createDate = createDate;
         this.status = status;
-    }
-
-    public CommandStatus() {
-
     }
 }

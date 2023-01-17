@@ -4,15 +4,14 @@ import com.hejz.common.Constant;
 import com.hejz.entity.RelayDefinitionCommand;
 import com.hejz.repository.RelayDefinitionCommandRepository;
 import com.hejz.service.RelayDefinitionCommandService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -21,25 +20,27 @@ import java.util.List;
  */
 @Service
 public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommandService {
+
     @Autowired
     private RelayDefinitionCommandRepository relayDefinitionCommandRepository;
     @Autowired
-    RedisTemplate redisTemplate;
+    private RedisTemplate redisTemplate;
 
-    @Cacheable(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#p0", unless = "#result == null")
+    @Cacheable(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#result.imei", unless = "#result == null")
     @Override
     public List<RelayDefinitionCommand> getByImei(String imei) {
-        return relayDefinitionCommandRepository.getAllByImei(imei);
+        return relayDefinitionCommandRepository.getByImei(imei);
     }
 
     @Override
     public RelayDefinitionCommand getById(Long id) {
-        return relayDefinitionCommandRepository.getById(id);
+        return relayDefinitionCommandRepository.findById(id).orElse(null);
     }
 
     @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#result.imei")
     @Override
     public RelayDefinitionCommand save(RelayDefinitionCommand relayDefinitionCommand) {
+        relayDefinitionCommand.setId(null);
         return relayDefinitionCommandRepository.save(relayDefinitionCommand);
     }
 
@@ -49,10 +50,13 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
         return relayDefinitionCommandRepository.save(relayDefinitionCommand);
     }
 
-    @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#p0")
     @Override
     public void delete(Long id) {
-        relayDefinitionCommandRepository.deleteById(id);
+        Optional<RelayDefinitionCommand> optionalRelayDefinitionCommand = relayDefinitionCommandRepository.findById(id);
+        if (optionalRelayDefinitionCommand.isPresent()) {
+            redisTemplate.delete(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY+"::"+optionalRelayDefinitionCommand.get().getImei());
+            relayDefinitionCommandRepository.deleteById(id);
+        }
     }
 
     @CacheEvict(value = Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY, key = "#p0")

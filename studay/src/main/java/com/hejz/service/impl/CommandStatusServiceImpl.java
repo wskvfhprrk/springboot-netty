@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -39,13 +40,14 @@ public class CommandStatusServiceImpl implements CommandStatusService {
 
     @Override
     public CommandStatus getById(Long id) {
-        CommandStatus commandStatus = commandStatusRepository.getById(id);
+        CommandStatus commandStatus = commandStatusRepository.findById(id).orElse(null);
         return commandStatus;
     }
 
     @CacheEvict(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#result.imei")
     @Override
     public CommandStatus save(CommandStatus commandStatus) {
+        commandStatus.setId(null);
         return commandStatusRepository.save(commandStatus);
     }
 
@@ -57,7 +59,7 @@ public class CommandStatusServiceImpl implements CommandStatusService {
 
     @Override
     public void delete(Long id) {
-        CommandStatus commandStatus = commandStatusRepository.getById(id);
+        CommandStatus commandStatus = commandStatusRepository.findById(id).orElse(null);
         redisTemplate.delete(Constant.COMMAND_STATUS_CACHE_KEY + "::" + commandStatus.getImei());
         commandStatusRepository.deleteById(id);
     }

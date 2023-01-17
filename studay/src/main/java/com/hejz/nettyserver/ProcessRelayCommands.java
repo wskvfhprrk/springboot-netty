@@ -40,8 +40,6 @@ public class ProcessRelayCommands {
     private RedisTemplate redisTemplate;
     @Autowired
     private CommandStatusService commandStatusService;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     /**
      * 传感器数据转为字符串——没有imei值的有效数据
@@ -80,7 +78,7 @@ public class ProcessRelayCommands {
         List<CommandStatus> commandStatuses = commandStatusService.getByImei(relayDefinitionCommand.getImei());
         if (commandStatuses != null && !commandStatuses.isEmpty()) {
             //把其状态置为false——过去时的
-            Optional<CommandStatus> commandStatusOptional = commandStatuses.stream().filter(commandStatus -> commandStatus.getCommonId().equals(relayDefinitionCommand.getId())).findFirst();
+            Optional<CommandStatus> commandStatusOptional = commandStatuses.stream().filter(commandStatus -> commandStatus.getCommonId().equals(relayDefinitionCommand.getCorrespondingCommandId())).findFirst();
             if (commandStatusOptional.isPresent()) {
                 CommandStatus commandStatus = commandStatusOptional.get();
                 commandStatus.setStatus(false);
