@@ -56,7 +56,7 @@ class CommandStatusServiceImplTest {
         CommandStatus commandStatus = commandStatusService.findById(1L);
         commandStatus.setStatus(false);
         CommandStatus update = commandStatusService.update(commandStatus);
-        Assert.isTrue(update.getStatus()==false, "修改值成功");
+        Assert.isTrue(!update.getStatus(), "修改值成功");
         Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
         Assert.isNull(o, "缓存中应该无值！");
     }
