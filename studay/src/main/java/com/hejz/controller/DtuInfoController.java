@@ -49,8 +49,8 @@ public class DtuInfoController {
         dtuInfoService.delete(id);
     }
     @ApiOperation("根据imei删除所有感器信息")
-    @DeleteMapping("deleteByImei/{imei}")
-    public void deleteByImei(@PathVariable("imei") String imei){
-        dtuInfoService.deleteByImei(imei);
+    @DeleteMapping("deleteAllByImei/{imei}")
+    public void deleteAllByImei(@PathVariable("imei") String imei){
+        dtuInfoService.deleteAllByImei(imei);
     }
 }

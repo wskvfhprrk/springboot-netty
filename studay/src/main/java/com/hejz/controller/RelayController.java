@@ -53,8 +53,8 @@ public class RelayController {
     }
 
     @ApiOperation("根据imei删除所有感器信息")
-    @DeleteMapping("deleteByImei/{imei}")
-    public void deleteByImei(@PathVariable("imei") String imei) {
-        relayService.deleteByImei(imei);
+    @DeleteMapping("deleteAllByImei/{imei}")
+    public void deleteAllByImei(@PathVariable("imei") String imei) {
+        relayService.deleteAllByImei(imei);
     }
 }

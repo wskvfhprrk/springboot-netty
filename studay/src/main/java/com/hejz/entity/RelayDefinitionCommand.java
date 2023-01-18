@@ -17,7 +17,6 @@ import java.io.Serializable;
 @Entity(name = "relay_definition_command")
 @NoArgsConstructor
 @AllArgsConstructor
-//@JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
 @JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 public class RelayDefinitionCommand implements Serializable {
     @Id

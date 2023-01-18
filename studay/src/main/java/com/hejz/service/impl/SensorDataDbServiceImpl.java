@@ -45,8 +45,8 @@ public class SensorDataDbServiceImpl implements SensorDataDbService {
     }
 
     @Override
-    public void deleteByImei(String imei) {
-        selayRepository.deleteByImei(imei);
+    public void deleteAllByImei(String imei) {
+        selayRepository.deleteAllByImei(imei);
     }
 
 }

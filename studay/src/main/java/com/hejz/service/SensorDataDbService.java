@@ -21,5 +21,5 @@ public interface SensorDataDbService {
 
     void delete(Long id);
 
-    void deleteByImei(String imei);
+    void deleteAllByImei(String imei);
 }

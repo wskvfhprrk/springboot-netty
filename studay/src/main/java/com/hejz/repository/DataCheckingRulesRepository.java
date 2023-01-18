@@ -1,8 +1,8 @@
 package com.hejz.repository;
 
 import com.hejz.entity.CheckingRules;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * author: hejz
  * data: 2022-5-9
  */
-public interface DataCheckingRulesRepository extends JpaRepository<CheckingRules,Integer> ,JpaSpecificationExecutor<CheckingRules> {
+public interface DataCheckingRulesRepository extends CrudRepository<CheckingRules,Integer>,JpaSpecificationExecutor<CheckingRules> {
 
     List<CheckingRules> findByCommonLength(Integer commonLength);
 

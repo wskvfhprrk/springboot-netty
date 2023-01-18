@@ -59,8 +59,8 @@ public class RelayServiceImpl implements RelayService {
 
     @CacheEvict(value = Constant.RELAY_CACHE_KEY, key = "#p0")
     @Override
-    public void deleteByImei(String imei) {
-        selayRepository.deleteByImei(imei);
+    public void deleteAllByImei(String imei) {
+        selayRepository.deleteAllByImei(imei);
     }
 
 }

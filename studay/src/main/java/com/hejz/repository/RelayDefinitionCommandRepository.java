@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface RelayDefinitionCommandRepository extends CrudRepository<RelayDefinitionCommand,Long>,JpaSpecificationExecutor<RelayDefinitionCommand> {
 
-    void deleteByImei(String imei);
+    void deleteAllByImei(String imei);
 
     List<RelayDefinitionCommand> findByImei(String imei);
 

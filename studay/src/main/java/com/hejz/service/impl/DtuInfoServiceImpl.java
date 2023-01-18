@@ -54,8 +54,8 @@ public class DtuInfoServiceImpl implements DtuInfoService {
 
     @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#p0")
     @Override
-    public void deleteByImei(String imei) {
-        dtuInfoRepository.deleteByImei(imei);
+    public void deleteAllByImei(String imei) {
+        dtuInfoRepository.deleteAllByImei(imei);
     }
 
 }

@@ -57,8 +57,8 @@ public class SensorServiceImpl implements SensorService {
 
     @CacheEvict(value = Constant.SENSOR_CACHE_KEY, key = "#p0")
     @Override
-    public void deleteByImei(String imei) {
-        sensorRepository.deleteByImei(imei);
+    public void deleteAllByImei(String imei) {
+        sensorRepository.deleteAllByImei(imei);
     }
 
 }

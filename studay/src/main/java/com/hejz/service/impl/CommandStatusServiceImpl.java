@@ -66,9 +66,9 @@ public class CommandStatusServiceImpl implements CommandStatusService {
 
     @CacheEvict(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#p0")
     @Override
-    public void deleteByImei(String imei) {
+    public void deleteAllByImei(String imei) {
         //查询当前所有状态，历史的不用查询了
-        commandStatusRepository.deleteByImei(imei);
+        commandStatusRepository.deleteAllByImei(imei);
     }
 
 }

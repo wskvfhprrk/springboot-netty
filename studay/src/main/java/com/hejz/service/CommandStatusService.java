@@ -21,5 +21,5 @@ public interface CommandStatusService {
 
     void delete(Long id);
 
-    void deleteByImei(String imei);
+    void deleteAllByImei(String imei);
 }

@@ -34,6 +34,6 @@ class DtuInfoServiceImplTest {
     }
 
     @Test
-    void deleteByImei() {
+    void deleteAllByImei() {
     }
 }

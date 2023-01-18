@@ -14,5 +14,5 @@ public interface DtuInfoRepository extends JpaRepository<DtuInfo,Long>,JpaSpecif
 
     DtuInfo getAllByImei(String imei);
 
-    void deleteByImei(String imei);
+    void deleteAllByImei(String imei);
 }

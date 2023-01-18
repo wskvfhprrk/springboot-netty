@@ -39,6 +39,6 @@ class CommandStatusControllerTest {
     }
 
     @Test
-    void deleteByImei() {
+    void deleteAllByImei() {
     }
 }

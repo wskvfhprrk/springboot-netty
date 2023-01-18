@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface CommandStatusRepository extends CrudRepository<CommandStatus,Long>,JpaSpecificationExecutor<CommandStatus> {
 
-    void deleteByImei(String imei);
+    void deleteAllByImei(String imei);
 
     List<CommandStatus> findByImei(String imei);
 
