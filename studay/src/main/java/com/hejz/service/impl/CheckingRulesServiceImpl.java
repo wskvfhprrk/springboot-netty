@@ -47,6 +47,7 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
     @Override
     public CheckingRules save(CheckingRules checkingRules) {
         redisTemplate.delete(Constant.CHECKING_RULES_CACHE_KEY + "::" + checkingRules.getCommonLength());
+        checkingRules.setId(null);
         return checkingRulesRepository.save(checkingRules);
     }
 

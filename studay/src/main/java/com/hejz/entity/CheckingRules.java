@@ -13,19 +13,19 @@ import java.io.Serializable;
  * @Description: 数据校检规则
  */
 @Data
-@Entity(name = "detection_rules")
+@Entity(name = "checking_rules")
 @NoArgsConstructor
 @AllArgsConstructor
 public class CheckingRules implements Serializable {
     @Id
     @SequenceGenerator(
-            name = "detection_rules_sequence",
-            sequenceName = "detection_rules_sequence",
+            name = "checking_rules_sequence",
+            sequenceName = "checking_rules_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "detection_rules_sequence"
+            generator = "checking_rules_sequence"
     )
 
     @Column(
