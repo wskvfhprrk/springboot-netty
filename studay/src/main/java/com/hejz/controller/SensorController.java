@@ -6,7 +6,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +28,7 @@ public class SensorController {
     @ApiOperation("根据imei查询所有感器信息")
     @GetMapping("all/{imei}")
     public List<Sensor> getSensorByImei(@PathVariable String imei) {
-        return sensorService.findByImei(imei);
+        return sensorService.findAllByImei(imei);
     }
 
     @ApiOperation("根据id查询感器信息")

@@ -10,7 +10,7 @@ import java.util.List;
  * @Description:
  */
 public interface SensorService {
-    List<Sensor> findByImei(String imei);
+    List<Sensor> findAllByImei(String imei);
 
     Sensor findById(Long id);
 

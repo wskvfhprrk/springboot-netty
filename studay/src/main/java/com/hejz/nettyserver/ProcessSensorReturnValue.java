@@ -63,7 +63,7 @@ public class ProcessSensorReturnValue {
             return;
         }
         Constant.INTERVAL_TIME_MAP.put(ctx.channel().id().toString(), dtuInfo.get(0).getIntervalTime());
-        int sensorsLength = sensorService.findByImei(imei).size();
+        int sensorsLength = sensorService.findAllByImei(imei).size();
         //计算当前时间与之前时间差值——如果没有注册信息，第一个值要把它加上30秒
         LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(dtuInfo.get(0).getIntervalTime() / 1000 + 30);
         LocalDateTime end = Constant.END_TIME_MAP.get(ctx.channel().id().toString()) == null ? dateIntervalTime : Constant.END_TIME_MAP.get(ctx.channel().id().toString());
@@ -111,7 +111,7 @@ public class ProcessSensorReturnValue {
         for (int i = 0; i < list.size(); i++) {
             Double aDouble = parseSensorOneData(list.get(i), i, ctx);
             String imei = NettyServiceCommon.calculationImei(list.get(0));
-            List<Sensor> sensors = sensorService.findByImei(imei);
+            List<Sensor> sensors = sensorService.findAllByImei(imei);
             Sensor sensor = sensors.get(i);
             SensorData sensorData = new SensorData(i, sensor.getName(), aDouble, sensor.getUnit());
             doubleList.add(sensorData);
@@ -154,7 +154,7 @@ public class ProcessSensorReturnValue {
         //获取数据值
         double d = Double.parseDouble(String.valueOf(x));
         String imei = NettyServiceCommon.calculationImei(bytes);
-        Sensor sensor = sensorService.findByImei(imei).get(arrayNumber);
+        Sensor sensor = sensorService.findAllByImei(imei).get(arrayNumber);
         //经过公式计算得到实际结果
         Double actualResults = calculateActualData(sensor.getCalculationFormula(), d);
         log.info(" 通道：{} imei==>{},{} =====> {}  ====> {}  ====> {}", ctx.channel().id().toString(), imei, arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());

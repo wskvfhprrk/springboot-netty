@@ -27,7 +27,7 @@ public class SensorServiceImpl implements SensorService {
 
     @Cacheable(value = Constant.SENSOR_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
-    public List<Sensor> findByImei(String imei) {
+    public List<Sensor> findAllByImei(String imei) {
         return sensorRepository.getAllByImei(imei);
     }
 
@@ -37,13 +37,14 @@ public class SensorServiceImpl implements SensorService {
         return sensor;
     }
 
-    @CacheEvict(value = Constant.SENSOR_CACHE_KEY, key = "#result.imei")
+    @CacheEvict(value = Constant.SENSOR_CACHE_KEY, key = "#p0.imei")
     @Override
     public Sensor save(Sensor sensor) {
+        sensor.setId(null);
         return sensorRepository.save(sensor);
     }
 
-    @CacheEvict(value = Constant.SENSOR_CACHE_KEY, key = "#result.imei")
+    @CacheEvict(value = Constant.SENSOR_CACHE_KEY, key = "#p0.imei")
     @Override
     public Sensor update(Sensor sensor) {
         return sensorRepository.save(sensor);
