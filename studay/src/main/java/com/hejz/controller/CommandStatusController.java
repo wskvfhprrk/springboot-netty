@@ -26,7 +26,7 @@ public class CommandStatusController {
     @ApiOperation("根据imei查询所有感器信息")
     @GetMapping("all/{imei}")
     public List<CommandStatus> getCommandStatusByImei(@PathVariable String imei) {
-        return commandStatusService.findByImei(imei);
+        return commandStatusService.findAllByImei(imei);
     }
 
     @ApiOperation("根据id查询感器信息")
@@ -53,10 +53,4 @@ public class CommandStatusController {
         commandStatusService.delete(id);
     }
 
-    @ApiOperation("根据imei删除所有感器信息")
-    @DeleteMapping("deleteAllByImei/{imei}")
-    @Transactional
-    public void deleteAllByImei(@PathVariable("imei") String imei) {
-        commandStatusService.deleteAllByImei(imei);
-    }
 }

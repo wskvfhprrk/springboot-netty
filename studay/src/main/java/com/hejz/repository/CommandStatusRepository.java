@@ -4,6 +4,7 @@ import com.hejz.entity.CommandStatus;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,10 +14,7 @@ import java.util.List;
  */
 public interface CommandStatusRepository extends CrudRepository<CommandStatus,Long>,JpaSpecificationExecutor<CommandStatus> {
 
-    void deleteAllByImei(String imei);
 
-    List<CommandStatus> findByImei(String imei);
+    List<CommandStatus> findAllByImei(String imei);
 
-
-//    CommandStatus update(CommandStatus commandStatus);
 }

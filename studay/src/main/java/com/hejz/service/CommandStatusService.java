@@ -11,7 +11,7 @@ import java.util.List;
  * @Description:
  */
 public interface CommandStatusService {
-    List<CommandStatus> findByImei(String imei);
+    List<CommandStatus> findAllByImei(String imei);
 
     CommandStatus findById(Long id);
 
@@ -21,5 +21,4 @@ public interface CommandStatusService {
 
     void delete(Long id);
 
-    void deleteAllByImei(String imei);
 }

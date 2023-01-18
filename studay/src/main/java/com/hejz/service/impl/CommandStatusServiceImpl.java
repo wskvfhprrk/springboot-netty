@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,11 +30,11 @@ public class CommandStatusServiceImpl implements CommandStatusService {
 
     @Cacheable(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
-    public List<CommandStatus> findByImei(String imei) {
-        List<CommandStatus> collect = commandStatusRepository.findByImei(imei).stream()
+    public List<CommandStatus> findAllByImei(String imei) {
+        List<CommandStatus> collect = commandStatusRepository.findAllByImei(imei).stream()
                 .filter(commandStatus -> commandStatus.getStatus()).collect(Collectors.toList());
         if (collect.isEmpty()) {
-            return null;
+            return new ArrayList<>();
         } else {
             return collect;
         }
@@ -65,12 +66,5 @@ public class CommandStatusServiceImpl implements CommandStatusService {
         commandStatusRepository.deleteById(id);
     }
 
-    @CacheEvict(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#p0")
-    @Override
-    @Transactional
-    public void deleteAllByImei(String imei) {
-        //查询当前所有状态，历史的不用查询了
-        commandStatusRepository.deleteAllByImei(imei);
-    }
 
 }

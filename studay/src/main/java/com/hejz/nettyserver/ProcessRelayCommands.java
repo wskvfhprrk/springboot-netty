@@ -71,7 +71,7 @@ public class ProcessRelayCommands {
         if (o == null) return;
         RelayDefinitionCommand relayDefinitionCommand = (RelayDefinitionCommand) o;
         //添加修改命令状态
-        List<CommandStatus> commandStatuses = commandStatusService.findByImei(relayDefinitionCommand.getImei());
+        List<CommandStatus> commandStatuses = commandStatusService.findAllByImei(relayDefinitionCommand.getImei());
         if (commandStatuses != null && !commandStatuses.isEmpty()) {
             //把其状态置为false——过去时的
             Optional<CommandStatus> commandStatusOptional = commandStatuses.stream().filter(commandStatus -> commandStatus.getCommonId().equals(relayDefinitionCommand.getCorrespondingCommandId())).findFirst();
@@ -108,7 +108,7 @@ public class ProcessRelayCommands {
         RelayDefinitionCommand relayDefinitionCommand = first.get();
         log.info("通道：{}，指令为：{},getRelayIds:{}", ctx.channel().id().toString(), relayDefinitionCommand.getName(), relayDefinitionCommand.getRelayIds());
         //判断当前状态是否一致，如果一致则不往继电器发送状态了；
-        List<CommandStatus> commandStatuses = commandStatusService.findByImei(relayDefinitionCommand.getImei());
+        List<CommandStatus> commandStatuses = commandStatusService.findAllByImei(relayDefinitionCommand.getImei());
         if (commandStatuses != null && !commandStatuses.isEmpty()) {
             Optional<CommandStatus> optionalCommandStatus = commandStatuses.stream().filter(c -> c.getCommonId().equals(relayDefinitionCommand.getId())).findFirst();
             if (optionalCommandStatus.isPresent()) {

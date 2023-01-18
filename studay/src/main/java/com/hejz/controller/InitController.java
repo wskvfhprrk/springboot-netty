@@ -27,7 +27,7 @@ public class InitController {
     @Autowired
     RelayDefinitionCommandRepository relayDefinitionCommandRepository;
     @Autowired
-    DataCheckingRulesRepository dataCheckingRulesRepository;
+    CheckingRulesRepository checkingRulesRepository;
     @Autowired
     CommandStatusRepository commandStatusRepository;
     @Autowired
@@ -35,8 +35,8 @@ public class InitController {
 
     @PostConstruct
     public void initData() {
-        dataCheckingRulesRepository.save(new CheckingRules("7位MODBUS协议111122", 7, 1, 1, 1, 2, 2));
-        dataCheckingRulesRepository.save(new CheckingRules("8位MODBUS协议1111122", 8, 1, 1, 1, 2, 2));
+        checkingRulesRepository.save(new CheckingRules("7位MODBUS协议111122", 7, 1, 1, 1, 2, 2));
+        checkingRulesRepository.save(new CheckingRules("8位MODBUS协议1111122", 8, 1, 1, 1, 2, 2));
         Long imei = 865328063321359L;
         for (int i = 0; i < 10; i++) {
             start(String.valueOf(imei), i);

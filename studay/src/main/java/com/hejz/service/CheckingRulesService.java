@@ -22,4 +22,5 @@ public interface CheckingRulesService {
     CheckingRules update(CheckingRules relay);
 
     void delete(Integer id);
+
 }

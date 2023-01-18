@@ -11,7 +11,7 @@ import java.util.List;
  * author: hejz
  * data: 2022-5-9
  */
-public interface DataCheckingRulesRepository extends CrudRepository<CheckingRules,Integer>,JpaSpecificationExecutor<CheckingRules> {
+public interface CheckingRulesRepository extends CrudRepository<CheckingRules,Integer>,JpaSpecificationExecutor<CheckingRules> {
 
     List<CheckingRules> findByCommonLength(Integer commonLength);
 
