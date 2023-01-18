@@ -11,9 +11,9 @@ import java.util.List;
  * @Description:
  */
 public interface RelayDefinitionCommandService {
-    List<RelayDefinitionCommand> getByImei(String imei);
+    List<RelayDefinitionCommand> findByImei(String imei);
 
-    RelayDefinitionCommand getById(Long id);
+    RelayDefinitionCommand findById(Long id);
 
     RelayDefinitionCommand save(RelayDefinitionCommand dtuInfo);
 

@@ -69,7 +69,7 @@ public class NettyServiceCommon {
     public static boolean testingData(byte[] bytes) {
         //1、必须注册过的imei值——查dtuInfo看有没有
         String imei = NettyServiceCommon.calculationImei(bytes);
-        DtuInfo dtuInfo = dtuInfoService.getByImei(imei);
+        DtuInfo dtuInfo = dtuInfoService.findByImei(imei);
         if (dtuInfo == null) {
             log.error("bytes：{}校验通不过——查无imei值：{}", HexConvert.BinaryToHexString(bytes), imei);
             return false;

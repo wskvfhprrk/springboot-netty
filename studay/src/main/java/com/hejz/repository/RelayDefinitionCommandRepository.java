@@ -18,5 +18,4 @@ public interface RelayDefinitionCommandRepository extends CrudRepository<RelayDe
 
     List<RelayDefinitionCommand> findByImei(String imei);
 
-    List<RelayDefinitionCommand> getByImei(String imei);
 }

@@ -25,7 +25,7 @@ public class SensorDataDbServiceImpl implements SensorDataDbService {
 
     @Override
     public SensorDataDb getSensorDataDbById(Long id) {
-        SensorDataDb selay = selayRepository.getById(id);
+        SensorDataDb selay = selayRepository.findById(id);
         return selay;
     }
 

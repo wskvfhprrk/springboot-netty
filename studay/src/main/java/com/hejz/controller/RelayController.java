@@ -25,13 +25,13 @@ public class RelayController {
     @ApiOperation("根据imei查询所有感器信息")
     @GetMapping("all/{imei}")
     public List<Relay> getRelayByImei(@PathVariable String imei) {
-        return relayService.getByImei(imei);
+        return relayService.findByImei(imei);
     }
 
     @ApiOperation("根据id查询感器信息")
     @GetMapping("{id}")
     public Relay getRelayById(@PathVariable("id") Long id) {
-        return relayService.getById(id);
+        return relayService.findById(id);
     }
 
     @ApiOperation("添加感器信息")

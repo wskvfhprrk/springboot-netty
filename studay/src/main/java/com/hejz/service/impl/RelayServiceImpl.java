@@ -26,13 +26,13 @@ public class RelayServiceImpl implements RelayService {
 
     @Cacheable(value = Constant.RELAY_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
-    public List<Relay> getByImei(String imei) {
+    public List<Relay> findByImei(String imei) {
         return selayRepository.getAllByImei(imei);
     }
 
     @Override
-    public Relay getById(Long id) {
-        Relay selay = selayRepository.getById(id);
+    public Relay findById(Long id) {
+        Relay selay = selayRepository.findById(id).orElse(null);
         return selay;
     }
 
@@ -52,7 +52,7 @@ public class RelayServiceImpl implements RelayService {
     @Override
     public void delete(Long id) {
         //缓存同步
-        Relay relay = selayRepository.getById(id);
+        Relay relay = selayRepository.findById(id).orElse(null);
         redisTemplate.delete(Constant.RELAY_CACHE_KEY + "::" + relay.getImei());
         selayRepository.deleteById(id);
     }

@@ -26,8 +26,8 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
     private RedisTemplate redisTemplate;
 
     @Override
-    public CheckingRules getById(Integer id) {
-        CheckingRules checkingRules = dataCheckingRulesRepository.getById(id);
+    public CheckingRules findById(Integer id) {
+        CheckingRules checkingRules = dataCheckingRulesRepository.findById(id).orElse(null);
         return checkingRules;
     }
 
@@ -56,7 +56,7 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
 
     @Override
     public void delete(Integer id) {
-        CheckingRules checkingRules = dataCheckingRulesRepository.getById(id);
+        CheckingRules checkingRules = dataCheckingRulesRepository.findById(id).orElse(null);
         redisTemplate.delete(Constant.CHECKING_RULES_CACHE_KEY + "::" + checkingRules.getCommonLength());
         dataCheckingRulesRepository.deleteById(id);
     }

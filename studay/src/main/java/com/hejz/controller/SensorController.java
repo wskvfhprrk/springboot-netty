@@ -28,13 +28,13 @@ public class SensorController {
     @ApiOperation("根据imei查询所有感器信息")
     @GetMapping("all/{imei}")
     public List<Sensor> getSensorByImei(@PathVariable String imei) {
-        return sensorService.getByImei(imei);
+        return sensorService.findByImei(imei);
     }
 
     @ApiOperation("根据id查询感器信息")
     @GetMapping("{id}")
     public Sensor getSensorById(@PathVariable("id") Long id) {
-        return sensorService.getById(id);
+        return sensorService.findById(id);
     }
 
     @ApiOperation("添加感器信息")

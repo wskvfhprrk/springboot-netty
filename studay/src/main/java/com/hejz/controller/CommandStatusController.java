@@ -25,13 +25,13 @@ public class CommandStatusController {
     @ApiOperation("根据imei查询所有感器信息")
     @GetMapping("all/{imei}")
     public List<CommandStatus> getCommandStatusByImei(@PathVariable String imei) {
-        return commandStatusService.getByImei(imei);
+        return commandStatusService.findByImei(imei);
     }
 
     @ApiOperation("根据id查询感器信息")
     @GetMapping("{id}")
     public CommandStatus getCommandStatusById(@PathVariable("id") Long id) {
-        return commandStatusService.getById(id);
+        return commandStatusService.findById(id);
     }
 
     @ApiOperation("添加感器信息")

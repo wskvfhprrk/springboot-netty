@@ -26,13 +26,13 @@ public class SensorServiceImpl implements SensorService {
 
     @Cacheable(value = Constant.SENSOR_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
-    public List<Sensor> getByImei(String imei) {
+    public List<Sensor> findByImei(String imei) {
         return sensorRepository.getAllByImei(imei);
     }
 
     @Override
-    public Sensor getById(Long id) {
-        Sensor sensor = sensorRepository.getById(id);
+    public Sensor findById(Long id) {
+        Sensor sensor = sensorRepository.findById(id).orElse(null);
         return sensor;
     }
 
@@ -50,7 +50,7 @@ public class SensorServiceImpl implements SensorService {
 
     @Override
     public void delete(Long id) {
-        Sensor sensor = sensorRepository.getById(id);
+        Sensor sensor = sensorRepository.findById(id).orElse(null);
         redisTemplate.delete(Constant.SENSOR_CACHE_KEY + "::" + sensor.getImei());
         sensorRepository.deleteById(id);
     }

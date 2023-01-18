@@ -8,9 +8,9 @@ import com.hejz.entity.DtuInfo;
  * @Description:
  */
 public interface DtuInfoService {
-    DtuInfo getByImei(String imei);
+    DtuInfo findByImei(String imei);
 
-    DtuInfo getById(Long id);
+    DtuInfo findById(Long id);
 
     DtuInfo save(DtuInfo dtuInfo);
 

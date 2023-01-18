@@ -55,7 +55,7 @@ public class ProcessSensorReturnValue {
     public void start(ChannelHandlerContext ctx, byte[] bytes) {
         String imei = NettyServiceCommon.calculationImei(bytes);
         //同步每次轮询间隔时间
-        DtuInfo dtuInfo = dtuInfoService.getByImei(imei);
+        DtuInfo dtuInfo = dtuInfoService.findByImei(imei);
         if(dtuInfo==null){
             log.error("imei值:{}查询不到或没有注册，关闭通道",imei);
             ctx.channel().close();
@@ -63,7 +63,7 @@ public class ProcessSensorReturnValue {
             return;
         }
         Constant.INTERVAL_TIME_MAP.put(ctx.channel().id().toString(), dtuInfo.getIntervalTime());
-        int sensorsLength = sensorService.getByImei(imei).size();
+        int sensorsLength = sensorService.findByImei(imei).size();
         //计算当前时间与之前时间差值——如果没有注册信息，第一个值要把它加上30秒
         LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(dtuInfo.getIntervalTime() / 1000 + 30);
         LocalDateTime end = Constant.END_TIME_MAP.get(ctx.channel().id().toString()) == null ? dateIntervalTime : Constant.END_TIME_MAP.get(ctx.channel().id().toString());
@@ -111,7 +111,7 @@ public class ProcessSensorReturnValue {
         for (int i = 0; i < list.size(); i++) {
             Double aDouble = parseSensorOneData(list.get(i), i, ctx);
             String imei = NettyServiceCommon.calculationImei(list.get(0));
-            List<Sensor> sensors = sensorService.getByImei(imei);
+            List<Sensor> sensors = sensorService.findByImei(imei);
             Sensor sensor = sensors.get(i);
             SensorData sensorData = new SensorData(i, sensor.getName(), aDouble, sensor.getUnit());
             doubleList.add(sensorData);
@@ -154,12 +154,12 @@ public class ProcessSensorReturnValue {
         //获取数据值
         double d = Double.parseDouble(String.valueOf(x));
         String imei = NettyServiceCommon.calculationImei(bytes);
-        Sensor sensor = sensorService.getByImei(imei).get(arrayNumber);
+        Sensor sensor = sensorService.findByImei(imei).get(arrayNumber);
         //经过公式计算得到实际结果
         Double actualResults = calculateActualData(sensor.getCalculationFormula(), d);
         log.info(" 通道：{} imei==>{},{} =====> {}  ====> {}  ====> {}", ctx.channel().id().toString(), imei, arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
         //开新建程——异步处理根据解析到数据大小判断是否产生事件
-        if (dtuInfoService.getByImei(NettyServiceCommon.calculationImei(bytes)).getAutomaticAdjustment()) {
+        if (dtuInfoService.findByImei(NettyServiceCommon.calculationImei(bytes)).getAutomaticAdjustment()) {
             new Thread(() -> {
                 processRelayCommands.handleAccordingToRelayCommand(sensor, actualResults, ctx);
             }).start();

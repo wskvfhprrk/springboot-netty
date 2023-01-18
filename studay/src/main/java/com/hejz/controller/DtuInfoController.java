@@ -26,12 +26,12 @@ public class DtuInfoController {
     @ApiOperation("根据imei查询所有dtu信息")
     @GetMapping("all/{imei}")
     public DtuInfo getDtuInfoByImei(@PathVariable String imei){
-        return dtuInfoService.getByImei(imei);
+        return dtuInfoService.findByImei(imei);
     }
     @ApiOperation("根据id查询感器信息")
     @GetMapping("{id}")
     public DtuInfo getDtuInfoById(@PathVariable("id") Long id){
-        return dtuInfoService.getById(id);
+        return dtuInfoService.findById(id);
     }
     @ApiOperation("添加感器信息")
     @PostMapping

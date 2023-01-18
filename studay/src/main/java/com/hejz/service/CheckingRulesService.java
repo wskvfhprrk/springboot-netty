@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface CheckingRulesService {
 
-    CheckingRules getById(Integer id);
+    CheckingRules findById(Integer id);
 
     List<CheckingRules> getAll();
 

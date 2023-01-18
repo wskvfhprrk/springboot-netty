@@ -17,7 +17,7 @@ public interface SensorDataDbRepository extends JpaRepository<SensorDataDb, Date
 
     void deleteByImei(String imei);
 
-    SensorDataDb getById(Long id);
+    SensorDataDb findById(Long id);
 
     void deleteById(Long id);
 }

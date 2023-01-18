@@ -28,8 +28,8 @@ public class CommandStatusServiceImpl implements CommandStatusService {
 
     @Cacheable(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
-    public List<CommandStatus> getByImei(String imei) {
-        List<CommandStatus> collect = commandStatusRepository.getByImei(imei).stream()
+    public List<CommandStatus> findByImei(String imei) {
+        List<CommandStatus> collect = commandStatusRepository.findByImei(imei).stream()
                 .filter(commandStatus -> commandStatus.getStatus()).collect(Collectors.toList());
         if (collect.isEmpty()) {
             return null;
@@ -39,7 +39,7 @@ public class CommandStatusServiceImpl implements CommandStatusService {
     }
 
     @Override
-    public CommandStatus getById(Long id) {
+    public CommandStatus findById(Long id) {
         CommandStatus commandStatus = commandStatusRepository.findById(id).orElse(null);
         return commandStatus;
     }

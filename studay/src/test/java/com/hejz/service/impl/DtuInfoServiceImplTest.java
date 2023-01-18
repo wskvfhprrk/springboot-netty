@@ -12,12 +12,12 @@ class DtuInfoServiceImplTest {
     @Autowired
     private DtuInfoService dtuInfoService;
     @Test
-    void getByImei() {
+    void findByImei() {
     }
 
     @Test
-    void getById() {
-        DtuInfo dtuInfo = dtuInfoService.getById(1L);
+    void findById() {
+        DtuInfo dtuInfo = dtuInfoService.findById(1L);
         System.out.println(dtuInfo);
     }
 

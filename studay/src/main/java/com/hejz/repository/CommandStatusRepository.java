@@ -15,7 +15,7 @@ public interface CommandStatusRepository extends CrudRepository<CommandStatus,Lo
 
     void deleteByImei(String imei);
 
-    List<CommandStatus> getByImei(String imei);
+    List<CommandStatus> findByImei(String imei);
 
 
 //    CommandStatus update(CommandStatus commandStatus);

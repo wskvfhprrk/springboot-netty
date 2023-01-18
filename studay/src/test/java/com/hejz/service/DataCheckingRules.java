@@ -3,7 +3,7 @@ package com.hejz.service;
 import com.hejz.entity.Relay;
 
 public interface DataCheckingRules {
-    Relay getById(Integer id);
+    Relay findById(Integer id);
 
     Relay save(Relay relay);
 

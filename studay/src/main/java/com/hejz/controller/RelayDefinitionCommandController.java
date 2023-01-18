@@ -25,13 +25,13 @@ public class RelayDefinitionCommandController {
     @ApiOperation("根据imei查询所有继电器定义命令信息")
     @GetMapping("all/{imei}")
     public List<RelayDefinitionCommand> getRelayDefinitionCommandByImei(@PathVariable String imei) {
-        return relayDefinitionCommandService.getByImei(imei);
+        return relayDefinitionCommandService.findByImei(imei);
     }
 
     @ApiOperation("根据id查询感器信息")
     @GetMapping("{id}")
     public RelayDefinitionCommand getRelayDefinitionCommandById(@PathVariable("id") Long id) {
-        return relayDefinitionCommandService.getById(id);
+        return relayDefinitionCommandService.findById(id);
     }
 
     @ApiOperation("添加感器信息")
