@@ -5,6 +5,7 @@ import com.hejz.service.RelayService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class RelayController {
     @ApiOperation("根据imei查询所有感器信息")
     @GetMapping("all/{imei}")
     public List<Relay> getRelayByImei(@PathVariable String imei) {
-        return relayService.findByImei(imei);
+        return relayService.findAllByImei(imei);
     }
 
     @ApiOperation("根据id查询感器信息")
@@ -54,6 +55,7 @@ public class RelayController {
 
     @ApiOperation("根据imei删除所有感器信息")
     @DeleteMapping("deleteAllByImei/{imei}")
+    @Transactional
     public void deleteAllByImei(@PathVariable("imei") String imei) {
         relayService.deleteAllByImei(imei);
     }

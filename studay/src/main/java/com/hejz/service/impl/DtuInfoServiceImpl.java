@@ -9,6 +9,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -24,7 +27,7 @@ public class DtuInfoServiceImpl implements DtuInfoService {
 
     @Cacheable(value = Constant.DTU_INFO_CACHE_KEY, key = "#p0",unless="#result == null")
     @Override
-    public DtuInfo findByImei(String imei) {
+    public List<DtuInfo> findAllByImei(String imei) {
         return dtuInfoRepository.getAllByImei(imei);
     }
 
@@ -54,6 +57,7 @@ public class DtuInfoServiceImpl implements DtuInfoService {
 
     @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#p0")
     @Override
+    @Transactional
     public void deleteAllByImei(String imei) {
         dtuInfoRepository.deleteAllByImei(imei);
     }

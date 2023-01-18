@@ -11,7 +11,8 @@ import java.util.List;
  * author: hejz
  * data: 2022-5-9
  */
-public interface RelayRepository extends CrudRepository<Relay,Long>,JpaSpecificationExecutor<Relay> {
+public interface RelayRepository extends CrudRepository<Relay, Long>, JpaSpecificationExecutor<Relay> {
+
     List<Relay> getAllByImei(String imei);
 
     void deleteAllByImei(String imei);

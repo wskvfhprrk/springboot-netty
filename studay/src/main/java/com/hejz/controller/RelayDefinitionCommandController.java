@@ -5,6 +5,7 @@ import com.hejz.service.RelayDefinitionCommandService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,6 +55,7 @@ public class RelayDefinitionCommandController {
 
     @ApiOperation("根据imei删除所有感器信息")
     @DeleteMapping("deleteAllByImei/{imei}")
+    @Transactional
     public void deleteAllByImei(@PathVariable("imei") String imei) {
         relayDefinitionCommandService.deleteAllByImei(imei);
     }

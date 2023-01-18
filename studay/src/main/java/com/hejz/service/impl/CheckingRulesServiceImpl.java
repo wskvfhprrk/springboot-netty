@@ -6,9 +6,14 @@ import com.hejz.repository.DataCheckingRulesRepository;
 import com.hejz.service.CheckingRulesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 
@@ -33,7 +38,8 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
 
     @Override
     public List<CheckingRules> getAll() {
-        return dataCheckingRulesRepository.findAll();
+        Specification<CheckingRules> spec= (root, query, criteriaBuilder) -> null;
+        return dataCheckingRulesRepository.findAll(spec);
     }
 
     @Cacheable(value = Constant.CHECKING_RULES_CACHE_KEY, key = "#p0", unless = "#result == null")

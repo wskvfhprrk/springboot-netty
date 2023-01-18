@@ -9,6 +9,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +67,7 @@ public class CommandStatusServiceImpl implements CommandStatusService {
 
     @CacheEvict(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#p0")
     @Override
+    @Transactional
     public void deleteAllByImei(String imei) {
         //查询当前所有状态，历史的不用查询了
         commandStatusRepository.deleteAllByImei(imei);

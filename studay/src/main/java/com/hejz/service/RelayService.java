@@ -10,7 +10,7 @@ import java.util.List;
  * @Description:
  */
 public interface RelayService {
-    List<Relay> findByImei(String imei);
+    List<Relay> findAllByImei(String imei);
 
     Relay findById(Long id);
 

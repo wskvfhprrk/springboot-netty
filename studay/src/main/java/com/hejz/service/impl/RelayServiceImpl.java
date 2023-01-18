@@ -9,6 +9,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class RelayServiceImpl implements RelayService {
 
     @Cacheable(value = Constant.RELAY_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
-    public List<Relay> findByImei(String imei) {
+    public List<Relay> findAllByImei(String imei) {
         return selayRepository.getAllByImei(imei);
     }
 
@@ -59,6 +60,7 @@ public class RelayServiceImpl implements RelayService {
 
     @CacheEvict(value = Constant.RELAY_CACHE_KEY, key = "#p0")
     @Override
+    @Transactional
     public void deleteAllByImei(String imei) {
         selayRepository.deleteAllByImei(imei);
     }

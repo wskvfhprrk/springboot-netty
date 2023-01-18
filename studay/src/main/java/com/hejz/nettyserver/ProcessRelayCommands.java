@@ -1,8 +1,5 @@
 package com.hejz.nettyserver;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hejz.common.Constant;
 import com.hejz.entity.CommandStatus;
 import com.hejz.entity.Relay;
@@ -18,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.rmi.CORBA.ValueHandler;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -133,7 +129,7 @@ public class ProcessRelayCommands {
     private void sendRelayCommandAccordingToLayIds(ChannelHandlerContext ctx, RelayDefinitionCommand
             relayDefinitionCommand) {
         String[] r = relayDefinitionCommand.getRelayIds().split(",");
-        List<Relay> relayList = relayService.findByImei(relayDefinitionCommand.getImei());
+        List<Relay> relayList = relayService.findAllByImei(relayDefinitionCommand.getImei());
         for (String s : r) {
             String[] s1 = s.split("-");
             loop:
