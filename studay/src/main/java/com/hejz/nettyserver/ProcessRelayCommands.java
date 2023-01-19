@@ -70,6 +70,9 @@ public class ProcessRelayCommands {
         Object o = redisTemplate.opsForValue().get(key);
         if (o == null) return;
         RelayDefinitionCommand relayDefinitionCommand = (RelayDefinitionCommand) o;
+        //处理过对应id锁:的不需要再次处理--有可能出现重复情况
+        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(Constant.PROCESSED_THE_CORRESPONDING_ID_LOCK + "::" + ctx.channel().id().toString()+ "::" + relayDefinitionCommand.getCorrespondingCommandId(), "1", Duration.ofSeconds(10L));
+        if(!aBoolean)return;
         //添加修改命令状态
         List<CommandStatus> commandStatuses = commandStatusService.findAllByImei(relayDefinitionCommand.getImei());
         if (commandStatuses != null && !commandStatuses.isEmpty()) {
@@ -78,11 +81,12 @@ public class ProcessRelayCommands {
             if (commandStatusOptional.isPresent()) {
                 CommandStatus commandStatus = commandStatusOptional.get();
                 commandStatus.setStatus(false);
+                commandStatus.setUpdateDate(new Date());
                 commandStatusService.update(commandStatus);
             }
         }
         //保存当前状态
-        commandStatusService.save(new CommandStatus(relayDefinitionCommand.getImei(), relayDefinitionCommand.getId(), new Date(), true));
+        commandStatusService.save(new CommandStatus(imei, relayDefinitionCommand.getId(),new Date(),new Date(),true));
         Long commonId = relayDefinitionCommand.getCommonId();
         //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand
         RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.findByImei(imei).stream()
