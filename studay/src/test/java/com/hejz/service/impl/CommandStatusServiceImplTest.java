@@ -45,7 +45,7 @@ class CommandStatusServiceImplTest {
     @Order(1)
     @Test
     void save() {
-        commandStatusService.save(new CommandStatus(imei, 1L,new Date(),true));
+        commandStatusService.save(new CommandStatus(imei, 1L,new Date(),new Date(),true));
         Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
         Assert.isNull(o, "缓存中应该无值！");
     }

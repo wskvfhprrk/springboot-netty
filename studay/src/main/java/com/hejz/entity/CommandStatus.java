@@ -55,16 +55,23 @@ public class CommandStatus implements Serializable {
     )
     private Date createDate;
     @Column(
+            name = "update_date",
+            nullable = false,
+            columnDefinition="datetime"+" COMMENT '修改时间'"
+    )
+    private Date updateDate;
+    @Column(
             name = "status",
             nullable = false,
             columnDefinition="bit"+" COMMENT '当前状态——true是新的状态，false是过期的状态'"
     )
     private Boolean status;
 
-    public CommandStatus(String imei, Long commonId, Date createDate, Boolean status) {
+    public CommandStatus(String imei, Long commonId, Date createDate,Date updateDate, Boolean status) {
         this.imei = imei;
         this.commonId = commonId;
         this.createDate = createDate;
+        this.updateDate = updateDate;
         this.status = status;
     }
 }

@@ -29,8 +29,8 @@ public class Constant {
     public static final Map<String, List<byte[]>> SENSOR_DATA_BYTE_LIST_MAP = new HashMap<>();
     //记录三次临界值才执行——key为ctx.channel().id()+min或max
     public static final Map<String,List<Double>> THREE_RECORDS_MAP = new HashMap();
-    //继电器状态值记录——key为ctx.channel().id()
-    public static final Map<Long, Integer> COMMAND_STATUS_MAP = new HashMap<>();
+    //已处理相应的ID锁
+    public static final String PROCESSED_THE_CORRESPONDING_ID_LOCK = "processedTheCorrespondingIdLock";
     //IMEI长度
     public static final int IMEI_LENGTH = 15;
     //dut注册bytes长度

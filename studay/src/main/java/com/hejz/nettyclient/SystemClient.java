@@ -81,7 +81,7 @@ public class SystemClient {
         List<String> instructionsSent = new ArrayList<>();
         //空气温度,空气湿度,土壤PH,土壤温度,土壤湿度,土壤氮,土壤磷,土壤钾,土壤电导率
         //一般缩小10倍是真实数据
-        List<Integer> data = Arrays.asList(100, 610, 1200, 70, 300, 30, 30, 170, 20);
+        List<Integer> data = Arrays.asList(300, 610, 1200, 70, 300, 30, 30, 170, 20);
         for (int i = 0; i < data.size(); i++) {
             instructionsSent.add(calculateRrc16ValidatedData("020302", data.get(i)));
         }

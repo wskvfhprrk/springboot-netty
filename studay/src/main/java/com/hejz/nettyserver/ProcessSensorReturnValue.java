@@ -93,7 +93,6 @@ public class ProcessSensorReturnValue {
             }
             //需要重置数据
             Constant.SENSOR_DATA_BYTE_LIST_MAP.remove(ctx.channel().id().toString());
-//            Constant.END_TIME_MAP.remove(ctx.channel().id().toString());
         }
         Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now());
     }

@@ -89,7 +89,7 @@ public class InitController {
         //处理dtu信息
         dtuInfoRepository.save(new DtuInfo(imei, 89, 15, 7, 7, 2, 30000, true, "1,2,3"));
         //状态管理
-        commandStatusRepository.save(new CommandStatus(imei,i*3+2L,new Date(),true));
+        commandStatusRepository.save(new CommandStatus(imei,i*3+2L,new Date(),new Date(),true));
     }
 
 }

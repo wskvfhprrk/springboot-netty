@@ -46,14 +46,14 @@ public class CommandStatusServiceImpl implements CommandStatusService {
         return commandStatus;
     }
 
-    @CacheEvict(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#result.imei")
+    @CacheEvict(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#p0.imei")
     @Override
     public CommandStatus save(CommandStatus commandStatus) {
-        commandStatus.setId(null);
+//        commandStatus.setId(null);
         return commandStatusRepository.save(commandStatus);
     }
 
-    @CacheEvict(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#result.imei")
+    @CacheEvict(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#p0.imei")
     @Override
     public CommandStatus update(CommandStatus commandStatus) {
         return commandStatusRepository.save(commandStatus);
