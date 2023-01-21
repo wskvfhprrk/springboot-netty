@@ -102,6 +102,7 @@ public class SystemClient {
             }
             try {
                 int time = Constant.INTERVAL_TIME_MAP.get(future.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(future.channel().id().toString());
+                log.info("time=={}",time);
                 Thread.sleep(time);
             } catch (InterruptedException e) {
                 e.printStackTrace();

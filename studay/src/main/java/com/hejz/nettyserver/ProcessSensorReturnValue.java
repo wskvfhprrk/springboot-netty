@@ -77,10 +77,12 @@ public class ProcessSensorReturnValue {
             sensorDataByteList = new ArrayList<>(sensorsLength);
             sensorDataByteList.add(bytes);
             Constant.SENSOR_DATA_BYTE_LIST_MAP.put(ctx.channel().id().toString(), sensorDataByteList);
+            Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now());
         } else {
             sensorDataByteList = Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString());
             sensorDataByteList.add(bytes);
             Constant.SENSOR_DATA_BYTE_LIST_MAP.put(ctx.channel().id().toString(), sensorDataByteList);
+            Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now());
         }
         if (Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()).size() == sensorsLength) {
             log.info("========={}=>{}=>解析一组出数据===========", ctx.channel().id().toString(), dtuId);
@@ -94,7 +96,7 @@ public class ProcessSensorReturnValue {
             //需要重置数据
             Constant.SENSOR_DATA_BYTE_LIST_MAP.remove(ctx.channel().id().toString());
         }
-        Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now());
+
     }
 
     /**

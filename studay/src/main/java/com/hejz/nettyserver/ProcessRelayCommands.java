@@ -117,7 +117,7 @@ public class ProcessRelayCommands {
             Optional<CommandStatus> optionalCommandStatus = commandStatuses.stream().filter(c -> c.getCommonId().equals(relayDefinitionCommand.getId())).findFirst();
             if (optionalCommandStatus.isPresent()) {
                 //如果状态存在，就不发送命令了
-                log.info("imei:{} 当前状态已经存在，不需要重复发送指令：{}", relayDefinitionCommand.getDtuId(), relayDefinitionCommand);
+                log.info("dtuId:{} 当前状态已经存在，不需要重复发送指令：{}", relayDefinitionCommand.getDtuId(), relayDefinitionCommand);
                 return;
             }
         }

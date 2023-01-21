@@ -41,7 +41,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
                     ctx.channel().close();
                     break;
                 case WRITER_IDLE:
-                    log.info("写空闲,发送心跳包给客户端：00 00");
+                    log.info("发送心跳包给客户端：00 00");
                     //根据检查频率和实际情况写空闲时发送心跳包给客户端——60秒,如果不存活的通道就不发送了
                     if (ctx.channel().isActive()) {
                         NettyServiceCommon.write("0000", ctx);
