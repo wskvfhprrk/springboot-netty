@@ -37,11 +37,11 @@ public class Relay implements Serializable {
     private Long id;
 
     @Column(
-            name = "imei",
+            name = "dtu_id",
             nullable = false,
-            columnDefinition="varchar(15)"+" COMMENT 'imei'"
+            columnDefinition="bigint"+" COMMENT 'dtuId'"
     )
-    private String imei;
+    private Long dtuId;
     /**
      * 感应器编号地址——发出接收时指令地址位（每个感应器都有一个地址位的）
      */
@@ -94,8 +94,8 @@ public class Relay implements Serializable {
     )
     private String remark;
 
-    public Relay( String imei, Integer adrss, String name, String opneHex, String closeHex, String url, String remark) {
-        this.imei = imei;
+    public Relay( Long dtuId, Integer adrss, String name, String opneHex, String closeHex, String url, String remark) {
+        this.dtuId = dtuId;
         this.adrss = adrss;
         this.name = name;
         this.opneHex = opneHex;

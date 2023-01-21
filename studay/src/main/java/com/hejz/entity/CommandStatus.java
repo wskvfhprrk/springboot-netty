@@ -37,11 +37,11 @@ public class CommandStatus implements Serializable {
     )
     private Long id;
     @Column(
-            name = "imei",
+            name = "dtu_id",
             nullable = false,
-            columnDefinition="varchar(15)"+" COMMENT 'imei'"
+            columnDefinition="bigint"+" COMMENT 'dtuId'"
     )
-    private String imei;
+    private Long dtuId;
     @Column(
             name = "common_id",
             nullable = false,
@@ -67,8 +67,8 @@ public class CommandStatus implements Serializable {
     )
     private Boolean status;
 
-    public CommandStatus(String imei, Long commonId, Date createDate,Date updateDate, Boolean status) {
-        this.imei = imei;
+    public CommandStatus(Long dtuId, Long commonId, Date createDate,Date updateDate, Boolean status) {
+        this.dtuId = dtuId;
         this.commonId = commonId;
         this.createDate = createDate;
         this.updateDate = updateDate;

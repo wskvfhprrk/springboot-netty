@@ -57,10 +57,10 @@ public class ProcessRelayCommands {
      * @param bytes
      */
     void start(ChannelHandlerContext ctx, byte[] bytes) {
-        String imei = NettyServiceCommon.calculationImei(bytes);
+        Long dtuId = NettyServiceCommon.calculationImei(bytes);
         //把数据bytes转化为string
         String useData = sensorDataToString(bytes);
-        log.info("通道：{} imei={}  继电器返回值：{}", ctx.channel().id().toString(), imei, useData);
+        log.info("通道：{} dtuId={}  继电器返回值：{}", ctx.channel().id().toString(), dtuId, useData);
         if (!NettyServiceCommon.testingData(bytes)) {
             log.error("继电器返回值：{}校验不通过！", HexConvert.BinaryToHexString(bytes));
             return;
@@ -74,7 +74,7 @@ public class ProcessRelayCommands {
         Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(Constant.PROCESSED_THE_CORRESPONDING_ID_LOCK + "::" + ctx.channel().id().toString()+ "::" + relayDefinitionCommand.getCorrespondingCommandId(), "1", Duration.ofSeconds(5L));
         if(!aBoolean)return;
         //添加修改命令状态
-        List<CommandStatus> commandStatuses = commandStatusService.findAllByImei(relayDefinitionCommand.getImei());
+        List<CommandStatus> commandStatuses = commandStatusService.findAllByDtuId(relayDefinitionCommand.getDtuId());
         if (commandStatuses != null && !commandStatuses.isEmpty()) {
             //把其状态置为false——过去时的
             Optional<CommandStatus> commandStatusOptional = commandStatuses.stream().filter(commandStatus -> commandStatus.getCommonId().equals(relayDefinitionCommand.getCorrespondingCommandId())).findFirst();
@@ -86,10 +86,10 @@ public class ProcessRelayCommands {
             }
         }
         //保存当前状态
-        commandStatusService.save(new CommandStatus(imei, relayDefinitionCommand.getId(),new Date(),new Date(),true));
+        commandStatusService.save(new CommandStatus(dtuId, relayDefinitionCommand.getId(),new Date(),new Date(),true));
         Long commonId = relayDefinitionCommand.getCommonId();
         //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand
-        RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.findByImei(imei).stream()
+        RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.findByAllDtuId(dtuId).stream()
                 .filter(r -> r.getId().equals(commonId)).findFirst().get();
         ctx.channel().eventLoop().schedule(() -> {
             log.info("通道==》{}开始延时任务，延时：{}", ctx.channel().id().toString(), relayDefinitionCommand1.getProcessingWaitingTime());
@@ -107,17 +107,17 @@ public class ProcessRelayCommands {
     void relayCommandData(Sensor sensor, Long id, ChannelHandlerContext ctx) {
         if (id == null || id.equals("0")) return;
         //编辑继电器指令
-        Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.findByImei(sensor.getImei()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(id)).findFirst();
+        Optional<RelayDefinitionCommand> first = relayDefinitionCommandService.findByAllDtuId(sensor.getDtuId()).stream().filter(relayDefinitionCommand -> relayDefinitionCommand.getId().equals(id)).findFirst();
         if (!first.isPresent()) return;
         RelayDefinitionCommand relayDefinitionCommand = first.get();
         log.info("通道：{}，指令为：{},getRelayIds:{}", ctx.channel().id().toString(), relayDefinitionCommand.getName(), relayDefinitionCommand.getRelayIds());
         //判断当前状态是否一致，如果一致则不往继电器发送状态了；
-        List<CommandStatus> commandStatuses = commandStatusService.findAllByImei(relayDefinitionCommand.getImei());
+        List<CommandStatus> commandStatuses = commandStatusService.findAllByDtuId(relayDefinitionCommand.getDtuId());
         if (commandStatuses != null && !commandStatuses.isEmpty()) {
             Optional<CommandStatus> optionalCommandStatus = commandStatuses.stream().filter(c -> c.getCommonId().equals(relayDefinitionCommand.getId())).findFirst();
             if (optionalCommandStatus.isPresent()) {
                 //如果状态存在，就不发送命令了
-                log.info("imei:{} 当前状态已经存在，不需要重复发送指令：{}", relayDefinitionCommand.getImei(), relayDefinitionCommand);
+                log.info("imei:{} 当前状态已经存在，不需要重复发送指令：{}", relayDefinitionCommand.getDtuId(), relayDefinitionCommand);
                 return;
             }
         }
@@ -133,7 +133,7 @@ public class ProcessRelayCommands {
     private void sendRelayCommandAccordingToLayIds(ChannelHandlerContext ctx, RelayDefinitionCommand
             relayDefinitionCommand) {
         String[] r = relayDefinitionCommand.getRelayIds().split(",");
-        List<Relay> relayList = relayService.findAllByImei(relayDefinitionCommand.getImei());
+        List<Relay> relayList = relayService.findAllByDtuId(relayDefinitionCommand.getDtuId());
         for (String s : r) {
             String[] s1 = s.split("-");
             loop:

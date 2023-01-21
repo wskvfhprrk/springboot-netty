@@ -14,7 +14,5 @@ import java.util.List;
  */
 public interface CommandStatusRepository extends CrudRepository<CommandStatus,Long>,JpaSpecificationExecutor<CommandStatus> {
 
-
-    List<CommandStatus> findAllByImei(String imei);
-
+    List<CommandStatus>  findAllByDtuId(Long dtuId);
 }

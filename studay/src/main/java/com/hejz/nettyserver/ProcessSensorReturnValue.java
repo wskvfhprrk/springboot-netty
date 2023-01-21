@@ -51,27 +51,29 @@ public class ProcessSensorReturnValue {
      * @param bytes 收到byte[]信息
      */
     public void start(ChannelHandlerContext ctx, byte[] bytes) {
-        String imei = NettyServiceCommon.calculationImei(bytes);
+        Long dtuId = NettyServiceCommon.calculationImei(bytes);
         //同步每次轮询间隔时间
-        List<DtuInfo> dtuInfo = dtuInfoService.findAllByImei(imei);
-        if(dtuInfo.isEmpty()){
-            log.error("imei值:{}查询不到或没有注册，关闭通道",imei);
+        DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
+        if(dtuInfo==null){
+            log.error("imei值:{}查询不到或没有注册，关闭通道",dtuId);
             ctx.channel().close();
             Constant.CHANNEL_GROUP.remove(ctx);
             return;
         }
-        Constant.INTERVAL_TIME_MAP.put(ctx.channel().id().toString(), dtuInfo.get(0).getIntervalTime());
-        int sensorsLength = sensorService.findAllByImei(imei).size();
+        Constant.INTERVAL_TIME_MAP.put(ctx.channel().id().toString(), dtuInfo.getIntervalTime());
+        int sensorsLength = sensorService.findAllByDtuId(dtuId).size();
         //计算当前时间与之前时间差值——如果没有注册信息，第一个值要把它加上30秒
-        LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(dtuInfo.get(0).getIntervalTime() / 1000 + 30);
+        LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(dtuInfo.getIntervalTime() / 1000 + 30);
+        //首次end时间为空值
         LocalDateTime end = Constant.END_TIME_MAP.get(ctx.channel().id().toString()) == null ? dateIntervalTime : Constant.END_TIME_MAP.get(ctx.channel().id().toString());
         Duration duration = Duration.between(end, LocalDateTime.now());
         long millis = duration.toMillis();
         List<byte[]> sensorDataByteList;
         //必须检测是有用的数据才可以，如果不能够使用才不可以
         if (!NettyServiceCommon.testingData(bytes)) return;
-        if (millis >= dtuInfo.get(0).getIntervalTime()) {
-            log.info("======={}=>{}==>查询一组出数据===========", ctx.channel().id().toString(), imei);
+        log.info("millis=={},dtuInfo.getIntervalTime()=={}",millis,dtuInfo.getIntervalTime());
+        if (millis >= dtuInfo.getIntervalTime()) {
+            log.info("======={}=>{}==>查询一组出数据===========", ctx.channel().id().toString(), dtuId);
             sensorDataByteList = new ArrayList<>(sensorsLength);
             sensorDataByteList.add(bytes);
             Constant.SENSOR_DATA_BYTE_LIST_MAP.put(ctx.channel().id().toString(), sensorDataByteList);
@@ -81,11 +83,11 @@ public class ProcessSensorReturnValue {
             Constant.SENSOR_DATA_BYTE_LIST_MAP.put(ctx.channel().id().toString(), sensorDataByteList);
         }
         if (Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()).size() == sensorsLength) {
-            log.info("========={}=>{}=>解析一组出数据===========", ctx.channel().id().toString(), imei);
+            log.info("========={}=>{}=>解析一组出数据===========", ctx.channel().id().toString(), dtuId);
             try {
                 List<SensorData> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
                 //插入数据库
-                insertDatabase(imei, sensorDataList);
+                insertDatabase(dtuId, sensorDataList);
             } catch (Exception e) {
                 log.info(e.toString());
             }
@@ -107,8 +109,8 @@ public class ProcessSensorReturnValue {
         //按顺序解析，根据sensor顺序解析找对应关系
         for (int i = 0; i < list.size(); i++) {
             Double aDouble = parseSensorOneData(list.get(i), i, ctx);
-            String imei = NettyServiceCommon.calculationImei(list.get(0));
-            List<Sensor> sensors = sensorService.findAllByImei(imei);
+            Long dtuId = NettyServiceCommon.calculationImei(list.get(0));
+            List<Sensor> sensors = sensorService.findAllByDtuId(dtuId);
             Sensor sensor = sensors.get(i);
             SensorData sensorData = new SensorData(i, sensor.getName(), aDouble, sensor.getUnit());
             doubleList.add(sensorData);
@@ -119,10 +121,10 @@ public class ProcessSensorReturnValue {
     /**
      * 添加到数据库中
      *
-     * @param imei
+     * @param dtuId
      * @param sensorDataList
      */
-    private void insertDatabase(String imei, List<SensorData> sensorDataList) throws Exception {
+    private void insertDatabase(Long dtuId, List<SensorData> sensorDataList) throws Exception {
         List<String> nameList = sensorDataList.stream().map(sensorData -> sensorData.getName().trim()).collect(Collectors.toList());
         String names = StringUtils.join(nameList, ",");
         List<String> dataList = sensorDataList.stream().map(sensorData -> sensorData.getData().toString()).collect(Collectors.toList());
@@ -130,7 +132,7 @@ public class ProcessSensorReturnValue {
         List<String> unitList = sensorDataList.stream().map(sensorData -> sensorData.getUnit()).collect(Collectors.toList());
         String units = StringUtils.join(unitList, ",");
         //存进数据
-        SensorDataDb sensorDataDb = new SensorDataDb(new Date(), imei, names, data, units);
+        SensorDataDb sensorDataDb = new SensorDataDb(new Date(), dtuId, names, data, units);
         sensorDataDbService.save(sensorDataDb);
     }
 
@@ -150,13 +152,13 @@ public class ProcessSensorReturnValue {
         Integer x = calculateReturnValue(useBytes);
         //获取数据值
         double d = Double.parseDouble(String.valueOf(x));
-        String imei = NettyServiceCommon.calculationImei(bytes);
-        Sensor sensor = sensorService.findAllByImei(imei).get(arrayNumber);
+        Long dtuId = NettyServiceCommon.calculationImei(bytes);
+        Sensor sensor = sensorService.findAllByDtuId(dtuId).get(arrayNumber);
         //经过公式计算得到实际结果
         Double actualResults = calculateActualData(sensor.getCalculationFormula(), d);
-        log.info(" 通道：{} imei==>{},{} =====> {}  ====> {}  ====> {}", ctx.channel().id().toString(), imei, arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
+        log.info(" 通道：{} dtuId==>{},{} =====> {}  ====> {}  ====> {}", ctx.channel().id().toString(), dtuId, arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
         //开新建程——异步处理根据解析到数据大小判断是否产生事件
-        if (dtuInfoService.findAllByImei(NettyServiceCommon.calculationImei(bytes)).get(0).getAutomaticAdjustment()) {
+        if (dtuInfoService.findById(NettyServiceCommon.calculationImei(bytes)).getAutomaticAdjustment()) {
             new Thread(() -> {
                 processRelayCommands.handleAccordingToRelayCommand(sensor, actualResults, ctx);
             }).start();

@@ -27,7 +27,7 @@ class DtuInfoServiceImplTest {
     @Order(5)
     @Test
     void findByImei() {
-        List<DtuInfo> dtuInfo = dtuInfoService.findAllByImei(imei);
+        DtuInfo dtuInfo = dtuInfoService.findAllByImei(imei);
         Assert.notNull(dtuInfo, "数据库中有值");
         Object o = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
         Assert.notNull(o, "缓存中有值！");
@@ -46,8 +46,8 @@ class DtuInfoServiceImplTest {
         dtuInfoService.save(new DtuInfo(imei,1,1,1,1,1,1,true,"1"));
         Object o = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
         Assert.isNull(o, "缓存中应该无值！");
-        List<DtuInfo> dtuInfos = dtuInfoService.findAllByImei(imei);
-        Assert.isTrue(dtuInfos.size() == 2, "测试其元素为2个");
+        DtuInfo dtuInfos = dtuInfoService.findAllByImei(imei);
+//        Assert.isTrue(dtuInfos.size() == 2, "测试其元素为2个");
         Object o1 = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
         Assert.notNull(o1, "缓存中有值！");
     }
@@ -61,8 +61,8 @@ class DtuInfoServiceImplTest {
         Assert.isTrue(update.getAddrs().equals("2"), "修改值成功");
         Object o = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
         Assert.isNull(o, "缓存中应该无值！");
-        List<DtuInfo> dtuInfos = dtuInfoService.findAllByImei(imei);
-        Assert.isTrue(dtuInfos.size() == 2, "测试其元素为2个");
+        DtuInfo dtuInfos = dtuInfoService.findAllByImei(imei);
+//        Assert.isTrue(dtuInfos.size() == 2, "测试其元素为2个");
         Object o1 = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
         Assert.notNull(o1, "缓存中有值！");
     }
@@ -73,21 +73,10 @@ class DtuInfoServiceImplTest {
         dtuInfoService.delete(1L);
         Object o = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
         Assert.isNull(o, "缓存中应该无值！");
-        List<DtuInfo> dtuInfos = dtuInfoService.findAllByImei(imei);
-        Assert.isTrue(dtuInfos.size() == 1, "测试其元素为1个");
+        DtuInfo dtuInfos = dtuInfoService.findAllByImei(imei);
+//        Assert.isTrue(dtuInfos.size() == 1, "测试其元素为1个");
         Object o1 = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
         Assert.notNull(o1, "缓存中有值！");
     }
 
-    @Order(6)
-    @Test
-    void deleteAllByImei() {
-        dtuInfoService.deleteAllByImei(imei);
-        Object o = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
-        Assert.isNull(o, "缓存中应该无值！");
-        List<DtuInfo> dtuInfos = dtuInfoService.findAllByImei(imei);
-        Assert.isTrue(dtuInfos.isEmpty(), "应该为空值");
-        Object o1 = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
-        Assert.isTrue(dtuInfos.isEmpty(), "应该为空值");
-    }
 }

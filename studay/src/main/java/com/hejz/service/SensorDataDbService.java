@@ -11,9 +11,9 @@ import java.util.List;
  * @Description:
  */
 public interface SensorDataDbService {
-    List<SensorDataDb> getSensorDataDbByImei(String imei);
+    List<SensorDataDb> findAllByDtuId(Long dtuId);
 
-    SensorDataDb getSensorDataDbById(Long id);
+    SensorDataDb getById(Long id);
 
     SensorDataDb save(SensorDataDb dtuInfo);
 
@@ -21,5 +21,5 @@ public interface SensorDataDbService {
 
     void delete(Long id);
 
-    void deleteAllByImei(String imei);
+    void deleteAllByDtuId(Long dtuId);
 }

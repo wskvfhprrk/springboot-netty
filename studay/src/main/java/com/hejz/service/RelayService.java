@@ -10,7 +10,7 @@ import java.util.List;
  * @Description:
  */
 public interface RelayService {
-    List<Relay> findAllByImei(String imei);
+    List<Relay> findAllByDtuId(Long dtuId);
 
     Relay findById(Long id);
 
@@ -20,5 +20,5 @@ public interface RelayService {
 
     void delete(Long id);
 
-    void deleteAllByImei(String imei);
+    void deleteAlByDtuId(Long dtuId);
 }

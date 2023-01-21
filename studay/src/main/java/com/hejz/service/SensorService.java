@@ -10,7 +10,7 @@ import java.util.List;
  * @Description:
  */
 public interface SensorService {
-    List<Sensor> findAllByImei(String imei);
+    List<Sensor> findAllByDtuId(Long dtuId);
 
     Sensor findById(Long id);
 
@@ -20,5 +20,5 @@ public interface SensorService {
 
     void delete(Long id);
 
-    void deleteAllByImei(String imei);
+    void deleteAllByDtuId(Long dtuId);
 }

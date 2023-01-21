@@ -41,11 +41,11 @@ public class SensorDataDb implements Serializable {
     )
     private Date createDate;
     @Column(
-            name = "imei",
+            name = "dtu_id",
             nullable = false,
-            columnDefinition="varchar(15)"+" COMMENT 'imei'"
+            columnDefinition="bigint"+" COMMENT 'dtuId'"
     )
-    private String imei;
+    private Long dtuId;
     @Column(
             name = "names",
             nullable = false,
@@ -65,9 +65,9 @@ public class SensorDataDb implements Serializable {
     )
     private String units;
 
-    public SensorDataDb(Date createDate, String imei, String names, String data, String units) {
+    public SensorDataDb(Date createDate, Long dtuId, String names, String data, String units) {
         this.createDate=createDate;
-        this.imei=imei;
+        this.dtuId=dtuId;
         this.names=names;
         this.data=data;
         this.units=units;

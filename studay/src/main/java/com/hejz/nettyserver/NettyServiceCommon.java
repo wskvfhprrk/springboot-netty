@@ -48,16 +48,18 @@ public class NettyServiceCommon {
 
 
     /**
-     * 计算imei
+     * 计算dtuId
      *
      * @param bytes
      * @return
      */
-    public static String calculationImei(byte[] bytes) {
+    public static Long calculationImei(byte[] bytes) {
         byte[] imeiBytes = new byte[Constant.IMEI_LENGTH];
         System.arraycopy(bytes, 0, imeiBytes, 0, Constant.IMEI_LENGTH);
         // TODO: 2023/1/13 BinaryToHexString要改为convertHexToString无空格的ASCII码
-        return HexConvert.hexStringToString(HexConvert.BinaryToHexString(imeiBytes).replaceAll(" ", ""));
+        String imei = HexConvert.hexStringToString(HexConvert.BinaryToHexString(imeiBytes).replaceAll(" ", ""));
+        DtuInfo dtuInfo = dtuInfoService.findAllByImei(imei.trim());
+        return dtuInfo.getId();
     }
 
     /**
@@ -68,10 +70,10 @@ public class NettyServiceCommon {
      */
     public static boolean testingData(byte[] bytes) {
         //1、必须注册过的imei值——查dtuInfo看有没有
-        String imei = NettyServiceCommon.calculationImei(bytes);
-        List<DtuInfo> dtuInfo = dtuInfoService.findAllByImei(imei);
-        if (dtuInfo.isEmpty()) {
-            log.error("bytes：{}校验通不过——查无imei值：{}", HexConvert.BinaryToHexString(bytes), imei);
+        Long dtuId = NettyServiceCommon.calculationImei(bytes);
+        DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
+        if (dtuInfo==null) {
+            log.error("bytes：{}校验通不过——查无imei值：{}", HexConvert.BinaryToHexString(bytes), dtuId);
             return false;
         }
         //todo 2、数据校检规则校验

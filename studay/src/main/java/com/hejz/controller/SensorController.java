@@ -22,13 +22,11 @@ public class SensorController {
 
     @Autowired
     private SensorService sensorService;
-    @Autowired
-    private RedisTemplate redisTemplate;
 
-    @ApiOperation("根据imei查询所有感器信息")
-    @GetMapping("all/{imei}")
-    public List<Sensor> getSensorByImei(@PathVariable String imei) {
-        return sensorService.findAllByImei(imei);
+    @ApiOperation("根据dtuId查询所有感器信息")
+    @GetMapping("all/{dtuId}")
+    public List<Sensor> findAllByDtuId(@PathVariable Long dtuId) {
+        return sensorService.findAllByDtuId(dtuId);
     }
 
     @ApiOperation("根据id查询感器信息")
@@ -55,9 +53,9 @@ public class SensorController {
         sensorService.delete(id);
     }
 
-    @ApiOperation("根据imei删除所有感器信息")
-    @DeleteMapping("deleteAllByImei/{imei}")
-    public void deleteAllByImei(@PathVariable("imei") String imei) {
-        sensorService.deleteAllByImei(imei);
+    @ApiOperation("根据dtuId删除所有感器信息")
+    @DeleteMapping("deleteAllByImei/{dtuId}")
+    public void deleteAllByImei(@PathVariable("dtuId") Long dtuId) {
+        sensorService.deleteAllByDtuId(dtuId);
     }
 }

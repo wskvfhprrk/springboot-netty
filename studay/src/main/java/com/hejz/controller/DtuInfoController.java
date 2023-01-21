@@ -5,7 +5,6 @@ import com.hejz.service.DtuInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,12 +21,10 @@ public class DtuInfoController {
 
     @Autowired
     private DtuInfoService dtuInfoService;
-    @Autowired
-    private RedisTemplate redisTemplate;
 
     @ApiOperation("根据imei查询所有dtu信息")
     @GetMapping("all/{imei}")
-    public List<DtuInfo> getDtuInfoByImei(@PathVariable String imei){
+    public DtuInfo findAllByDtuId(@PathVariable String imei){
         return dtuInfoService.findAllByImei(imei);
     }
     @ApiOperation("根据id查询感器信息")
@@ -49,10 +46,5 @@ public class DtuInfoController {
     @DeleteMapping("{id}")
     public void delete(@PathVariable("id") Long id){
         dtuInfoService.delete(id);
-    }
-    @ApiOperation("根据imei删除所有感器信息")
-    @DeleteMapping("deleteAllByImei/{imei}")
-    public void deleteAllByImei(@PathVariable("imei") String imei){
-        dtuInfoService.deleteAllByImei(imei);
     }
 }

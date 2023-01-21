@@ -12,12 +12,12 @@ import java.util.List;
  * author: hejz
  * data: 2022-5-9
  */
-public interface SensorDataDbRepository extends CrudRepository<SensorDataDb, Date>,JpaSpecificationExecutor<SensorDataDb> {
-    List<SensorDataDb> getAllByImei(String imei);
-
-    void deleteAllByImei(String imei);
+public interface SensorDataDbRepository extends CrudRepository<SensorDataDb, Date>, JpaSpecificationExecutor<SensorDataDb> {
+    List<SensorDataDb> findAllByDtuId(Long dtuId);
 
     SensorDataDb findById(Long id);
 
     void deleteById(Long id);
+
+    void deleteAllByDtuId(Long dutId);
 }

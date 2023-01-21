@@ -11,7 +11,7 @@ import java.util.List;
  * @Description:
  */
 public interface CommandStatusService {
-    List<CommandStatus> findAllByImei(String imei);
+    List<CommandStatus> findAllByDtuId(Long dtuId);
 
     CommandStatus findById(Long id);
 

@@ -36,15 +36,12 @@ public class Sensor implements Serializable {
             columnDefinition="bigint"+" COMMENT 'ID'"
     )
     private Long id;
-    /**
-     * 每个控制器都有一个唯一的imei值对应——dur信息中的imei值
-     */
     @Column(
-            name = "imei",
-            nullable = true,
-            columnDefinition="varchar(15)"+" COMMENT '每个控制器都有一个唯一的imei值对应——dur信息中的imei值'"
+            name = "dtu_id",
+            nullable = false,
+            columnDefinition="bigint"+" COMMENT 'dtuId'"
     )
-    private String imei;
+    private Long dtuId;
     /**
      * 感应器编号地址——发出接收时指令地址位（每个感应器都有一个地址位的）
      */
@@ -127,8 +124,8 @@ public class Sensor implements Serializable {
     )
     private Long minRelayDefinitionCommandId = 0L;
 
-    public Sensor( String imei, Integer adrss, String name, String hex, String calculationFormula, String unit, Integer max, Integer min, Long maxRelayDefinitionCommandId, Long minRelayDefinitionCommandId) {
-        this.imei = imei;
+    public Sensor( Long dtuId, Integer adrss, String name, String hex, String calculationFormula, String unit, Integer max, Integer min, Long maxRelayDefinitionCommandId, Long minRelayDefinitionCommandId) {
+        this.dtuId = dtuId;
         this.adrss = adrss;
         this.name = name;
         this.hex = hex;

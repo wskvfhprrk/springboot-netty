@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface RelayRepository extends CrudRepository<Relay, Long>, JpaSpecificationExecutor<Relay> {
 
-    List<Relay> getAllByImei(String imei);
+    List<Relay> findAlByDtuId(Long dtuId);
 
-    void deleteAllByImei(String imei);
+    void deleteAllByDtuId(Long dtuId);
 }

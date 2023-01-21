@@ -1,8 +1,10 @@
 package com.hejz.service.impl;
 
 import com.hejz.common.Constant;
+import com.hejz.entity.DtuInfo;
 import com.hejz.entity.Relay;
 import com.hejz.repository.RelayRepository;
+import com.hejz.service.DtuInfoService;
 import com.hejz.service.RelayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -23,12 +25,13 @@ public class RelayServiceImpl implements RelayService {
     @Autowired
     private RelayRepository selayRepository;
     @Autowired
+    private DtuInfoService dtuInfoService;
+    @Autowired
     RedisTemplate redisTemplate;
 
     @Cacheable(value = Constant.RELAY_CACHE_KEY, key = "#p0", unless = "#result == null")
-    @Override
-    public List<Relay> findAllByImei(String imei) {
-        return selayRepository.getAllByImei(imei);
+    public List<Relay> findAllByDtuId(Long dtuId) {
+        return selayRepository.findAlByDtuId(dtuId);
     }
 
     @Override
@@ -37,14 +40,14 @@ public class RelayServiceImpl implements RelayService {
         return selay;
     }
 
-    @CacheEvict(value = Constant.RELAY_CACHE_KEY, key = "#result.imei")
+    @CacheEvict(value = Constant.RELAY_CACHE_KEY, key = "#result.dtuId")
     @Override
     public Relay save(Relay selay) {
         selay.setCloseHex(null);
         return selayRepository.save(selay);
     }
 
-    @CacheEvict(value = Constant.RELAY_CACHE_KEY, key = "#result.imei")
+    @CacheEvict(value = Constant.RELAY_CACHE_KEY, key = "#result.dtuId")
     @Override
     public Relay update(Relay selay) {
         return selayRepository.save(selay);
@@ -54,15 +57,16 @@ public class RelayServiceImpl implements RelayService {
     public void delete(Long id) {
         //缓存同步
         Relay relay = selayRepository.findById(id).orElse(null);
-        redisTemplate.delete(Constant.RELAY_CACHE_KEY + "::" + relay.getImei());
+        DtuInfo dtuInfo = dtuInfoService.findById(relay.getDtuId());
+        redisTemplate.delete(Constant.RELAY_CACHE_KEY + "::" + dtuInfo.getId());
         selayRepository.deleteById(id);
     }
 
     @CacheEvict(value = Constant.RELAY_CACHE_KEY, key = "#p0")
     @Override
     @Transactional
-    public void deleteAllByImei(String imei) {
-        selayRepository.deleteAllByImei(imei);
+    public void deleteAlByDtuId(Long dtuId) {
+        selayRepository.deleteAllByDtuId(dtuId);
     }
 
 }

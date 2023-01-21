@@ -22,14 +22,14 @@ class RelayDefinitionCommandServiceImplTest {
     RelayDefinitionCommandService relayDefinitionCommandService;
     @Autowired
     RedisTemplate redisTemplate;
-    private String imei = "865328063321359";
+    private Long dtuId = 1L;
 
     @Order(5)
     @Test
     void findByImei() {
-        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByImei(imei);
+        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByAllDtuId(dtuId);
         Assert.isTrue(relayDefinitionCommands.size() == 3, "测试其元素为3个");
-        Object o = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + imei);
+        Object o = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + dtuId);
         Assert.notNull(o, "缓存中有值！");
     }
 
@@ -43,12 +43,12 @@ class RelayDefinitionCommandServiceImplTest {
     @Order(1)
     @Test
     void save() {
-        relayDefinitionCommandService.save(new RelayDefinitionCommand(imei, "打开大棚", "打开大棚", "1,2,3", true, 1L, 1L, 1L));
-        Object o = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + imei);
+        relayDefinitionCommandService.save(new RelayDefinitionCommand(dtuId, "打开大棚", "打开大棚", "1,2,3", true, 1L, 1L, 1L));
+        Object o = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + dtuId);
         Assert.isNull(o, "缓存中应该无值！");
-        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByImei(imei);
+        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByAllDtuId(dtuId);
         Assert.isTrue(relayDefinitionCommands.size() == 4, "测试其元素为4个");
-        Object o1 = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + imei);
+        Object o1 = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + dtuId);
         Assert.notNull(o1, "缓存中有值！");
     }
 
@@ -59,11 +59,11 @@ class RelayDefinitionCommandServiceImplTest {
         relayDefinitionCommand.setRelayIds("2");
         RelayDefinitionCommand update = relayDefinitionCommandService.update(relayDefinitionCommand);
         Assert.isTrue(update.getRelayIds().equals("2"), "修改值成功");
-        Object o = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + imei);
+        Object o = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + dtuId);
         Assert.isNull(o, "缓存中应该无值！");
-        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByImei(imei);
+        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByAllDtuId(dtuId);
         Assert.isTrue(relayDefinitionCommands.size() == 4, "测试其元素为4个");
-        Object o1 = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + imei);
+        Object o1 = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + dtuId);
         Assert.notNull(o1, "缓存中有值！");
     }
 
@@ -71,23 +71,23 @@ class RelayDefinitionCommandServiceImplTest {
     @Test
     void delete() {
         relayDefinitionCommandService.delete(1L);
-        Object o = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + imei);
+        Object o = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + dtuId);
         Assert.isNull(o, "缓存中应该无值！");
-        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByImei(imei);
+        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByAllDtuId(dtuId);
         Assert.isTrue(relayDefinitionCommands.size() == 3, "测试其元素为3个");
-        Object o1 = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + imei);
+        Object o1 = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + dtuId);
         Assert.notNull(o1, "缓存中有值！");
     }
 
     @Order(6)
     @Test
     void deleteAllByImei() {
-        relayDefinitionCommandService.deleteAllByImei(imei);
-        Object o = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + imei);
+        relayDefinitionCommandService.deleteAllByDtuId(dtuId);
+        Object o = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + dtuId);
         Assert.isNull(o, "缓存中应该无值！");
-        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByImei(imei);
+        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByAllDtuId(dtuId);
         Assert.isTrue(relayDefinitionCommands.isEmpty(), "应该为空值");
-        Object o1 = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + imei);
+        Object o1 = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + dtuId);
         Assert.isTrue(relayDefinitionCommands.isEmpty(), "应该为空值");
     }
 }

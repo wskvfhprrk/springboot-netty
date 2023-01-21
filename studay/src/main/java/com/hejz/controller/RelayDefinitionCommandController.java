@@ -23,10 +23,10 @@ public class RelayDefinitionCommandController {
     @Autowired
     private RelayDefinitionCommandService relayDefinitionCommandService;
 
-    @ApiOperation("根据imei查询所有继电器定义命令信息")
-    @GetMapping("all/{imei}")
-    public List<RelayDefinitionCommand> getRelayDefinitionCommandByImei(@PathVariable String imei) {
-        return relayDefinitionCommandService.findByImei(imei);
+    @ApiOperation("根据dtuId查询所有继电器定义命令信息")
+    @GetMapping("all/{dtuId}")
+    public List<RelayDefinitionCommand> findByAllDtuId(@PathVariable Long dtuId) {
+        return relayDefinitionCommandService.findByAllDtuId(dtuId);
     }
 
     @ApiOperation("根据id查询感器信息")
@@ -53,10 +53,10 @@ public class RelayDefinitionCommandController {
         relayDefinitionCommandService.delete(id);
     }
 
-    @ApiOperation("根据imei删除所有感器信息")
-    @DeleteMapping("deleteAllByImei/{imei}")
+    @ApiOperation("根据dtuId删除所有感器信息")
+    @DeleteMapping("deleteAllByDtuId/{dtuId}")
     @Transactional
-    public void deleteAllByImei(@PathVariable("imei") String imei) {
-        relayDefinitionCommandService.deleteAllByImei(imei);
+    public void deleteAllByDtuId(@PathVariable("dtuId") Long dtuId) {
+        relayDefinitionCommandService.deleteAllByDtuId(dtuId);
     }
 }

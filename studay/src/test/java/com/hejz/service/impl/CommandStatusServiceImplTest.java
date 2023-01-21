@@ -24,14 +24,14 @@ class CommandStatusServiceImplTest {
     CommandStatusService commandStatusService;
     @Autowired
     RedisTemplate redisTemplate;
-    private String imei = "865328063321351";
+    private Long dtuId = 1L;
 
     @Order(2)
     @Test
     void findByImei() {
-        List<CommandStatus> commandStatus = commandStatusService.findAllByImei(imei);
+        List<CommandStatus> commandStatus = commandStatusService.findAllByDtuId(dtuId);
         Assert.isTrue(commandStatus.size() == 1, "测试其元素为1个");
-        Object o = redisTemplate.opsForValue().get(Constant.COMMAND_STATUS_CACHE_KEY + "::" + imei);
+        Object o = redisTemplate.opsForValue().get(Constant.COMMAND_STATUS_CACHE_KEY + "::" + dtuId);
         Assert.isTrue(((ArrayList) o).size()==1, "测试其元素为1个");
     }
 
@@ -45,8 +45,8 @@ class CommandStatusServiceImplTest {
     @Order(1)
     @Test
     void save() {
-        commandStatusService.save(new CommandStatus(imei, 1L,new Date(),new Date(),true));
-        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
+        commandStatusService.save(new CommandStatus(dtuId, 1L,new Date(),new Date(),true));
+        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuId);
         Assert.isNull(o, "缓存中应该无值！");
     }
 
@@ -57,7 +57,7 @@ class CommandStatusServiceImplTest {
         commandStatus.setStatus(false);
         CommandStatus update = commandStatusService.update(commandStatus);
         Assert.isTrue(!update.getStatus(), "修改值成功");
-        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
+        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuId);
         Assert.isNull(o, "缓存中应该无值！");
     }
 
@@ -65,7 +65,7 @@ class CommandStatusServiceImplTest {
     @Test
     void delete() {
         commandStatusService.delete(1L);
-        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
+        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuId);
         Assert.isNull(o, "缓存中应该无值！");
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
  * @Description:
  */
 public interface RelayDefinitionCommandService {
-    List<RelayDefinitionCommand> findByImei(String imei);
+    List<RelayDefinitionCommand> findByAllDtuId(Long dtuId);
 
     RelayDefinitionCommand findById(Long id);
 
@@ -21,5 +21,5 @@ public interface RelayDefinitionCommandService {
 
     void delete(Long id);
 
-    void deleteAllByImei(String imei);
+    void deleteAllByDtuId(Long dtuId);
 }

@@ -20,12 +20,12 @@ public class SensorDataDbServiceImpl implements SensorDataDbService {
     private SensorDataDbRepository selayRepository;
 
     @Override
-    public List<SensorDataDb> getSensorDataDbByImei(String imei) {
-        return selayRepository.getAllByImei(imei);
+    public List<SensorDataDb> findAllByDtuId(Long dtuId) {
+        return selayRepository.findAllByDtuId(dtuId);
     }
 
     @Override
-    public SensorDataDb getSensorDataDbById(Long id) {
+    public SensorDataDb getById(Long id) {
         SensorDataDb selay = selayRepository.findById(id);
         return selay;
     }
@@ -47,8 +47,8 @@ public class SensorDataDbServiceImpl implements SensorDataDbService {
 
     @Override
     @Transactional
-    public void deleteAllByImei(String imei) {
-        selayRepository.deleteAllByImei(imei);
+    public void deleteAllByDtuId(Long dutId) {
+        selayRepository.deleteAllByDtuId(dutId);
     }
 
 }

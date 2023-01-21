@@ -18,7 +18,7 @@ class CommandStatusControllerTest {
 
     @Test
     void getCommandStatusByImei() {
-        List<CommandStatus> commandStatusByImei = commandStatusController.getCommandStatusByImei("865328063321360");
+        List<CommandStatus> commandStatusByImei = commandStatusController.findAllByDtuId(1L);
         Assert.notEmpty(commandStatusByImei,"结果为空值！");
     }
 

@@ -12,9 +12,11 @@ import java.util.List;
  * data: 2022-5-9
  */
 public interface SensorRepository extends CrudRepository<Sensor,Long>,JpaSpecificationExecutor<Sensor> {
-    List<Sensor> getAllByImei(String imei);
 
     void deleteById(Long id);
 
-    void deleteAllByImei(String imei);
+
+    List<Sensor> findAllByDtuId(Long dtuId);
+
+    void deleteAllByDtuId(Long dtuId);
 }

@@ -13,7 +13,5 @@ import java.util.List;
  */
 public interface DtuInfoRepository extends JpaRepository<DtuInfo,Long>,JpaSpecificationExecutor<DtuInfo> {
 
-    List<DtuInfo> getAllByImei(String imei);
-
-    void deleteAllByImei(String imei);
+    DtuInfo findAllByImei(String imei);
 }

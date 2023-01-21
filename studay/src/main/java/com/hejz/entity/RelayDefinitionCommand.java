@@ -36,13 +36,12 @@ public class RelayDefinitionCommand implements Serializable {
             columnDefinition="bigint"+" COMMENT 'ID'"
     )
     private Long id;
-    //名称
     @Column(
-            name = "imei",
+            name = "dtu_id",
             nullable = false,
-            columnDefinition="varchar(15)"+" COMMENT 'imei'"
+            columnDefinition="bigint"+" COMMENT 'dtuId'"
     )
-    private String imei;
+    private Long dtuId;
     @Column(
             name = "name",
             nullable = false,
@@ -92,8 +91,8 @@ public class RelayDefinitionCommand implements Serializable {
     private Long correspondingCommandId;
 
 
-    public RelayDefinitionCommand(String imei, String name, String remarks, String relayIds, boolean isProcessTheReturnValue, long processingWaitingTime, Long commonId, Long correspondingCommandId) {
-        this.imei=imei;
+    public RelayDefinitionCommand(Long dtuId, String name, String remarks, String relayIds, boolean isProcessTheReturnValue, long processingWaitingTime, Long commonId, Long correspondingCommandId) {
+        this.dtuId=dtuId;
         this.name=name;
         this.remarks=remarks;
         this.relayIds=relayIds;

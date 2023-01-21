@@ -23,14 +23,14 @@ class SensorServiceImplTest {
     SensorService sensorService;
     @Autowired
     RedisTemplate redisTemplate;
-    private String imei = "865328063321359";
+    private Long dtuId = 1L;
 
     @Order(1)
     @Test
     void findByImei() {
-        List<Sensor> sensors = sensorService.findAllByImei(imei);
+        List<Sensor> sensors = sensorService.findAllByDtuId(dtuId);
         Assert.isTrue(sensors.size() == 9, "测试其元素为9个");
-        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
+        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuId);
         Assert.isTrue(((ArrayList) o).size()==9, "测试其元素为9个");
     }
 
@@ -44,12 +44,12 @@ class SensorServiceImplTest {
     @Order(2)
     @Test
     void save() {
-        sensorService.save(new Sensor(imei, 1,"打开大棚", "打开大棚", "1,2,9", "1",1,1,1L,1L));
-        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
+        sensorService.save(new Sensor(dtuId, 1,"打开大棚", "打开大棚", "1,2,9", "1",1,1,1L,1L));
+        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuId);
         Assert.isNull(o, "缓存中应该无值！");
-        List<Sensor> sensors = sensorService.findAllByImei(imei);
+        List<Sensor> sensors = sensorService.findAllByDtuId(dtuId);
         Assert.isTrue(sensors.size() == 10, "测试其元素为10个");
-        Object o1 = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
+        Object o1 = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuId);
         Assert.isTrue(((ArrayList) o1).size()==10, "测试其元素为10个");
     }
 
@@ -60,11 +60,11 @@ class SensorServiceImplTest {
         sensor.setAdrss(1);
         Sensor update = sensorService.update(sensor);
         Assert.isTrue(update.getAdrss()==1, "修改值成功");
-        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
+        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuId);
         Assert.isNull(o, "缓存中应该无值！");
-        List<Sensor> sensors = sensorService.findAllByImei(imei);
+        List<Sensor> sensors = sensorService.findAllByDtuId(dtuId);
         Assert.isTrue(sensors.size() == 10, "测试其元素为10个");
-        Object o1 = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
+        Object o1 = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuId);
         Assert.isTrue(((ArrayList) o1).size()==10, "测试其元素为10个");
     }
 
@@ -72,23 +72,23 @@ class SensorServiceImplTest {
     @Test
     void delete() {
         sensorService.delete(1L);
-        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
+        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuId);
         Assert.isNull(o, "缓存中应该无值！");
-        List<Sensor> sensors = sensorService.findAllByImei(imei);
+        List<Sensor> sensors = sensorService.findAllByDtuId(dtuId);
         Assert.isTrue(sensors.size() == 9, "测试其元素为9个");
-        Object o1 = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
+        Object o1 = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuId);
         Assert.isTrue(((ArrayList) o1).size()==9, "测试其元素为9个");
     }
 
     @Order(6)
     @Test
     void deleteAllByImei() {
-        sensorService.deleteAllByImei(imei);
-        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
+        sensorService.deleteAllByDtuId(dtuId);
+        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuId);
         Assert.isNull(o, "缓存中应该无值！");
-        List<Sensor> sensors = sensorService.findAllByImei(imei);
+        List<Sensor> sensors = sensorService.findAllByDtuId(dtuId);
         Assert.isTrue(sensors.isEmpty(), "应该为空值");
-        Object o1 = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + imei);
+        Object o1 = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuId);
         Assert.isTrue(((ArrayList) o1).size()==0, "测试其元素为0个");
     }
 }

@@ -10,8 +10,6 @@ import java.util.List;
  * @Description:
  */
 public interface DtuInfoService {
-    List<DtuInfo> findAllByImei(String imei);
-
     DtuInfo findById(Long id);
 
     DtuInfo save(DtuInfo dtuInfo);
@@ -20,5 +18,5 @@ public interface DtuInfoService {
 
     void delete(Long id);
 
-    void deleteAllByImei(String imei);
+    DtuInfo findAllByImei(String Imei);
 }
