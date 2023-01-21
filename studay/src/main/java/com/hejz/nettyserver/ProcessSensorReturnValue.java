@@ -42,8 +42,6 @@ public class ProcessSensorReturnValue {
     @Autowired
     DtuRegister dtuRegister;
     @Autowired
-    private RelayService relayService;
-    @Autowired
     private ProcessRelayCommands processRelayCommands;
 
     /**

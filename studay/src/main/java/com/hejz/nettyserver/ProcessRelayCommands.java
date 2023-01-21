@@ -188,6 +188,7 @@ public class ProcessRelayCommands {
                 list.add(data);
                 Constant.THREE_RECORDS_MAP.put(key, list);
             }
+            //校验次
             if (Constant.THREE_RECORDS_MAP.get(key).size() == 3) {
                 List<Double> collect = Constant.THREE_RECORDS_MAP.get(key).stream().sorted().collect(Collectors.toList());
                 if (collect.get(2) - Double.parseDouble(sensor.getMax().toString()) > 0) {
