@@ -71,7 +71,7 @@ public class ProcessSensorReturnValue {
         List<byte[]> sensorDataByteList;
         //必须检测是有用的数据才可以，如果不能够使用才不可以
         if (!NettyServiceCommon.testingData(bytes)) return;
-        log.info("millis=={},dtuInfo.getIntervalTime()=={}",millis,dtuInfo.getIntervalTime());
+//        log.info("millis=={},dtuInfo.getIntervalTime()=={}",millis,dtuInfo.getIntervalTime());
         if (millis >= dtuInfo.getIntervalTime()) {
             log.info("======={}=>{}==>查询一组出数据===========", ctx.channel().id().toString(), dtuId);
             sensorDataByteList = new ArrayList<>(sensorsLength);
@@ -85,7 +85,7 @@ public class ProcessSensorReturnValue {
             Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now());
         }
         if (Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()).size() == sensorsLength) {
-            log.info("========={}=>{}=>解析一组出数据===========", ctx.channel().id().toString(), dtuId);
+            log.info("======{}=>{}=>解析一组出数据=========", ctx.channel().id().toString(), dtuId);
             try {
                 List<SensorData> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
                 //插入数据库
@@ -150,7 +150,6 @@ public class ProcessSensorReturnValue {
         int useLength = bytes.length - Constant.IMEI_LENGTH;
         byte[] useBytes = NettyServiceCommon.getUseBytes(bytes, useLength);
         // TODO: 2023/1/13 计算返回值
-//        String hex = "0x" + HexConvert.convertStringToHex(HexConvert.BinaryToHexString(useBytes));
         Integer x = calculateReturnValue(useBytes);
         //获取数据值
         double d = Double.parseDouble(String.valueOf(x));

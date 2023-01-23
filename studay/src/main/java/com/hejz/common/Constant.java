@@ -21,6 +21,7 @@ public class Constant {
     public static final String SENSOR_CACHE_KEY = "sensorCacheKey";
     public static final String RELAY_DEFINITION_COMMAND_CACHE_KEY = "relayDefinitionCommandCacheKey";
     public static final String DTU_INFO_CACHE_KEY = "dtuInfoCacheKey";
+    public static final String DTU_INFO_IMEI_CACHE_KEY = "dtuInfoImeiCacheKey";
     public static final String CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY = "cacheInstructionsThatNeedToContinueProcessingCacheKey";
     public static final String COMMAND_STATUS_CACHE_KEY = "commandStatusCacheKey";
     //最后时间——key为ctx.channel().id()
