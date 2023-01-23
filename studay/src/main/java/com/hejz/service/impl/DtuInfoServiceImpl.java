@@ -24,7 +24,7 @@ public class DtuInfoServiceImpl implements DtuInfoService {
     private DtuInfoRepository dtuInfoRepository;
     @Autowired
     RedisTemplate redisTemplate;
-
+    @Cacheable(value = Constant.DTU_INFO_IMEI_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
     public DtuInfo findAllByImei(String imei) {
         return dtuInfoRepository.findAllByImei(imei);
@@ -39,18 +39,21 @@ public class DtuInfoServiceImpl implements DtuInfoService {
     @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#result.id")
     @Override
     public DtuInfo save(DtuInfo dtuInfo) {
+        redisTemplate.delete(Constant.DTU_INFO_IMEI_CACHE_KEY+"::"+dtuInfo.getImei());
         return dtuInfoRepository.save(dtuInfo);
     }
 
     @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#po.id")
     @Override
     public DtuInfo update(DtuInfo dtuInfo) {
+        redisTemplate.delete(Constant.DTU_INFO_IMEI_CACHE_KEY+"::"+dtuInfo.getImei());
         return dtuInfoRepository.save(dtuInfo);
     }
 
     @Override
     public void delete(Long id) {
         DtuInfo dtuInfo = dtuInfoRepository.findById(id).orElse(null);
+        redisTemplate.delete(Constant.DTU_INFO_IMEI_CACHE_KEY+"::"+dtuInfo.getImei());
         redisTemplate.delete(Constant.DTU_INFO_CACHE_KEY + "::" + dtuInfo.getId());
         dtuInfoRepository.deleteById(id);
     }
