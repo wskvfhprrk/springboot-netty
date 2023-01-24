@@ -31,7 +31,7 @@ public class CheckingRules implements Serializable {
     @Column(
             name = "id",
             nullable = false,
-            columnDefinition="int"+" COMMENT 'ID'"
+            columnDefinition="int(2)"+" COMMENT 'ID'"
     )
     //id
     private Integer id;
@@ -52,21 +52,21 @@ public class CheckingRules implements Serializable {
     @Column(
             name = "address_bit_length",
             nullable = false,
-            columnDefinition="bit"+" COMMENT '地址位'"
+            columnDefinition="int(2)"+" COMMENT '地址位'"
     )
     private Integer AddressBitLength;
     //功能码
     @Column(
             name = "function_code_length",
             nullable = false,
-            columnDefinition="bit"+" COMMENT '功能码'"
+            columnDefinition="int(2)"+" COMMENT '功能码'"
     )
     private Integer functionCodeLength;
     //数据位数
     @Column(
             name = "data_bits_length",
             nullable = false,
-            columnDefinition="bit"+" COMMENT '数据位数'"
+            columnDefinition="int(2)"+" COMMENT '数据位数'"
     )
     private Integer DataBitsLength;
     //16进制数据值
