@@ -1,0 +1,29 @@
+@startuml
+start
+if (注册信息) then (yes)
+  :注册;
+  :根据imei查询dtu信息;
+      if (dtu是否为空值?) then (==null)
+        #palegreen:记录日志并关闭通道;
+        stop
+      endif
+      ->不为null;
+      :channel和dtuId双向绑定;
+elseif (数据数值) then (yes)
+     if (如果已经注册？) then (未注册)
+            :截取前15个bytes得到imei值;
+            :根据imei查询dtu信息;
+                  if (dtu是否为空值?) then (==null)
+                    #palegreen:记录日志并关闭通道;
+                    stop
+                  endif
+                  ->不为null;
+                  :进行注册;
+    endif
+          ->已注册;
+          :处理数据数值;
+else (nothing)
+  :打印日志;
+endif
+stop
+@enduml

@@ -26,7 +26,7 @@ public class DtuInfoServiceImpl implements DtuInfoService {
     RedisTemplate redisTemplate;
     @Cacheable(value = Constant.DTU_INFO_IMEI_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
-    public DtuInfo findAllByImei(String imei) {
+    public DtuInfo findByImei(String imei) {
         return dtuInfoRepository.findAllByImei(imei);
     }
 

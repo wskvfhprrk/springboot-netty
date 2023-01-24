@@ -73,18 +73,22 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         byte[] bytes = new byte[readableBytes];
         byteBuf.readBytes(bytes);
         //dtu必须开通注册功能，开通注册才可以查询到信息
-        if (readableBytes == Constant.DUT_REGISTERED_BYTES_LENGTH) {
-            dtuRegister.start(ctx);
-        } else if (readableBytes == (Constant.DTU_POLLING_RETURN_LENGTH)) { //处理dtu轮询返回值
-            new Thread(() -> {
-                processSensorReturnValue.start(ctx, bytes);
-            }).start();
-        } else if (readableBytes == (Constant.RELAY_RETURN_VALUES_LENGTH)) { //处理继电器返回值
-            new Thread(() -> {
-                processRelayCommands.start(ctx, bytes);
-            }).start();
-        } else {
-            log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), readableBytes, HexConvert.BinaryToHexString(bytes));
+        switch (readableBytes){
+            case Constant.DUT_REGISTERED_BYTES_LENGTH:
+                dtuRegister.start(ctx,bytes);
+                break;
+            case Constant.DTU_POLLING_RETURN_LENGTH: //处理dtu轮询返回值
+                new Thread(() -> {
+                    processSensorReturnValue.start(ctx, bytes);
+                }).start();
+                break;
+            case Constant.RELAY_RETURN_VALUES_LENGTH: //处理继电器返回值
+                new Thread(() -> {
+                    processRelayCommands.start(ctx, bytes);
+                }).start();
+                break;
+            default:
+                log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), readableBytes, HexConvert.BinaryToHexString(bytes));
         }
     }
 }

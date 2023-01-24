@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -45,9 +46,11 @@ public class Constant {
     //每组间隔默认时间（毫秒）
     public static final int INTERVAL_TIME = 30000;
     //按通道存储每组上报间隔时间——在接到据后会自传感器数据后动修改与dtu设置的每组间隔时间一致，否则会是默认时间。
-    public static final  Map<String,Integer> INTERVAL_TIME_MAP = new HashMap() ;
+    public static final  Map<String,Integer> INTERVAL_TIME_MAP = new ConcurrentHashMap() ;
     //需要继续处理缓存键的缓存指令失效时间（毫秒）
     public static final long EXPIRATION_TIME_OF_CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEYS = 600000;
     //netty客户端所有的连接绑定信息
-//    private static Map<String, Channel> USER_CHANNEL = new ConcurrentHashMap<>();
+    public static final Map<Long, Channel> USER_CHANNEL = new ConcurrentHashMap<>();
+    //channel绑定的dtuId的Key
+    public static final String CHANNEl_KEY = "dtuId";
 }

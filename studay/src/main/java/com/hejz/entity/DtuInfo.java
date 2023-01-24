@@ -55,21 +55,21 @@ public class DtuInfo implements Serializable {
     )
     private Integer imeiLength = 15;
     /**
-     * 继电器返回值长度
+     * 继电器返回值检测规则id
      */
     @Column(
-            name = "relay_length",
-            columnDefinition="int(2) default 8"+" COMMENT '继电器返回值长度'"
+            name = "relay_checking_rules_id",
+            columnDefinition="int(2) default 8"+" COMMENT '继电器返回值检测规则id'"
     )
-    private Integer relayLength=8;
+    private Integer relayCheckingRulesId=2;
     /**
-     * 感应器返回值长度
+     * 感应器返回值检测规则id
      */
     @Column(
-            name = "sensor_length",
-            columnDefinition="int(2) default 7"+" COMMENT '感应器返回值长度'"
+            name = "sensor_checking_rules_id",
+            columnDefinition="int(2) default 7"+" COMMENT '感应器返回值检测规则id'"
     )
-    private Integer sensorLength=7;
+    private Integer sensorCheckingRulesId=1;
     /**
      * 心跳bates长度
      */
@@ -96,23 +96,25 @@ public class DtuInfo implements Serializable {
             columnDefinition="bit(1)"+" COMMENT '是否自动控制——1是自动0是手动控制'"
     )
     private Boolean automaticAdjustment = true;
-    /**
-     * 使用到的地址——接收和发送信号检测信号使用的，一般地址1-3使用就为1,2,3
-     */
-    private String addrs;
+    @Column(
+            name = "no_imei",
+            nullable = true,
+            columnDefinition="bit(1)"+" COMMENT '返回值是否带imei'"
+    )
+    private Boolean noImei = true;
 
     public DtuInfo() {
     }
 
-    public DtuInfo(String imei, Integer registrationLength, Integer imeiLength, Integer relayLength, Integer sensorLength, Integer heartbeatLength, Integer intervalTime, Boolean automaticAdjustment, String addrs) {
+    public DtuInfo(String imei, Integer registrationLength, Integer imeiLength, Integer relayCheckingRulesId, Integer sensorCheckingRulesId, Integer heartbeatLength, Integer intervalTime, Boolean automaticAdjustment,Boolean noImei) {
         this.imei = imei;
         this.registrationLength = registrationLength;
         this.imeiLength = imeiLength;
-        this.relayLength = relayLength;
-        this.sensorLength = sensorLength;
+        this.relayCheckingRulesId = relayCheckingRulesId;
+        this.sensorCheckingRulesId = sensorCheckingRulesId;
         this.heartbeatLength = heartbeatLength;
         this.intervalTime = intervalTime;
         this.automaticAdjustment = automaticAdjustment;
-        this.addrs = addrs;
+        this.noImei = noImei;
     }
 }

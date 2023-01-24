@@ -7,8 +7,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * @author:hejz 75412985@qq.com
  * @create: 2023-01-12 07:44
@@ -25,7 +23,7 @@ public class DtuInfoController {
     @ApiOperation("根据imei查询所有dtu信息")
     @GetMapping("all/{imei}")
     public DtuInfo findAllByDtuId(@PathVariable String imei){
-        return dtuInfoService.findAllByImei(imei);
+        return dtuInfoService.findByImei(imei);
     }
     @ApiOperation("根据id查询感器信息")
     @GetMapping("{id}")

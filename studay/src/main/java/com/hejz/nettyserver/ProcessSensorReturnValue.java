@@ -5,8 +5,10 @@ import com.hejz.entity.*;
 import com.hejz.service.*;
 import com.hejz.utils.HexConvert;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -51,32 +53,36 @@ public class ProcessSensorReturnValue {
      * @param bytes 收到byte[]信息
      */
     public void start(ChannelHandlerContext ctx, byte[] bytes) {
-        Long dtuId = NettyServiceCommon.calculationImei(bytes);
-        //同步每次轮询间隔时间
-        DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
-        if(dtuInfo==null){
-            log.error("imei值:{}查询不到或没有注册，关闭通道",dtuId);
-            ctx.channel().close();
-//            Constant.CHANNEL_GROUP.remove(ctx);
-            return;
+        DtuInfo dtuInfo;
+        AttributeKey<String> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
+        String s = ctx.channel().attr(key).get();
+        if (s != null) {
+            Long dtuId = Long.valueOf(s);
+            dtuInfo = dtuInfoService.findById(dtuId);
+        } else {
+            Long dtuId = NettyServiceCommon.calculationImei(bytes);
+            dtuInfo = dtuInfoService.findById(dtuId);
+            dtuRegister.register(ctx, dtuInfoService.findById(dtuId));
         }
+        //同步每次轮询间隔时间
         //把间隔时间设置为每个所在dtu间隔发送时间
         Constant.INTERVAL_TIME_MAP.put(ctx.channel().id().toString(), dtuInfo.getIntervalTime());
-        int sensorsLength = sensorService.findAllByDtuId(dtuId).size();
+        int sensorsLength = sensorService.findAllByDtuId(dtuInfo.getId()).size();
         /**
          * 每组数据以上报时间差值最大的为一组的第一个数据为标准——发送数据时间间隔大于等于周周期时间的视为第一个数据
          */
-        LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(dtuInfo.getIntervalTime() / 1000 + 300);
+        LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(dtuInfo.getIntervalTime() / 1000 + 30);
         //首次end时间为空值
         LocalDateTime end = Constant.END_TIME_MAP.get(ctx.channel().id().toString()) == null ? dateIntervalTime : Constant.END_TIME_MAP.get(ctx.channel().id().toString());
         Duration duration = Duration.between(end, LocalDateTime.now());
-        long millis = duration.toMillis();
+        //两个时间，多加一秒时间，防止出错
+        long millis = duration.toMillis()+1000;
         List<byte[]> sensorDataByteList;
         //必须检测是有用的数据才可以，如果不能够使用才不可以
         if (!NettyServiceCommon.testingData(bytes)) return;
 //        log.info("millis=={},dtuInfo.getIntervalTime()=={}",millis,dtuInfo.getIntervalTime());
         if (millis >= dtuInfo.getIntervalTime()) {
-            log.info("======={}=>{}==>查询一组出数据===========", ctx.channel().id().toString(), dtuId);
+            log.info("======={}=>{}==>查询一组出数据===========", ctx.channel().id().toString(), dtuInfo.getId());
             sensorDataByteList = new ArrayList<>(sensorsLength);
             sensorDataByteList.add(bytes);
             Constant.SENSOR_DATA_BYTE_LIST_MAP.put(ctx.channel().id().toString(), sensorDataByteList);
@@ -88,18 +94,17 @@ public class ProcessSensorReturnValue {
             Constant.END_TIME_MAP.put(ctx.channel().id().toString(), LocalDateTime.now());
         }
         if (Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()).size() == sensorsLength) {
-            log.info("======{}=>{}=>解析一组出数据=========", ctx.channel().id().toString(), dtuId);
+            log.info("======{}=>{}=>解析一组出数据=========", ctx.channel().id().toString(), dtuInfo.getId());
             try {
                 List<SensorData> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
                 //插入数据库
-                insertDatabase(dtuId, sensorDataList);
+                insertDatabase(dtuInfo.getId(), sensorDataList);
             } catch (Exception e) {
                 log.info(e.toString());
             }
             //需要重置数据
             Constant.SENSOR_DATA_BYTE_LIST_MAP.remove(ctx.channel().id().toString());
         }
-
     }
 
     /**

@@ -18,5 +18,5 @@ public interface DtuInfoService {
 
     void delete(Long id);
 
-    DtuInfo findAllByImei(String Imei);
+    DtuInfo findByImei(String Imei);
 }

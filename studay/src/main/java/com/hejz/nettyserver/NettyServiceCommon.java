@@ -58,7 +58,7 @@ public class NettyServiceCommon {
         System.arraycopy(bytes, 0, imeiBytes, 0, Constant.IMEI_LENGTH);
         // TODO: 2023/1/13 BinaryToHexString要改为convertHexToString无空格的ASCII码
         String imei = HexConvert.hexStringToString(HexConvert.BinaryToHexString(imeiBytes).replaceAll(" ", ""));
-        DtuInfo dtuInfo = dtuInfoService.findAllByImei(imei.trim());
+        DtuInfo dtuInfo = dtuInfoService.findByImei(imei.trim());
         return dtuInfo.getId();
     }
 

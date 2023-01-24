@@ -1,16 +1,20 @@
 package com.hejz;
 
 import com.hejz.nettyserver.NettyServer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.time.LocalDateTime;
 
 /**
  * author: hejz
  * data:  2022-5-9
  */
 @SpringBootApplication
+@Slf4j
 public class Application implements CommandLineRunner {
     @Autowired
     private NettyServer nettyServer;
