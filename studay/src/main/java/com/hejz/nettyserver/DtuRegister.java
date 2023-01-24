@@ -63,11 +63,13 @@ public class DtuRegister {
         }
 
         // 双向绑定
-        // channel -> imei
-        AttributeKey<String> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
-        ctx.channel().attr(key).set(String.valueOf(dtuInfo.getId()));
+        // channel -> dtuId
+        AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
+        ctx.channel().attr(key).set(dtuInfo.getId());
 
-        // imei -> channel
+        // dtuId -> channel
         Constant.USER_CHANNEL.put(dtuInfo.getId(), ctx.channel());
+
+        NettyServiceCommon.write("0000",ctx);
     }
 }

@@ -1,10 +1,7 @@
 package com.hejz.nettyserver;
 
 import com.hejz.common.Constant;
-import com.hejz.entity.CommandStatus;
-import com.hejz.entity.Relay;
-import com.hejz.entity.RelayDefinitionCommand;
-import com.hejz.entity.Sensor;
+import com.hejz.entity.*;
 import com.hejz.service.CommandStatusService;
 import com.hejz.service.RelayDefinitionCommandService;
 import com.hejz.service.RelayService;
@@ -57,10 +54,10 @@ public class ProcessRelayCommands {
      * @param bytes
      */
     void start(ChannelHandlerContext ctx, byte[] bytes) {
-        Long dtuId = NettyServiceCommon.calculationImei(bytes);
+        DtuInfo dtuInfo = NettyServiceCommon.calculationDtuInfo(bytes);
         //把数据bytes转化为string
         String useData = sensorDataToString(bytes);
-        log.info("通道：{} dtuId={}  继电器返回值：{}", ctx.channel().id().toString(), dtuId, useData);
+        log.info("通道：{} dtuId={}  继电器返回值：{}", ctx.channel().id().toString(), dtuInfo.getId(), useData);
         if (!NettyServiceCommon.testingData(bytes)) {
             log.error("继电器返回值：{}校验不通过！", HexConvert.BinaryToHexString(bytes));
             return;
@@ -86,10 +83,10 @@ public class ProcessRelayCommands {
             }
         }
         //保存当前状态
-        commandStatusService.save(new CommandStatus(dtuId, relayDefinitionCommand.getId(),new Date(),new Date(),true));
+        commandStatusService.save(new CommandStatus(dtuInfo.getId(), relayDefinitionCommand.getId(),new Date(),new Date(),true));
         Long commonId = relayDefinitionCommand.getCommonId();
         //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand
-        RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.findByAllDtuId(dtuId).stream()
+        RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.findByAllDtuId(dtuInfo.getId()).stream()
                 .filter(r -> r.getId().equals(commonId)).findFirst().get();
         ctx.channel().eventLoop().schedule(() -> {
             log.info("通道==》{}开始延时任务，延时：{}", ctx.channel().id().toString(), relayDefinitionCommand1.getProcessingWaitingTime());

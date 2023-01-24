@@ -8,7 +8,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -54,15 +53,13 @@ public class ProcessSensorReturnValue {
      */
     public void start(ChannelHandlerContext ctx, byte[] bytes) {
         DtuInfo dtuInfo;
-        AttributeKey<String> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
-        String s = ctx.channel().attr(key).get();
-        if (s != null) {
-            Long dtuId = Long.valueOf(s);
+        AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
+        Long dtuId = ctx.channel().attr(key).get();
+        if (dtuId != null) {
             dtuInfo = dtuInfoService.findById(dtuId);
         } else {
-            Long dtuId = NettyServiceCommon.calculationImei(bytes);
-            dtuInfo = dtuInfoService.findById(dtuId);
-            dtuRegister.register(ctx, dtuInfoService.findById(dtuId));
+            dtuInfo = NettyServiceCommon.calculationDtuInfo(bytes);
+            dtuRegister.register(ctx, dtuInfo);
         }
         //同步每次轮询间隔时间
         //把间隔时间设置为每个所在dtu间隔发送时间
@@ -76,7 +73,7 @@ public class ProcessSensorReturnValue {
         LocalDateTime end = Constant.END_TIME_MAP.get(ctx.channel().id().toString()) == null ? dateIntervalTime : Constant.END_TIME_MAP.get(ctx.channel().id().toString());
         Duration duration = Duration.between(end, LocalDateTime.now());
         //两个时间，多加一秒时间，防止出错
-        long millis = duration.toMillis()+1000;
+        long millis = duration.toMillis() + 1000;
         List<byte[]> sensorDataByteList;
         //必须检测是有用的数据才可以，如果不能够使用才不可以
         if (!NettyServiceCommon.testingData(bytes)) return;
@@ -119,8 +116,8 @@ public class ProcessSensorReturnValue {
         //按顺序解析，根据sensor顺序解析找对应关系
         for (int i = 0; i < list.size(); i++) {
             Double aDouble = parseSensorOneData(list.get(i), i, ctx);
-            Long dtuId = NettyServiceCommon.calculationImei(list.get(0));
-            List<Sensor> sensors = sensorService.findAllByDtuId(dtuId);
+            DtuInfo dtuInfo = NettyServiceCommon.calculationDtuInfo(list.get(0));
+            List<Sensor> sensors = sensorService.findAllByDtuId(dtuInfo.getId());
             Sensor sensor = sensors.get(i);
             SensorData sensorData = new SensorData(i, sensor.getName(), aDouble, sensor.getUnit());
             doubleList.add(sensorData);
@@ -161,13 +158,13 @@ public class ProcessSensorReturnValue {
         Integer x = calculateReturnValue(useBytes);
         //获取数据值
         double d = Double.parseDouble(String.valueOf(x));
-        Long dtuId = NettyServiceCommon.calculationImei(bytes);
-        Sensor sensor = sensorService.findAllByDtuId(dtuId).get(arrayNumber);
+        DtuInfo dtuInfo = NettyServiceCommon.calculationDtuInfo(bytes);
+        Sensor sensor = sensorService.findAllByDtuId(dtuInfo.getId()).get(arrayNumber);
         //经过公式计算得到实际结果
         Double actualResults = calculateActualData(sensor.getCalculationFormula(), d);
-        log.info(" 通道：{} dtuId==>{},{} =====> {}  ====> {}  ====> {}", ctx.channel().id().toString(), dtuId, arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
+        log.info(" 通道：{} dtuId==>{},{} =====> {}  ====> {}  ====> {}", ctx.channel().id().toString(), dtuInfo.getId(), arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
         //开新建程——异步处理根据解析到数据大小判断是否产生事件
-        if (dtuInfoService.findById(NettyServiceCommon.calculationImei(bytes)).getAutomaticAdjustment()) {
+        if (dtuInfo.getAutomaticAdjustment()) {
             new Thread(() -> {
                 processRelayCommands.handleAccordingToRelayCommand(sensor, actualResults, ctx);
             }).start();

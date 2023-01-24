@@ -58,25 +58,26 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
         try {
-            start(ctx, (ByteBuf) msg);
+            start(ctx, (byte[]) msg);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    private void start(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
+    private void start(ChannelHandlerContext ctx, byte[] bytes) throws Exception {
         //当前数据个数
-        ByteBuf byteBuf = msg;
-        //获取缓冲区可读字节数
-        int readableBytes = byteBuf.readableBytes();
-        byte[] bytes = new byte[readableBytes];
-        byteBuf.readBytes(bytes);
+//        ByteBuf byteBuf = msg;
+//        //获取缓冲区可读字节数
+//        int readableBytes = byteBuf.readableBytes();
+//        byte[] bytes = new byte[readableBytes];
+//        byteBuf.readBytes(bytes);
+//        log.info("获取的值为：{}",HexConvert.BinaryToHexString(bytes));
         //dtu必须开通注册功能，开通注册才可以查询到信息
-        switch (readableBytes){
-            case Constant.DUT_REGISTERED_BYTES_LENGTH:
-                dtuRegister.start(ctx,bytes);
-                break;
+        switch (bytes.length){
+//            case Constant.DUT_REGISTERED_BYTES_LENGTH:
+//                dtuRegister.start(ctx,bytes);
+//                break;
             case Constant.DTU_POLLING_RETURN_LENGTH: //处理dtu轮询返回值
                 new Thread(() -> {
                     processSensorReturnValue.start(ctx, bytes);
@@ -88,7 +89,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
                 }).start();
                 break;
             default:
-                log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), readableBytes, HexConvert.BinaryToHexString(bytes));
+                log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), bytes.length, HexConvert.BinaryToHexString(bytes));
         }
     }
 }

@@ -18,6 +18,11 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
     Logger log = LogManager.getLogger(NettyServerInitializer.class);
     @Autowired
     private NettyServerHandler nettyServerHandler;
+    @Autowired
+    private NettyMsgDecoder nettyMsgDecoder;
+    @Autowired
+    private RegisterHandler registerHandler;
+
     //连接注册，创建成功，会被调用
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
@@ -31,8 +36,10 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         //定义读写空闲时间——（单位秒）
         pipeline.addLast(new IdleStateHandler(180, 60,180));
 //        pipeline.addLast(serverHeartBeatHandler);
+        //注册拦截器
+        pipeline.addLast(registerHandler);
         // 自定义解码器
-//        pipeline.addLast(new NettyMessageDecoder());
+//        pipeline.addLast(nettyMsgDecoder);
         pipeline.addLast(nettyServerHandler);
     }
 
