@@ -22,13 +22,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     @Autowired
     ProcessRelayCommands processRelayCommands;
 
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        // 获取当前连接的客户端的 channel
-        Channel incoming = ctx.channel();
-        // 将客户端的 Channel 存入 ChannelGroup 列表中
-        Constant.CHANNEL_GROUP.add(incoming);
-    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
@@ -37,7 +30,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             IdleState state = ((IdleStateEvent) evt).state();
             switch (state) {
                 case READER_IDLE:
-                    log.info("读空闲3分钟自动关闭通道！");
+                    log.info("channel:{},空闲3分钟无上报数据自动关闭通道！",ctx.channel().id().toString());
                     ctx.channel().close();
                     break;
                 case WRITER_IDLE:
@@ -64,16 +57,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
-        Channel channel = ctx.channel();
-        Constant.CHANNEL_GROUP.forEach(channel1 -> {
-            if (channel1 == channel) {//匹配当前连接对象
-                try {
-                    start(ctx, (ByteBuf) msg);
-                } catch (Exception e) {
-                    log.error(e.getMessage());
-                }
-            }
-        });
+        try {
+            start(ctx, (ByteBuf) msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -99,5 +87,4 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), readableBytes, HexConvert.BinaryToHexString(bytes));
         }
     }
-
 }

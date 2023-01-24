@@ -57,13 +57,16 @@ public class ProcessSensorReturnValue {
         if(dtuInfo==null){
             log.error("imei值:{}查询不到或没有注册，关闭通道",dtuId);
             ctx.channel().close();
-            Constant.CHANNEL_GROUP.remove(ctx);
+//            Constant.CHANNEL_GROUP.remove(ctx);
             return;
         }
+        //把间隔时间设置为每个所在dtu间隔发送时间
         Constant.INTERVAL_TIME_MAP.put(ctx.channel().id().toString(), dtuInfo.getIntervalTime());
         int sensorsLength = sensorService.findAllByDtuId(dtuId).size();
-        //计算当前时间与之前时间差值——如果没有注册信息，第一个值要把它加上30秒
-        LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(dtuInfo.getIntervalTime() / 1000 + 30);
+        /**
+         * 每组数据以上报时间差值最大的为一组的第一个数据为标准——发送数据时间间隔大于等于周周期时间的视为第一个数据
+         */
+        LocalDateTime dateIntervalTime = LocalDateTime.now().minusSeconds(dtuInfo.getIntervalTime() / 1000 + 300);
         //首次end时间为空值
         LocalDateTime end = Constant.END_TIME_MAP.get(ctx.channel().id().toString()) == null ? dateIntervalTime : Constant.END_TIME_MAP.get(ctx.channel().id().toString());
         Duration duration = Duration.between(end, LocalDateTime.now());

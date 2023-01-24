@@ -1,5 +1,6 @@
 package com.hejz.common;
 
+import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -46,6 +48,6 @@ public class Constant {
     public static final  Map<String,Integer> INTERVAL_TIME_MAP = new HashMap() ;
     //需要继续处理缓存键的缓存指令失效时间（毫秒）
     public static final long EXPIRATION_TIME_OF_CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEYS = 600000;
-    //netty客户端所有的连接
-    public static ChannelGroup CHANNEL_GROUP = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    //netty客户端所有的连接绑定信息
+//    private static Map<String, Channel> USER_CHANNEL = new ConcurrentHashMap<>();
 }

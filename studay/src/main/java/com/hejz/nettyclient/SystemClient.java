@@ -81,7 +81,20 @@ public class SystemClient {
         List<String> instructionsSent = new ArrayList<>();
         //空气温度,空气湿度,土壤PH,土壤温度,土壤湿度,土壤氮,土壤磷,土壤钾,土壤电导率
         //一般缩小10倍是真实数据
-        List<Integer> data = Arrays.asList(300, 610, 1200, 70, 300, 30, 30, 170, 20);
+//        List<Integer> data = new ArrayList<>();
+//        for (int i = 0; i < 100; i++) {
+//            data.add(100 + i * 10);
+//        }
+//        data.add(610);
+//        data.add(1200);
+//        data.add(70);
+//        data.add(300);
+//        data.add(30);
+//        data.add(30);
+//        data.add(170);
+//        data.add(20);
+
+        List<Integer> data = Arrays.asList(100, 610, 1200, 70, 300, 30, 30, 170, 20);
         for (int i = 0; i < data.size(); i++) {
             instructionsSent.add(calculateRrc16ValidatedData("020302", data.get(i)));
         }
@@ -102,7 +115,7 @@ public class SystemClient {
             }
             try {
                 int time = Constant.INTERVAL_TIME_MAP.get(future.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(future.channel().id().toString());
-                log.info("time=={}",time);
+                log.info("time=={}", time);
                 Thread.sleep(time);
             } catch (InterruptedException e) {
                 e.printStackTrace();
