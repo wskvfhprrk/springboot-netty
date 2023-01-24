@@ -69,7 +69,5 @@ public class DtuRegister {
 
         // dtuId -> channel
         Constant.USER_CHANNEL.put(dtuInfo.getId(), ctx.channel());
-
-        NettyServiceCommon.write("0000",ctx);
     }
 }

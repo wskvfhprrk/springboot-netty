@@ -26,6 +26,7 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Cacheable(cacheNames = Constant.CHECKING_RULES_CACHE_KEY,key = "#p0" , unless = "#result == null")
     @Override
     public CheckingRules findById(Integer id) {
         CheckingRules checkingRules = checkingRulesRepository.findById(id).orElse(null);
@@ -38,7 +39,6 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
         return checkingRulesRepository.findAll(spec);
     }
 
-    @Cacheable(value = Constant.CHECKING_RULES_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
     public List<CheckingRules> getByCommonLength(Integer commonLength) {
         return checkingRulesRepository.findByCommonLength(commonLength);
@@ -46,7 +46,6 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
 
     @Override
     public CheckingRules save(CheckingRules checkingRules) {
-        redisTemplate.delete(Constant.CHECKING_RULES_CACHE_KEY + "::" + checkingRules.getCommonLength());
         checkingRules.setId(null);
         return checkingRulesRepository.save(checkingRules);
     }
@@ -60,7 +59,7 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
     @Override
     public void delete(Integer id) {
         CheckingRules checkingRules = checkingRulesRepository.findById(id).orElse(null);
-        redisTemplate.delete(Constant.CHECKING_RULES_CACHE_KEY + "::" + checkingRules.getCommonLength());
+        redisTemplate.delete(Constant.CHECKING_RULES_CACHE_KEY + "::" + checkingRules.getId());
         checkingRulesRepository.deleteById(id);
     }
 

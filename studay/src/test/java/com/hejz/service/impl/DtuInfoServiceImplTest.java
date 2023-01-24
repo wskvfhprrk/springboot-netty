@@ -41,7 +41,7 @@ class DtuInfoServiceImplTest {
     @Order(1)
     @Test
     void save() {
-        dtuInfoService.save(new DtuInfo(imei,1,1,1,1,1,1,true,true));
+        dtuInfoService.save(new DtuInfo(imei,1,1,"1","1",1,1,true,true));
         Object o = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
         Assert.isNull(o, "缓存中应该无值！");
         DtuInfo dtuInfos = dtuInfoService.findByImei(imei);

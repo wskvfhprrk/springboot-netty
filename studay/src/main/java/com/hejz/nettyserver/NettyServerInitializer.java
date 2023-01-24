@@ -38,8 +38,8 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
 //        pipeline.addLast(serverHeartBeatHandler);
         //注册拦截器
         pipeline.addLast(registerHandler);
-        // 自定义解码器
-//        pipeline.addLast(nettyMsgDecoder);
+        // 自定义解码器——解决拆包粘包问题
+        pipeline.addLast(nettyMsgDecoder);
         pipeline.addLast(nettyServerHandler);
     }
 

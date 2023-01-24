@@ -58,18 +58,18 @@ public class DtuInfo implements Serializable {
      * 继电器返回值检测规则id
      */
     @Column(
-            name = "relay_checking_rules_id",
-            columnDefinition="int(2) default 8"+" COMMENT '继电器返回值检测规则id'"
+            name = "relay_checking_rules_ids",
+            columnDefinition="varchar(100) default 8"+" COMMENT '继电器返回值检测规则,多个以逗号隔开，首个为地址位，末位为规则id'"
     )
-    private Integer relayCheckingRulesId=2;
+    private String relayCheckingRulesIds;
     /**
      * 感应器返回值检测规则id
      */
     @Column(
-            name = "sensor_checking_rules_id",
-            columnDefinition="int(2) default 7"+" COMMENT '感应器返回值检测规则id'"
+            name = "sensor_checking_rules_ids",
+            columnDefinition="varchar(100) default 7"+" COMMENT '感应器返回值检测规则,多个以逗号隔开，首个为地址位，末位为规则id'"
     )
-    private Integer sensorCheckingRulesId=1;
+    private String sensorCheckingRulesIds;
     /**
      * 心跳bates长度
      */
@@ -106,12 +106,12 @@ public class DtuInfo implements Serializable {
     public DtuInfo() {
     }
 
-    public DtuInfo(String imei, Integer registrationLength, Integer imeiLength, Integer relayCheckingRulesId, Integer sensorCheckingRulesId, Integer heartbeatLength, Integer intervalTime, Boolean automaticAdjustment,Boolean noImei) {
+    public DtuInfo(String imei, Integer registrationLength, Integer imeiLength, String relayCheckingRulesIds, String sensorCheckingRulesIds, Integer heartbeatLength, Integer intervalTime, Boolean automaticAdjustment,Boolean noImei) {
         this.imei = imei;
         this.registrationLength = registrationLength;
         this.imeiLength = imeiLength;
-        this.relayCheckingRulesId = relayCheckingRulesId;
-        this.sensorCheckingRulesId = sensorCheckingRulesId;
+        this.relayCheckingRulesIds = relayCheckingRulesIds;
+        this.sensorCheckingRulesIds = sensorCheckingRulesIds;
         this.heartbeatLength = heartbeatLength;
         this.intervalTime = intervalTime;
         this.automaticAdjustment = automaticAdjustment;
