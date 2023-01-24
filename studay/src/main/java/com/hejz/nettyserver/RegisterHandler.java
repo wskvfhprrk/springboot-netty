@@ -44,13 +44,12 @@ public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
             dtuRegister.start(ctx, bytes);
         } else if (byteBuf.readableBytes() >= Constant.IMEI_LENGTH) {
             //先获取imei注册再把其它的数据交给后面处理
-            byte[] bytes = new byte[Constant.IMEI_LENGTH];
+            byte[] bytes = new byte[byteBuf.readableBytes()];
             byteBuf.readBytes(bytes);
             DtuInfo dtuInfo = NettyServiceCommon.calculationDtuInfo(bytes);
             dtuRegister.register(ctx,dtuInfo);
-            byte[] bytes1 = new byte[byteBuf.readableBytes()];
-            byteBuf.readBytes(bytes1);
-            list.add(bytes1);
+            //把所有数据后传，交给编码处理
+            list.add(bytes);
         }
     }
 }
