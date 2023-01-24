@@ -22,6 +22,8 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
     private NettyMsgDecoder nettyMsgDecoder;
     @Autowired
     private RegisterHandler registerHandler;
+    @Autowired
+    private ServerHeartBeatHandler serverHeartBeatHandler;
 
     //连接注册，创建成功，会被调用
     @Override
@@ -35,10 +37,10 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         ChannelPipeline pipeline = ch.pipeline();
         //定义读写空闲时间——（单位秒）
         pipeline.addLast(new IdleStateHandler(180, 60,180));
-//        pipeline.addLast(serverHeartBeatHandler);
+        pipeline.addLast(serverHeartBeatHandler);
         //注册拦截器
         pipeline.addLast(registerHandler);
-        // 自定义解码器——解决拆包粘包问题
+        //自定义解码器——解决拆包粘包问题
         pipeline.addLast(nettyMsgDecoder);
         pipeline.addLast(nettyServerHandler);
     }

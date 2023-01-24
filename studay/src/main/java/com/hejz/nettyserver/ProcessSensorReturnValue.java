@@ -55,12 +55,7 @@ public class ProcessSensorReturnValue {
         DtuInfo dtuInfo;
         AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
         Long dtuId = ctx.channel().attr(key).get();
-        if (dtuId != null) {
-            dtuInfo = dtuInfoService.findById(dtuId);
-        } else {
-            dtuInfo = NettyServiceCommon.calculationDtuInfo(bytes);
-            dtuRegister.register(ctx, dtuInfo);
-        }
+        dtuInfo = dtuInfoService.findById(dtuId);
         //同步每次轮询间隔时间
         //把间隔时间设置为每个所在dtu间隔发送时间
         Constant.INTERVAL_TIME_MAP.put(ctx.channel().id().toString(), dtuInfo.getIntervalTime());
@@ -112,11 +107,13 @@ public class ProcessSensorReturnValue {
      * @return
      */
     private List<SensorData> parseSensorListData(List<byte[]> list, ChannelHandlerContext ctx) throws Exception {
+        AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
+        Long dtuId = ctx.channel().attr(key).get();
+        DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
         List<SensorData> doubleList = new ArrayList<>();
         //按顺序解析，根据sensor顺序解析找对应关系
         for (int i = 0; i < list.size(); i++) {
-            Double aDouble = parseSensorOneData(list.get(i), i, ctx);
-            DtuInfo dtuInfo = NettyServiceCommon.calculationDtuInfo(list.get(0));
+            Double aDouble = parseSensorOneData(list.get(i), i, ctx, dtuInfo);
             List<Sensor> sensors = sensorService.findAllByDtuId(dtuInfo.getId());
             Sensor sensor = sensors.get(i);
             SensorData sensorData = new SensorData(i, sensor.getName(), aDouble, sensor.getUnit());
@@ -146,19 +143,17 @@ public class ProcessSensorReturnValue {
     /**
      * 传感器接收数据解析——温湿度和土壤一样规则
      *
-     * @param bytes       收到byte[]信息——22长度
+     * @param useBytes    收到byte[]信息——7长度
      * @param arrayNumber 数组编号
      * @param ctx         通道上下文
+     * @param dtuInfo
      */
-    private Double parseSensorOneData(byte[] bytes, int arrayNumber, ChannelHandlerContext ctx) throws Exception {
-        ////有用的bytes[]的值
-        int useLength = bytes.length - Constant.IMEI_LENGTH;
-        byte[] useBytes = NettyServiceCommon.getUseBytes(bytes, useLength);
+    private Double parseSensorOneData(byte[] useBytes, int arrayNumber, ChannelHandlerContext ctx, DtuInfo dtuInfo) throws Exception {
+
         // TODO: 2023/1/13 计算返回值
         Integer x = calculateReturnValue(useBytes);
         //获取数据值
         double d = Double.parseDouble(String.valueOf(x));
-        DtuInfo dtuInfo = NettyServiceCommon.calculationDtuInfo(bytes);
         Sensor sensor = sensorService.findAllByDtuId(dtuInfo.getId()).get(arrayNumber);
         //经过公式计算得到实际结果
         Double actualResults = calculateActualData(sensor.getCalculationFormula(), d);

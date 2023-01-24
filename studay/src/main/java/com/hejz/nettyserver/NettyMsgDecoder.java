@@ -58,7 +58,8 @@ public class NettyMsgDecoder extends MessageToMessageDecoder<byte[]> {
         //如果大于等于加上imei值的话就可以拆包，去除imei值了
         if (bytes.length - Constant.IMEI_LENGTH - useLength >= 0) {
             //只要有用的才可以用
-            byte[] useBytes = NettyServiceCommon.getUseBytes(bytes, useLength);
+            byte[] useBytes = new byte[useLength];
+            System.arraycopy(bytes, Constant.IMEI_LENGTH, useBytes, 0, useLength);  //数组截取
             list.add(useBytes);
         }else {
             //不够就等待
@@ -66,5 +67,7 @@ public class NettyMsgDecoder extends MessageToMessageDecoder<byte[]> {
             return;
         }
     }
+
+
 
 }

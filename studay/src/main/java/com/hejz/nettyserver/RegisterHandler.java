@@ -2,6 +2,7 @@ package com.hejz.nettyserver;
 
 import com.hejz.common.Constant;
 import com.hejz.entity.DtuInfo;
+import com.hejz.service.DtuInfoService;
 import com.hejz.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
@@ -26,6 +27,8 @@ import java.util.List;
 public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
     @Autowired
     private DtuRegister dtuRegister;
+    @Autowired
+    private DtuInfoService dtuInfoService;
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws Exception {
@@ -46,7 +49,7 @@ public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
             //先获取imei注册再把其它的数据交给后面处理
             byte[] bytes = new byte[byteBuf.readableBytes()];
             byteBuf.readBytes(bytes);
-            DtuInfo dtuInfo = NettyServiceCommon.calculationDtuInfo(bytes);
+            DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
             dtuRegister.register(ctx,dtuInfo);
             //把所有数据后传，交给编码处理
             list.add(bytes);

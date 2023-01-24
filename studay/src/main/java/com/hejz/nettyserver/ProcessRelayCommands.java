@@ -3,10 +3,12 @@ package com.hejz.nettyserver;
 import com.hejz.common.Constant;
 import com.hejz.entity.*;
 import com.hejz.service.CommandStatusService;
+import com.hejz.service.DtuInfoService;
 import com.hejz.service.RelayDefinitionCommandService;
 import com.hejz.service.RelayService;
 import com.hejz.utils.HexConvert;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -33,6 +35,8 @@ public class ProcessRelayCommands {
     private RedisTemplate redisTemplate;
     @Autowired
     private CommandStatusService commandStatusService;
+    @Autowired
+    private DtuInfoService dtuInfoService;
 
     /**
      * 传感器数据转为字符串——没有imei值的有效数据
@@ -42,9 +46,7 @@ public class ProcessRelayCommands {
      */
     String sensorDataToString(byte[] bytes) {
         //截取有效值进行分析——不要imei值
-        int useLength = bytes.length - Constant.IMEI_LENGTH;
-        byte[] useBytes = NettyServiceCommon.getUseBytes(bytes, useLength);
-        return HexConvert.BinaryToHexString(useBytes).trim();
+        return HexConvert.BinaryToHexString(bytes).trim();
     }
 
     /**
@@ -54,7 +56,9 @@ public class ProcessRelayCommands {
      * @param bytes
      */
     void start(ChannelHandlerContext ctx, byte[] bytes) {
-        DtuInfo dtuInfo = NettyServiceCommon.calculationDtuInfo(bytes);
+        AttributeKey<Long> dtuKey = AttributeKey.valueOf(Constant.CHANNEl_KEY);
+        Long dtuId = ctx.channel().attr(dtuKey).get();
+        DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
         //把数据bytes转化为string
         String useData = sensorDataToString(bytes);
         log.info("通道：{} dtuId={}  继电器返回值：{}", ctx.channel().id().toString(), dtuInfo.getId(), useData);
@@ -68,8 +72,8 @@ public class ProcessRelayCommands {
         if (o == null) return;
         RelayDefinitionCommand relayDefinitionCommand = (RelayDefinitionCommand) o;
         //处理过对应id锁:的不需要再次处理--有可能出现重复情况
-        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(Constant.PROCESSED_THE_CORRESPONDING_ID_LOCK + "::" + ctx.channel().id().toString()+ "::" + relayDefinitionCommand.getCorrespondingCommandId(), "1", Duration.ofSeconds(5L));
-        if(!aBoolean)return;
+        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(Constant.PROCESSED_THE_CORRESPONDING_ID_LOCK + "::" + ctx.channel().id().toString() + "::" + relayDefinitionCommand.getCorrespondingCommandId(), "1", Duration.ofSeconds(5L));
+        if (!aBoolean) return;
         //添加修改命令状态
         List<CommandStatus> commandStatuses = commandStatusService.findAllByDtuId(relayDefinitionCommand.getDtuId());
         if (commandStatuses != null && !commandStatuses.isEmpty()) {
@@ -83,7 +87,7 @@ public class ProcessRelayCommands {
             }
         }
         //保存当前状态
-        commandStatusService.save(new CommandStatus(dtuInfo.getId(), relayDefinitionCommand.getId(),new Date(),new Date(),true));
+        commandStatusService.save(new CommandStatus(dtuInfo.getId(), relayDefinitionCommand.getId(), new Date(), new Date(), true));
         Long commonId = relayDefinitionCommand.getCommonId();
         //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand
         RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.findByAllDtuId(dtuInfo.getId()).stream()

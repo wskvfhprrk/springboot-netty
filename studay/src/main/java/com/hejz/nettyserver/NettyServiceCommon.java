@@ -47,20 +47,20 @@ public class NettyServiceCommon {
     }
 
 
-    /**
-     * 计算dtuId
-     *
-     * @param bytes
-     * @return
-     */
-    public static DtuInfo calculationDtuInfo(byte[] bytes) {
-        byte[] imeiBytes = new byte[Constant.IMEI_LENGTH];
-        System.arraycopy(bytes, 0, imeiBytes, 0, Constant.IMEI_LENGTH);
-        // TODO: 2023/1/13 BinaryToHexString要改为convertHexToString无空格的ASCII码
-        String imei = HexConvert.hexStringToString(HexConvert.BinaryToHexString(imeiBytes).replaceAll(" ", ""));
-        DtuInfo dtuInfo = dtuInfoService.findByImei(imei.trim());
-        return dtuInfo;
-    }
+//    /**
+//     * 计算dtuId
+//     *
+//     * @param bytes
+//     * @return
+//     */
+//    public static DtuInfo calculationDtuInfo(byte[] bytes) {
+//        byte[] imeiBytes = new byte[Constant.IMEI_LENGTH];
+//        System.arraycopy(bytes, 0, imeiBytes, 0, Constant.IMEI_LENGTH);
+//        // TODO: 2023/1/13 BinaryToHexString要改为convertHexToString无空格的ASCII码
+//        String imei = HexConvert.hexStringToString(HexConvert.BinaryToHexString(imeiBytes).replaceAll(" ", ""));
+//        DtuInfo dtuInfo = dtuInfoService.findByImei(imei.trim());
+//        return dtuInfo;
+//    }
 
     /**
      * 必须检测是有用的数据才可以，如果不能够使用才不可以
@@ -69,42 +69,21 @@ public class NettyServiceCommon {
      * @return
      */
     public static boolean testingData(byte[] bytes) {
-        //1、必须注册过的imei值——查dtuInfo看有没有
-        DtuInfo dtuInfo= NettyServiceCommon.calculationDtuInfo(bytes);
-        if (dtuInfo==null) {
-            log.error("bytes：{}校验通不过——查无imei值：{}", HexConvert.BinaryToHexString(bytes), dtuInfo.getId());
-            return false;
-        }
-        //todo 2、数据校检规则校验
+        //数据校检规则校验
         int bytesLength = bytes.length - Constant.IMEI_LENGTH;
         //查出所有符合此长度的规则
         List<CheckingRules> checkingRules = checkingRulesService.getByCommonLength(bytesLength);
         for (CheckingRules dataCheckingRule : checkingRules) {
             //使用crc16校验——不需要imei值
-            Integer useLength = dataCheckingRule.getCommonLength();
-            byte[] useBytes = getUseBytes(bytes, useLength);
-            boolean b = validCRC16(useBytes, dataCheckingRule);
+            boolean b = validCRC16(bytes, dataCheckingRule);
             if (!b) {
                 log.error("bytes：{}校验通不过——crc16校验不过：{}", HexConvert.BinaryToHexString(bytes));
                 return false;
             }
-            //todo 地址位不在dtuInfo中
         }
         return true;
     }
 
-    /**
-     * 截取有用的bytes——不含imei
-     *
-     * @param bytes
-     * @param useLength
-     * @return
-     */
-    public static byte[] getUseBytes(byte[] bytes, Integer useLength) {
-        byte[] useBytes = new byte[useLength];
-        System.arraycopy(bytes, Constant.IMEI_LENGTH, useBytes, 0, useLength);  //数组截取
-        return useBytes;
-    }
 
     /**
      * crc16校验——校验7位bytes,最后两位为校验为
