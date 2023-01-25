@@ -39,11 +39,8 @@ public class NettyMsgDecoder extends MessageToMessageDecoder<byte[]> {
         AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
         Long dtuId = ctx.channel().attr(key).get();
         DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
+        //使用imei值作为分割符拆包
         String[] s1 = HexConvert.BinaryToHexString(bytes).replaceAll(" ", "").split(HexConvert.convertStringToHex(dtuInfo.getImei()));
-//        if(s1.length==2){
-//            Thread.sleep(10000l);
-//        }
-//        log.info("s1.length=={}",s1.length);
         for (String s : s1) {
             if(s.length()!=0) {
                 //指令的地址值
@@ -66,25 +63,19 @@ public class NettyMsgDecoder extends MessageToMessageDecoder<byte[]> {
                         break;
                     }
                 }
-                if(useLength.equals(dtuInfo.getHeartbeatLength()) && adds.equals("0")){
+                int length = HexConvert.hexStringToBytes(s).length;
+                if(adds.equals("0")){
                     //心跳不作处理
                     log.info("检测到客户端imei:{}心跳：{}",dtuInfo.getImei(),s);
                 }
-                //如果带有imei且大于等于总长度的话的话就可以拆包，去除imei值了
-                if (bytes.length - Constant.IMEI_LENGTH - useLength >= 0 && dtuInfo.getNoImei()) {
-                    //只要有用的才可以用
-                    byte[] useBytes = new byte[useLength];
-                    System.arraycopy(bytes, Constant.IMEI_LENGTH, useBytes, 0, useLength);  //数组截取
-                    list.add(useBytes);
-                }
                 //如果不带imei且大于等于总长度的话的话就可以拆包
-                else if (bytes.length - useLength >= 0 && !dtuInfo.getNoImei()) {
+                else if (length - useLength == 0) {
                     //只要有用的才可以用
-                    list.add(bytes);
+                    list.add(HexConvert.hexStringToBytes(s));
                 } else {
-                    //不够就等待
-                    log.info("长度不够，继续等待");
-                    return;
+                    //todo 不够再粘包了——以后再开发此指令
+                    log.info("长度不够，不要此值：{}",s);
+//                    return;
                 }
             }
         }
