@@ -31,35 +31,35 @@ public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
     private DtuInfoService dtuInfoService;
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
         Long dtuId = ctx.channel().attr(key).get();
         if (dtuId != null) {
             //注册后把bytes全部向后传
-            byte[] bytes = new byte[byteBuf.readableBytes()];
-            byteBuf.readBytes(bytes);
-            list.add(bytes);
-        } else if (byteBuf.readableBytes() >= Constant.DUT_REGISTERED_BYTES_LENGTH) {
+            byte[] bytes = new byte[in.readableBytes()];
+            in.readBytes(bytes);
+            out.add(bytes);
+        } else if (in.readableBytes() == Constant.DUT_REGISTERED_BYTES_LENGTH) {
             //去注册
             byte[] bytes = new byte[Constant.DUT_REGISTERED_BYTES_LENGTH];
-            byteBuf.readBytes(bytes);
+            in.readBytes(bytes);
             log.info("进入注册拦截器……………………进行注册");
             dtuRegister.start(ctx, bytes);
-        } else if (byteBuf.readableBytes() >= Constant.IMEI_LENGTH) {
+        } else if (in.readableBytes() >= Constant.IMEI_LENGTH) {
             //先获取imei注册再把其它的数据交给后面处理
-            byte[] bytes = new byte[byteBuf.readableBytes()];
-            byteBuf.readBytes(bytes);
+            byte[] bytes = new byte[in.readableBytes()];
+            in.readBytes(bytes);
             byte[] imeiBytes = new byte[Constant.IMEI_LENGTH];
             System.arraycopy(bytes, 0, imeiBytes, 0, Constant.IMEI_LENGTH);
             String imei = HexConvert.hexStringToString(HexConvert.BinaryToHexString(imeiBytes).replaceAll(" ", ""));
             DtuInfo dtuInfo = dtuInfoService.findByImei(imei.trim());
             dtuRegister.register(ctx,dtuInfo);
             //把所有数据后传，交给编码处理
-            list.add(bytes);
+            out.add(bytes);
         }else {
-            log.info("无法注册，关闭通道！");
-            NettyServiceCommon.deleteKey(ctx.channel().id().toString());
-            ctx.channel().close();
+            byte[] bytes = new byte[in.readableBytes()];
+            in.readBytes(bytes);
+            log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), bytes.length, HexConvert.BinaryToHexString(bytes));
         }
     }
 }
