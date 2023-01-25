@@ -39,12 +39,12 @@ public class NettyMsgDecoder extends MessageToMessageDecoder<byte[]> {
         AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
         Long dtuId = ctx.channel().attr(key).get();
         DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
-        //使用imei值作为分割符拆包
+        //使用imei值作为分割符拆包，那后面处理就不需要考虑imei
         String[] s1 = HexConvert.BinaryToHexString(bytes).replaceAll(" ", "").split(HexConvert.convertStringToHex(dtuInfo.getImei()));
         for (String s : s1) {
             if(s.length()!=0) {
                 //指令的地址值
-                Integer adds = 0;
+                Integer adds;
                 if (dtuInfo.getNoImei()) {
                     String hex = "0x" + s.substring(0,2);
                     adds = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
