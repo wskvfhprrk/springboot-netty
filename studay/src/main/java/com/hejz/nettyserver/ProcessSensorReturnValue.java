@@ -67,12 +67,11 @@ public class ProcessSensorReturnValue {
         //首次end时间为空值
         LocalDateTime end = Constant.END_TIME_MAP.get(ctx.channel().id().toString()) == null ? dateIntervalTime : Constant.END_TIME_MAP.get(ctx.channel().id().toString());
         Duration duration = Duration.between(end, LocalDateTime.now());
-        //两个时间，多加一秒时间，防止出错
-        long millis = duration.toMillis() + 1000;
+        //两个时间，多加一些时间，防止出错
+        long millis = duration.toMillis() + 1000 * sensorsLength;
         List<byte[]> sensorDataByteList;
         //必须检测是有用的数据才可以，如果不能够使用才不可以
         if (!NettyServiceCommon.testingData(bytes)) return;
-//        log.info("millis=={},dtuInfo.getIntervalTime()=={}",millis,dtuInfo.getIntervalTime());
         if (millis >= dtuInfo.getIntervalTime()) {
             log.info("======={}=>{}==>查询一组出数据===========", ctx.channel().id().toString(), dtuInfo.getId());
             sensorDataByteList = new ArrayList<>(sensorsLength);
