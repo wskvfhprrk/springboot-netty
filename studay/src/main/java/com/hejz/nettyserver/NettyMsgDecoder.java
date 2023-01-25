@@ -39,13 +39,24 @@ public class NettyMsgDecoder extends MessageToMessageDecoder<byte[]> {
         AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
         Long dtuId = ctx.channel().attr(key).get();
         DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
-        //imei在前取出imei长度+1位就是地址位令仅为一位
+        //指令的地址值
+        Integer adds = 0;
+        if (dtuInfo.getNoImei()) {
+            //imei在前取出imei长度+1位就是地址位令仅为一位
+            Integer useLength = 0;
+            byte[] b = new byte[1];
+            System.arraycopy(bytes, Constant.IMEI_LENGTH, b, 0, 1);  //数组截取
+            String hex = "0x" + HexConvert.BinaryToHexString(b).replaceAll(" ", "");
+            adds = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
+        } else {
+            Integer useLength = 0;
+            byte[] b = new byte[1];
+            System.arraycopy(bytes, 0, b, 0, 1);  //数组截取
+            String hex = "0x" + HexConvert.BinaryToHexString(b).replaceAll(" ", "");
+            adds = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
+        }
         //有用数据建立在dtu中地址
         Integer useLength = 0;
-        byte[] b = new byte[1];
-        System.arraycopy(bytes, Constant.IMEI_LENGTH, b, 0, 1);  //数组截取
-        String hex = "0x" + HexConvert.BinaryToHexString(b).replaceAll(" ", "");
-        Integer adds = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
         String relayCheckingRulesIds = dtuInfo.getRelayCheckingRulesIds() + "," + dtuInfo.getSensorCheckingRulesIds();
         for (String s : relayCheckingRulesIds.split(",")) {
             String[] split = s.split("-");
@@ -55,19 +66,23 @@ public class NettyMsgDecoder extends MessageToMessageDecoder<byte[]> {
                 break;
             }
         }
-        //如果大于等于加上imei值的话就可以拆包，去除imei值了
-        if (bytes.length - Constant.IMEI_LENGTH - useLength >= 0) {
+        //如果带有imei且大于等于总长度的话的话就可以拆包，去除imei值了
+        if (bytes.length - Constant.IMEI_LENGTH - useLength >= 0 && dtuInfo.getNoImei()) {
             //只要有用的才可以用
             byte[] useBytes = new byte[useLength];
             System.arraycopy(bytes, Constant.IMEI_LENGTH, useBytes, 0, useLength);  //数组截取
             list.add(useBytes);
-        }else {
+        }
+        //如果不带imei且大于等于总长度的话的话就可以拆包
+        else if (bytes.length - useLength >= 0 && !dtuInfo.getNoImei()) {
+            //只要有用的才可以用
+            list.add(bytes);
+        } else {
             //不够就等待
             log.info("长度不够，继续等待");
             return;
         }
     }
-
 
 
 }

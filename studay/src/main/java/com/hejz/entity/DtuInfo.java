@@ -99,7 +99,7 @@ public class DtuInfo implements Serializable {
     @Column(
             name = "no_imei",
             nullable = true,
-            columnDefinition="bit(1)"+" COMMENT '返回值是否带imei'"
+            columnDefinition="bit(1)"+" COMMENT '返回值是否带imei:true带imei,false不带'"
     )
     private Boolean noImei = true;
 
