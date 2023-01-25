@@ -56,7 +56,6 @@ public class NettyServiceCommon {
 //    public static DtuInfo calculationDtuInfo(byte[] bytes) {
 //        byte[] imeiBytes = new byte[Constant.IMEI_LENGTH];
 //        System.arraycopy(bytes, 0, imeiBytes, 0, Constant.IMEI_LENGTH);
-//        // TODO: 2023/1/13 BinaryToHexString要改为convertHexToString无空格的ASCII码
 //        String imei = HexConvert.hexStringToString(HexConvert.BinaryToHexString(imeiBytes).replaceAll(" ", ""));
 //        DtuInfo dtuInfo = dtuInfoService.findByImei(imei.trim());
 //        return dtuInfo;
