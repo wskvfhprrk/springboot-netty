@@ -53,6 +53,9 @@ public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
             dtuRegister.register(ctx,dtuInfo);
             //把所有数据后传，交给编码处理
             list.add(bytes);
+        }else {
+            log.info("无法注册，关闭通道！");
+            ctx.channel().close();
         }
     }
 }

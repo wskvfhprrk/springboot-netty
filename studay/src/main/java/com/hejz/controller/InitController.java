@@ -28,8 +28,8 @@ public class InitController {
     RelayDefinitionCommandRepository relayDefinitionCommandRepository;
     @Autowired
     CheckingRulesRepository checkingRulesRepository;
-    @Autowired
-    CommandStatusRepository commandStatusRepository;
+//    @Autowired
+//    CommandStatusRepository commandStatusRepository;
     @Autowired
     RedisTemplate redisTemplate;
 
@@ -91,7 +91,7 @@ public class InitController {
         //处理dtu信息
         dtuInfoRepository.save(new DtuInfo(imei, 89, 15, "3-2", "1-1,2-1", 2, 30000, true, true));
         //状态管理
-        commandStatusRepository.save(new CommandStatus((long) (i + 1), i * 3 + 2L, new Date(), new Date(), true));
+//        commandStatusRepository.save(new CommandStatus((long) (i + 1), i * 3 + 2L, new Date(), new Date(), true));
     }
 
 }
