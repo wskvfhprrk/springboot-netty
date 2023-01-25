@@ -58,6 +58,7 @@ public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
             list.add(bytes);
         }else {
             log.info("无法注册，关闭通道！");
+            NettyServiceCommon.deleteKey(ctx.channel().id().toString());
             ctx.channel().close();
         }
     }

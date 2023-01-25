@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -35,15 +36,31 @@ public class NettyServiceCommon {
     @Autowired
     private CheckingRulesService checkingRulesService1;
     private static CheckingRulesService checkingRulesService;
-    @Resource(name="redisTemplate")
+    @Resource(name = "redisTemplate")
     private RedisTemplate redisTemplate1;
     private static RedisTemplate redisTemplate;
 
+    /**
+     * 删除所有缓存和内存中map
+     *
+     * @param channelId
+     */
+    public static void deleteKey(String channelId) {
+
+        Constant.INTERVAL_TIME_MAP.remove(channelId);
+        Constant.SENSOR_DATA_BYTE_LIST_MAP.remove(channelId);
+        Constant.THREE_RECORDS_MAP.remove(channelId + "min");
+        Constant.THREE_RECORDS_MAP.remove(channelId + "max");
+
+        Set<String> keys = redisTemplate.keys(Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY + "::" + channelId + ":*");
+        redisTemplate.delete(keys);
+    }
+
     @PostConstruct
-    public void init(){
-        this.dtuInfoService=dtuInfoService1;
-        this.checkingRulesService=checkingRulesService1;
-        this.redisTemplate=redisTemplate1;
+    public void init() {
+        this.dtuInfoService = dtuInfoService1;
+        this.checkingRulesService = checkingRulesService1;
+        this.redisTemplate = redisTemplate1;
     }
 
 

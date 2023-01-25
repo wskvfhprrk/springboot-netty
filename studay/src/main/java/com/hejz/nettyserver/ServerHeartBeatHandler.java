@@ -25,6 +25,7 @@ public class ServerHeartBeatHandler extends ChannelInboundHandlerAdapter {
             switch (state) {
                 case READER_IDLE:
                     log.info("channel:{},空闲3分钟无上报数据自动关闭通道！",ctx.channel().id().toString());
+                    NettyServiceCommon.deleteKey(ctx.channel().id().toString());
                     ctx.channel().close();
                     break;
                 case WRITER_IDLE:

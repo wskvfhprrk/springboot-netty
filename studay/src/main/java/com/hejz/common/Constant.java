@@ -33,20 +33,19 @@ public class Constant {
     public static final Map<String, List<byte[]>> SENSOR_DATA_BYTE_LIST_MAP = new HashMap<>();
     //记录三次临界值才执行——key为ctx.channel().id()+min或max
     public static final Map<String,List<Double>> THREE_RECORDS_MAP = new HashMap();
+    //按通道存储每组上报间隔时间——在接到据后会自传感器数据后动修改与dtu设置的每组间隔时间一致，否则会是默认时间。
+    public static final  Map<String,Integer> INTERVAL_TIME_MAP = new ConcurrentHashMap() ;
+
+
+
     //已处理相应的ID锁
     public static final String PROCESSED_THE_CORRESPONDING_ID_LOCK = "processedTheCorrespondingIdLock";
     //IMEI长度
     public static final int IMEI_LENGTH = 15;
     //dut注册bytes长度
     public static final int DUT_REGISTERED_BYTES_LENGTH = 89;
-    //DTU轮询返回长度
-    public static final int DTU_POLLING_RETURN_LENGTH = 7;
-    //继电器返回值长度
-    public static final int RELAY_RETURN_VALUES_LENGTH = 8;
     //每组间隔默认时间（毫秒）
     public static final int INTERVAL_TIME = 30000;
-    //按通道存储每组上报间隔时间——在接到据后会自传感器数据后动修改与dtu设置的每组间隔时间一致，否则会是默认时间。
-    public static final  Map<String,Integer> INTERVAL_TIME_MAP = new ConcurrentHashMap() ;
     //需要继续处理缓存键的缓存指令失效时间（毫秒）
     public static final long EXPIRATION_TIME_OF_CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEYS = 600000;
     //netty客户端所有的连接绑定信息

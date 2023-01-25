@@ -30,6 +30,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.getCause();
+        NettyServiceCommon.deleteKey(ctx.channel().id().toString());
         ctx.channel().close();
     }
 

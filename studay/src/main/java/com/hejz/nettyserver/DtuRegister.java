@@ -59,12 +59,15 @@ public class DtuRegister {
         log.info("=========={}====dtu注册了=============",ctx.channel().id().toString());
         if (dtuInfo == null) {
             log.error("imei值:{}查询不到或没有注册，关闭通道", dtuInfo.getImei());
+            NettyServiceCommon.deleteKey(ctx.channel().id().toString());
             ctx.channel().close();
             return;
         }
         // 之前已经绑定过了，移除并释放掉之前绑定的channel
         if (Constant.USER_CHANNEL.containsKey(dtuInfo.getId())) { // map  imei --> channel
             Channel oldChannel = Constant.USER_CHANNEL.get(dtuInfo.getId());
+            log.info("imei:{} 冲突,原通道：{} 被关闭",dtuInfo.getImei(),oldChannel.id().toString());
+            NettyServiceCommon.deleteKey(oldChannel.id().toString());
             oldChannel.close();
         }
 
