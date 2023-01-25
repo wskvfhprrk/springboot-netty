@@ -27,8 +27,8 @@ import java.util.List;
 public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
     @Autowired
     private DtuRegister dtuRegister;
-    @Autowired
-    private DtuInfoService dtuInfoService;
+//    @Autowired
+//    private DtuInfoService dtuInfoService;
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws Exception {
@@ -39,20 +39,20 @@ public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
             byte[] bytes = new byte[byteBuf.readableBytes()];
             byteBuf.readBytes(bytes);
             list.add(bytes);
-        } else if (byteBuf.readableBytes() == Constant.DUT_REGISTERED_BYTES_LENGTH) {
+        } else if (byteBuf.readableBytes() >= Constant.DUT_REGISTERED_BYTES_LENGTH) {
             //去注册
             byte[] bytes = new byte[Constant.DUT_REGISTERED_BYTES_LENGTH];
             byteBuf.readBytes(bytes);
             log.info("进入注册拦截器……………………进行注册");
             dtuRegister.start(ctx, bytes);
-        } else if (byteBuf.readableBytes() >= Constant.IMEI_LENGTH) {
-            //先获取imei注册再把其它的数据交给后面处理
-            byte[] bytes = new byte[byteBuf.readableBytes()];
-            byteBuf.readBytes(bytes);
-            DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
-            dtuRegister.register(ctx,dtuInfo);
-            //把所有数据后传，交给编码处理
-            list.add(bytes);
+//        } else if (byteBuf.readableBytes() >= Constant.IMEI_LENGTH) {
+//            //先获取imei注册再把其它的数据交给后面处理
+//            byte[] bytes = new byte[byteBuf.readableBytes()];
+//            byteBuf.readBytes(bytes);
+//            DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
+//            dtuRegister.register(ctx,dtuInfo);
+//            //把所有数据后传，交给编码处理
+//            list.add(bytes);
         }else {
             log.info("无法注册，关闭通道！");
             ctx.channel().close();

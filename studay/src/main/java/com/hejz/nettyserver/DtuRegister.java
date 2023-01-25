@@ -6,6 +6,7 @@ import com.hejz.common.Constant;
 import com.hejz.entity.DtuInfo;
 import com.hejz.entity.RegisterInfo;
 import com.hejz.service.DtuInfoService;
+import com.hejz.utils.HexConvert;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
@@ -37,12 +38,17 @@ public class DtuRegister {
     public void start(ChannelHandlerContext ctx, byte[] bytes) {
         synchronized (this) {
             RegisterInfo registerInfo = null;
+            String imei=null;
             try {
                 registerInfo = objectMapper.readValue(new String(bytes, StandardCharsets.UTF_8), RegisterInfo.class);
+                 imei = registerInfo.getImei().trim();
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                log.info("RegisterInfo序列化不了就是以imei开头消息，以imei为开头消息进行注册");
+                byte[] imeiBytes=new byte[Constant.IMEI_LENGTH];
+                System.arraycopy(bytes,0,imeiBytes,0,Constant.IMEI_LENGTH);
+                imei= HexConvert.BinaryToHexString(imeiBytes).replaceAll(" ","").trim();
             }
-            String imei = registerInfo.getImei().trim();
+
             DtuInfo dtuInfo = dtuInfoService.findByImei(imei);
             register(ctx, dtuInfo);
         }
