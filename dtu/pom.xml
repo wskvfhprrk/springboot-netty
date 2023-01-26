@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.hejz</groupId>
-    <artifactId>studay</artifactId>
+    <artifactId>dtu</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>studay</name>
+    <name>dtu</name>
     <description>spring data jpa+netty</description>
     <properties>
         <java.version>1.8</java.version>
