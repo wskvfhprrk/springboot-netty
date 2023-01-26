@@ -4,7 +4,7 @@
 #cho -e "\033[3${0};4${7}m文字色值 ${0}, 背景色值 ${7}\033[0m"
 #删除服务器
 echo -e  ======================1.删除运行的服务器======================
-ps -aux | grep studay | grep -v grep| awk '{print $2}' |xargs  kill -9
+ps -aux | grep dtu | grep -v grep| awk '{print $2}' |xargs  kill -9
 #启动docker
 echo -e ======================2.启动docker:为了启动mysql和redis======================
 systemctl start docker
@@ -24,14 +24,14 @@ rm -rf /root/start.sh
 
 cp -rf start.sh /root/
 #进入目录中
-cd studay
+cd dtu
 #跳过测试建jar包
 echo -e ======================6.跳过测试构建jar包======================
 mvn clean package -Dmaven.test.skip=true
 #重启服务
 echo -e ======================7.重启服务======================
 cd target
-nohup java -jar -Dserver.port=8080 studay-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
+nohup java -jar -Dserver.port=8080 dtu-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
 echo -e
 echo -e
 echo -e =================请自行打开小米球操作======================
