@@ -21,10 +21,11 @@ echo -e ======================5.先删除start.sh源文件再拷贝=============
 cd /root/springboot-netty/
 #先删除源文件再拷贝
 rm -rf /root/start.sh
-
 cp -rf start.sh /root/
 #进入目录中
 cd dtu
+echo -e ======================6.修改application.yml文件======================
+find -name 'application.yml' | xargs perl -pi -e 's|create-drop|update|g'
 #跳过测试建jar包
 echo -e ======================6.跳过测试构建jar包======================
 mvn clean package -Dmaven.test.skip=true
