@@ -28,7 +28,7 @@ echo -e ======================6.修改application.yml文件=====================
 find -name 'application.yml' | xargs perl -pi -e 's|create-drop|update|g'
 #find -name 'InitController.java' | xargs perl -pi -e 's|import javax.annotation.GetMapping;||g'
 find -name 'InitController.java' | xargs perl -pi -e 's|PostConstruct|GetMapping|g'
-find -name 'InitController.java' | xargs perl -pi -e 's|annotation.GetMapping|annotation.PostConstruct|g'
+find -name 'InitController.java' | xargs perl -pi -e 's|javax.annotation.GetMapping|javax.annotation.PostConstruct|g'
 #跳过测试建jar包
 echo -e ======================6.跳过测试构建jar包======================
 mvn clean package -Dmaven.test.skip=true
