@@ -26,7 +26,7 @@ cp -rf start.sh /root/
 cd dtu
 echo -e ======================6.修改application.yml文件======================
 find -name 'application.yml' | xargs perl -pi -e 's|create-drop|update|g'
-#find -name 'InitController.java' | xargs perl -pi -e 's|import javax.annotation.GetMapping;||g'
+# 启动时写入数据库中的初始化数据不用写了
 find -name 'InitController.java' | xargs perl -pi -e 's|PostConstruct|GetMapping|g'
 find -name 'InitController.java' | xargs perl -pi -e 's|javax.annotation.GetMapping|javax.annotation.PostConstruct|g'
 #跳过测试建jar包
