@@ -5,6 +5,7 @@ import com.hejz.entity.*;
 import com.hejz.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
@@ -28,8 +29,6 @@ public class InitController {
     RelayDefinitionCommandRepository relayDefinitionCommandRepository;
     @Autowired
     CheckingRulesRepository checkingRulesRepository;
-//    @Autowired
-//    CommandStatusRepository commandStatusRepository;
     @Autowired
     RedisTemplate redisTemplate;
 
@@ -90,8 +89,6 @@ public class InitController {
         sensorRepository.save(new Sensor((long) (i + 1), 2, "土壤电导率", "02 03 02 02 00 01 24 41", "D/1", "us/cm", 250, 80, 0L, 0L));
         //处理dtu信息
         dtuInfoRepository.save(new DtuInfo(imei, 89, 15, "3-2", "1-1,2-1", 2, 30000, true, true));
-        //状态管理
-//        commandStatusRepository.save(new CommandStatus((long) (i + 1), i * 3 + 2L, new Date(), new Date(), true));
     }
 
 }
