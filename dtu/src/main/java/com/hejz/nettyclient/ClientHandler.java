@@ -27,7 +27,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         //如果收到不是心跳信息返回给服务端
         if(!hex.equals("00 00 ")){
             ByteBuf bufff = Unpooled.buffer();
-            String s = HexConvert.convertStringToHex(SystemClient.imie) + hex.replaceAll(" ","");
+            String s = HexConvert.convertStringToHex(SystemClient.imei) + hex.replaceAll(" ","");
             log.info("服务器响应数据返回给服务器=="+s);
             bufff.writeBytes(HexConvert.hexStringToBytes(s));
             ctx.writeAndFlush(bufff);

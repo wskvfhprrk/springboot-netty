@@ -30,7 +30,7 @@ public class SystemClient {
 
     private String host;
     private int port;
-    public static String imie;
+    public static String imei;
 
     public SystemClient(String host, int port) {
         this.host = host;
@@ -71,13 +71,59 @@ public class SystemClient {
 
 
     private void start(ChannelFuture future) throws IOException {
+        Long im=865328063321359L;
+        for (int i = 0; i < 10; i++) {
+            System.out.println("选择"+i+"===="+im+i);
+        }
         InputStreamReader is = new InputStreamReader(System.in, "UTF-8");
         BufferedReader br = new BufferedReader(is);
-        log.info("请输入你的imei>>>");
+        System.out.println("请选择你的imei>>>");
         //向服务器发送数据
-        String imei = br.readLine();
-        SystemClient.imie = imei;
+        int data = Integer.parseInt(br.readLine());
+        String imei = null;
+        switch (data){
+            case 0:
+                imei="865328063321359";
+                break;
+            case 1:
+                imei="865328063321360";
+                break;
+            case 2:
+                imei="865328063321361";
+                break;
+            case 3:
+                imei="865328063321362";
+                break;
+            case 4:
+                imei="865328063321363";
+                break;
+            case 5:
+                imei="865328063321364";
+                break;
+            case 6:
+                imei="865328063321365";
+                break;
+            case 7:
+                imei="865328063321366";
+                break;
+            case 8:
+                imei="865328063321367";
+                break;
+            case 9:
+                imei="865328063321368";
+                break;
+            default:
+                System.out.println("只能选择0-9");
+        }
+        System.out.println("您选择的imei值===>"+imei);
+        SystemClient.imei = imei;
         //发送的指令
+        instructionsSent(future, imei);
+        br.close();
+        is.close();
+    }
+
+    private void instructionsSent(ChannelFuture future, String imei) {
         List<String> instructionsSent = new ArrayList<>();
         //空气温度,空气湿度,土壤PH,土壤温度,土壤湿度,土壤氮,土壤磷,土壤钾,土壤电导率
         //一般缩小10倍是真实数据
@@ -120,8 +166,6 @@ public class SystemClient {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            br.close();
-            is.close();
         }
     }
 
