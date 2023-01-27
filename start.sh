@@ -26,6 +26,7 @@ cp -rf start.sh /root/
 cd dtu
 echo -e ======================6.修改application.yml文件======================
 find -name 'application.yml' | xargs perl -pi -e 's|create-drop|update|g'
+find -name 'InitController' | xargs perl -pi -e 's|@PostConstruct|//@PostConstruct|g'
 #跳过测试建jar包
 echo -e ======================6.跳过测试构建jar包======================
 mvn clean package -Dmaven.test.skip=true
