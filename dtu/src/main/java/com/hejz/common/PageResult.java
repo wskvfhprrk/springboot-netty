@@ -6,9 +6,9 @@ import java.util.List;
 
 @Data
 public class PageResult<T> {
-    private Integer pageNo;
-    private Integer pageSize;
-    private Integer totalPage;
-    private Long totalElements;
-    private List<T> content;
+    private Integer page;
+//    private Integer pageSize;
+    private Integer limit;
+    private Long total;
+    private List<T> items;
 }

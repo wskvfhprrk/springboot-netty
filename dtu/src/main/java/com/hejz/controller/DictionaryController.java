@@ -59,18 +59,17 @@ public class DictionaryController {
     public Result<PageResult<DictionaryFindByPageVo>> findBypage( @Valid DictionaryFindByPageDto dto){
         Dictionary dictionary=new Dictionary();
         BeanUtils.copyProperties(dto,dictionary);
-        Page<Dictionary> dictionaryPage = dictionaryService.findPage(dictionary, dto.getPageNo(), dto.getPageSize());
+        Page<Dictionary> dictionaryPage = dictionaryService.findPage(dictionary, dto.getPage(), dto.getPage());
         List<DictionaryFindByPageVo> list = dictionaryPage.getContent().stream().map(d -> {
             DictionaryFindByPageVo vo = new DictionaryFindByPageVo();
             BeanUtils.copyProperties(d,vo);
             return vo;
         }).collect(Collectors.toList());
         PageResult<DictionaryFindByPageVo> pages=new PageResult<>();
-        pages.setPageNo(dto.getPageNo());
-        pages.setPageSize(dto.getPageSize());
-        pages.setTotalPage(dictionaryPage.getTotalPages());
-        pages.setTotalElements(dictionaryPage.getTotalElements());
-        pages.setContent(list);
+        pages.setPage(dto.getPage());
+        pages.setLimit(dto.getLimit());
+        pages.setTotal(dictionaryPage.getTotalElements());
+        pages.setItems(list);
         return Result.ok(pages);
     }
 

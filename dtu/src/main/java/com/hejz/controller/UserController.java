@@ -90,18 +90,16 @@ public class UserController {
     public Result<PageResult<UserFindByPageVo>> findBypage( @Valid UserFindByPageDto dto){
         User user=new User();
         BeanUtils.copyProperties(dto,user);
-        Page<User> userPage = userService.findPage(user, dto.getPageNo(), dto.getPageSize());
+        Page<User> userPage = userService.findPage(user, dto.getPage(), dto.getPage());
         List<UserFindByPageVo> list = userPage.getContent().stream().map(d -> {
             UserFindByPageVo vo = new UserFindByPageVo();
             BeanUtils.copyProperties(d,vo);
             return vo;
         }).collect(Collectors.toList());
         PageResult<UserFindByPageVo> pages=new PageResult<>();
-        pages.setPageNo(dto.getPageNo());
-        pages.setPageSize(dto.getPageSize());
-        pages.setTotalPage(userPage.getTotalPages());
-        pages.setTotalElements(userPage.getTotalElements());
-        pages.setContent(list);
+        pages.setPage(dto.getPage());
+        pages.setLimit(dto.getLimit());
+        pages.setItems(list);
         return Result.ok(pages);
     }
 

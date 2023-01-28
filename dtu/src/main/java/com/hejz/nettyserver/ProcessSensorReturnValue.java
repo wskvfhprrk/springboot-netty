@@ -89,7 +89,9 @@ public class ProcessSensorReturnValue {
             try {
                 List<SensorData> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
                 //插入数据库
-                insertDatabase(dtuInfo.getId(), sensorDataList);
+                if (sensorDataList != null) {
+                    insertDatabase(dtuInfo.getId(), sensorDataList);
+                }
             } catch (Exception e) {
                 log.info(e.toString());
             }
@@ -113,6 +115,9 @@ public class ProcessSensorReturnValue {
         //按顺序解析，根据sensor顺序解析找对应关系
         for (int i = 0; i < list.size(); i++) {
             Double aDouble = parseSensorOneData(list.get(i), i, ctx, dtuInfo);
+            if (aDouble == null) {
+                return null;
+            }
             List<Sensor> sensors = sensorService.findAllByDtuId(dtuInfo.getId());
             Sensor sensor = sensors.get(i);
             SensorData sensorData = new SensorData(i, sensor.getName(), aDouble, sensor.getUnit());
@@ -148,7 +153,6 @@ public class ProcessSensorReturnValue {
      * @param dtuInfo
      */
     private Double parseSensorOneData(byte[] useBytes, int arrayNumber, ChannelHandlerContext ctx, DtuInfo dtuInfo) throws Exception {
-
         // TODO: 2023/1/13 计算返回值
         Integer x = calculateReturnValue(useBytes);
         //获取数据值
@@ -158,10 +162,16 @@ public class ProcessSensorReturnValue {
         Double actualResults = calculateActualData(sensor.getCalculationFormula(), d);
         log.info(" 通道：{} dtuId==>{},{} =====> {}  ====> {}  ====> {}", ctx.channel().id().toString(), dtuInfo.getId(), arrayNumber, sensor.getAdrss(), sensor.getName(), actualResults + sensor.getUnit());
         //开新建程——异步处理根据解析到数据大小判断是否产生事件
+        if (arrayNumber == 0) {
+            if (actualResults - 50 >= 0 || actualResults + 50 <= 0) {
+                log.error("当前一组温度数据:{}不合理温度没有大于50或小于-50的温度，数据记录错位，不作为参考！", actualResults);
+                return null;
+            }
+        }
         if (dtuInfo.getAutomaticAdjustment()) {
-            new Thread(() -> {
-                processRelayCommands.handleAccordingToRelayCommand(sensor, actualResults, ctx);
-            }).start();
+//            new Thread(() -> {
+            processRelayCommands.handleAccordingToRelayCommand(sensor, actualResults, ctx);
+//            }).start();
         }
         return actualResults;
     }

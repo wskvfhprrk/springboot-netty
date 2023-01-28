@@ -1,8 +1,11 @@
 package com.hejz.entity;
 
 import lombok.Data;
-import java.io.Serializable;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 用户信息实体类
@@ -27,14 +30,11 @@ public class User implements Serializable{
     @Column(
             name = "age",
             nullable = true,
-            columnDefinition="int"+" COMMENT '年龄'"
+            columnDefinition = "int" + " COMMENT '年龄'"
     )
     private Integer age;
 
-    @Column(
-            name = "role_id",
-            nullable = true,
-            columnDefinition="int"+" COMMENT '角色id'"
-    )
-    private Integer roleId;
+    //多对多关系映射
+    @ManyToMany(mappedBy = "users")
+    private Set<Role> roles = new HashSet<Role>(0);
 }

@@ -48,9 +48,6 @@ public class UserServiceImpl implements UserService {
             if(user.getAge()!=null && user.getAge()!=0) {
             predicates.add(cb.equal(root.get("Age"), user.getAge()));
             }
-            if(user.getRoleId()!=null && user.getRoleId()!=0) {
-            predicates.add(cb.equal(root.get("RoleId"), user.getRoleId()));
-            }
             Predicate[] andPredicate = new Predicate[predicates.size()];
             return cb.and(predicates.toArray(andPredicate));
         };
@@ -71,9 +68,6 @@ public class UserServiceImpl implements UserService {
             }
             if(user.getAge()!=null && user.getAge()!=0) {
             predicates.add(cb.equal(root.get("Age"), user.getAge()));
-            }
-            if(user.getRoleId()!=null && user.getRoleId()!=0) {
-            predicates.add(cb.equal(root.get("RoleId"), user.getRoleId()));
             }
             Predicate[] andPredicate = new Predicate[predicates.size()];
             return cb.and(predicates.toArray(andPredicate));

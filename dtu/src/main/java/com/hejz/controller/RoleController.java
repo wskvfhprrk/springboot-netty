@@ -59,18 +59,16 @@ public class RoleController {
     public Result<PageResult<RoleFindByPageVo>> findBypage( @Valid RoleFindByPageDto dto){
         Role role=new Role();
         BeanUtils.copyProperties(dto,role);
-        Page<Role> rolePage = roleService.findPage(role, dto.getPageNo(), dto.getPageSize());
+        Page<Role> rolePage = roleService.findPage(role, dto.getPage(), dto.getLimit());
         List<RoleFindByPageVo> list = rolePage.getContent().stream().map(d -> {
             RoleFindByPageVo vo = new RoleFindByPageVo();
             BeanUtils.copyProperties(d,vo);
             return vo;
         }).collect(Collectors.toList());
         PageResult<RoleFindByPageVo> pages=new PageResult<>();
-        pages.setPageNo(dto.getPageNo());
-        pages.setPageSize(dto.getPageSize());
-        pages.setTotalPage(rolePage.getTotalPages());
-        pages.setTotalElements(rolePage.getTotalElements());
-        pages.setContent(list);
+        pages.setPage(dto.getPage());
+        pages.setLimit(dto.getLimit());
+        pages.setItems(list);
         return Result.ok(pages);
     }
 

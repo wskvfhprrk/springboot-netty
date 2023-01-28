@@ -2,6 +2,8 @@ package com.hejz.entity;
 
 import lombok.Data;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.*;
 
 /**
@@ -36,4 +38,18 @@ public class Role implements Serializable{
             columnDefinition="varchar(255)"+" COMMENT '名称'"
     )
     private String name;
+
+    //多对多关系映射
+    @ManyToMany
+    @JoinTable(name="tb_user_role",//中间表的名称
+            //中间表user_role_rel字段关联sys_role表的主键字段role_id
+            joinColumns={@JoinColumn(name="role_id",referencedColumnName="id")},
+            //中间表user_role_rel的字段关联sys_user表的主键user_id
+            inverseJoinColumns={@JoinColumn(name="user_id",referencedColumnName="id")}
+    )
+    private Set<User> users = new HashSet<User>(0);
+
+    //多对多关系映射
+    @ManyToMany(mappedBy = "roles")
+    private Set<Menu> menus=new HashSet<>();
 }
