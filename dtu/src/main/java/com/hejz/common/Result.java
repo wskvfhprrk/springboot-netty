@@ -16,7 +16,7 @@ public class Result<T> {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     // 响应业务状态
-    private Integer status;
+    private Integer code;
 
     // 响应消息
     private String msg;
@@ -48,24 +48,24 @@ public class Result<T> {
     }
 
     public Result(Integer status, String msg, T data) {
-        this.status = status;
+        this.code = status;
         this.msg = msg;
         this.data = data;
     }
 
     public Result(T data) {
-        this.status = 200;
+        this.code = 20000;
         this.msg = "OK";
         this.data = data;
     }
 
 
-    public Integer getStatus() {
-        return status;
+    public Integer getCode() {
+        return code;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setCode(Integer code) {
+        this.code = code;
     }
 
     public String getMsg() {

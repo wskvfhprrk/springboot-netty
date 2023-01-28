@@ -17,7 +17,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("sensor")
-@Api("感应器参数控制器")
+@Api(tags ="感应器参数控制器")
 public class SensorController {
 
     @Autowired

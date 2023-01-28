@@ -17,7 +17,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("densorDataDb")
-@Api("dtu参数控制器")
+@Api(tags ="dtu参数控制器")
 public class SensroDataDbController {
 
     @Autowired

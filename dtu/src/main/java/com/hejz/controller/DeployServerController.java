@@ -17,7 +17,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("deployServer")
 @Slf4j
-@Api("部署服务器")
+@Api(tags ="部署服务器")
 public class DeployServerController {
     @GetMapping
     @ApiOperation("部署服务器")

@@ -13,8 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +34,32 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    String token = "admin-token";
+
+    @ApiOperation("登陆")
+    @PostMapping("login")
+    public Result login(@RequestBody LoginUserDto loginUserDto,HttpServletResponse response) {
+        Map<String, String> map = new HashMap<>();
+        map.put("\"token\"", token);
+        //操作cookies
+        Cookie cookie = new Cookie("Admin-Token",token);
+        response.addCookie(cookie);
+//        return Result.ok("'token':'admin-token");
+        return Result.ok(map);
+    }
+
+    @ApiOperation("获取用户信息")
+    @GetMapping("info")
+    public Result<UserInfoVo> getUserInfo(String token) {
+        return Result.ok(new UserInfoVo("zs", "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif", "zs", Arrays.asList("admin")));
+    }
+
+    @ApiOperation("登陆")
+    @PostMapping("logout")
+    public Result logout() {
+        return Result.ok();
+    }
 
     @PostMapping()
     @ApiOperation("添加用户信息")

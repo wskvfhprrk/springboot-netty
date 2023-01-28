@@ -17,7 +17,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("commandStatus")
-@Api("继电器参数控制器")
+@Api(tags ="继电器参数控制器")
 public class CommandStatusController {
 
     @Autowired

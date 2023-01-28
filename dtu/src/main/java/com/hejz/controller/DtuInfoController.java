@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("dtuInfo")
-@Api("dtu参数控制器")
+@Api(tags ="dtu参数控制器")
 public class DtuInfoController {
 
     @Autowired

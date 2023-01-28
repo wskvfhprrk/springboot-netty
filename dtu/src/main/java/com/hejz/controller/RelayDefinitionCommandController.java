@@ -17,7 +17,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("relayDefinitionCommand")
-@Api("继电器定义命令参数控制器")
+@Api(tags ="继电器定义命令参数控制器")
 public class RelayDefinitionCommandController {
 
     @Autowired
