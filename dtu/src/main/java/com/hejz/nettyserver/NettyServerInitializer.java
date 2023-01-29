@@ -1,23 +1,19 @@
 package com.hejz.nettyserver;
 
-import com.hejz.common.Constant;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.TimeUnit;
-
 @Component
 public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
     Logger log = LogManager.getLogger(NettyServerInitializer.class);
     @Autowired
-    private NettyServerHandler nettyServerHandler;
+    private TotalDataProcessorHandler totalDataProcessorHandler;
     @Autowired
     private NettyMsgDecoder nettyMsgDecoder;
     @Autowired
@@ -42,7 +38,8 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(registerHandler);
         //自定义解码器——解决拆包粘包问题
         pipeline.addLast(nettyMsgDecoder);
-        pipeline.addLast(nettyServerHandler);
+        //总数据处理器
+        pipeline.addLast(totalDataProcessorHandler);
     }
 
 }

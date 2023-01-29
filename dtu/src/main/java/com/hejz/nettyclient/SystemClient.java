@@ -140,7 +140,7 @@ public class SystemClient {
 //        data.add(170);
 //        data.add(20);
 
-        List<Integer> data = Arrays.asList(600, 610, 1200, 70, 300, 30, 30, 170, 20);
+        List<Integer> data = Arrays.asList(200, 610, 1200, 70, 300, 30, 30, 170, 20);
         for (int i = 0; i < data.size(); i++) {
             instructionsSent.add(calculateRrc16ValidatedData("020302", data.get(i)));
         }

@@ -1,0 +1,74 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+partition "**注册处理器**" {
+    if(通道是否注册)then(是的)
+    label next
+    else
+    :收到第一个通道数据进行注册;
+    :通道绑定设备信息;
+        if(是否仅是注册信息)then(不是)
+        label next
+        else
+        stop
+        endif
+    endif
+}
+partition "**编码处理器**" {
+    if(是否带imei)then(不带)
+    :交下一个处理器处理;
+    else
+    :去除imei;
+    endif
+}
+partition "**总数据处理器**" {
+    :收集数据区分;
+    switch (数据类型?)
+    case ( 心跳数据 )
+      :不做处理;
+      stop
+    case ( 感应器数据 )
+    :交给感应器数据处理器处理;
+    case ( 继电器数据 )
+      :交给继数据处理器处理;
+      stop
+    endswitch
+}
+partition "**感应器数据处理器**" {
+        :按轮询时间为一个周期收集一组数据;
+        if (是否是单个485传感器设备) then (是单个设备)
+        label sp_lab0
+            label sp_lab1
+            label sp_lab1
+            label sp_lab1
+            label sp_lab1
+            label sp_lab1
+            label sp_lab1
+            label sp_lab1
+            label sp_lab1
+          label lab
+          :三次上报数据取中间一次数据;
+          :排顺序后取中间数据;
+          :记录到数据库中
+          :与感应器值全理的区间进行比较;
+          if(超过区间?)then(没有)
+          else(超过区间)
+          :发出——继电器响应信号;
+          endif
+          stop
+        else(多个感应器)
+          :轮询访问时，设备顺序打乱;
+          if(上报数据时地址位是否按询问顺序上报) then (不是)
+          :不按顺序上报不考虑;
+          stop
+          else(是的)
+          :选取按顺序询问排列的数据;
+          endif
+          if(是否三次数据取中间一次数据)then(是的)
+          label sp_lab2
+           goto lab
+          else(不是)
+          endif
+          stop
+@enduml
