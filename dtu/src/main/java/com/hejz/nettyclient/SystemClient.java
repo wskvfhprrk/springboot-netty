@@ -12,7 +12,6 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
@@ -117,79 +116,17 @@ public class SystemClient {
         }
         System.out.println("您选择的imei值===>"+imei);
         SystemClient.imei = imei;
-        //发送的指令
-        instructionsSent(future, imei);
+        //发送的正常指令测试
+//        NormalCommandTest.instructionsSent(future, imei);
+        //编码粘包拆包测试
+//        CodeStickingAndUnpackingTest.instructionsSent(future, imei);
+        ///编码粘包拆包含有心跳信息测试
+        CodeStickingAndUnpackingContainsHeartbeatInformationTest.instructionsSent(future, imei);
         br.close();
         is.close();
     }
 
-    private void instructionsSent(ChannelFuture future, String imei) {
-        List<String> instructionsSent = new ArrayList<>();
-        //空气温度,空气湿度,土壤PH,土壤温度,土壤湿度,土壤氮,土壤磷,土壤钾,土壤电导率
-        //一般缩小10倍是真实数据
-//        List<Integer> data = new ArrayList<>();
-//        for (int i = 0; i < 100; i++) {
-//            data.add(100 + i * 10);
-//        }
-//        data.add(610);
-//        data.add(1200);
-//        data.add(70);
-//        data.add(300);
-//        data.add(30);
-//        data.add(30);
-//        data.add(170);
-//        data.add(20);
 
-        List<Integer> data = Arrays.asList(200, 610, 1200, 70, 300, 30, 30, 170, 20);
-        for (int i = 0; i < data.size(); i++) {
-            instructionsSent.add(calculateRrc16ValidatedData("020302", data.get(i)));
-        }
-        for (int i = 0; i < 100; i++) {
-//            log.info();("=========================发送一组新数据===========================");
-            for (String s : instructionsSent) {
-                String hex = HexConvert.convertStringToHex(imei) + s;
-                try {
-                    Thread.sleep(1000L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                log.info("发送给服务器的==" + i + "==内容======" + hex);
-                //netty需要用ByteBuf传输
-                ByteBuf bufff = Unpooled.buffer();
-                bufff.writeBytes(HexConvert.hexStringToBytes(hex));
-                future.channel().writeAndFlush(bufff);
-            }
-            try {
-                int time = Constant.INTERVAL_TIME_MAP.get(future.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(future.channel().id().toString());
-                log.info("time=={}", time);
-                Thread.sleep(time);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * 计算RRC16验证过的数据
-     *
-     * @param previousData 前面部分的数据：地址+功能码+数据位
-     * @param i            数据位——10进制数据
-     * @return
-     */
-    private String calculateRrc16ValidatedData(String previousData, Integer i) {
-        String hexString = Integer.toHexString(i).toUpperCase(Locale.ROOT);
-        if (hexString.length() == 1) {
-            hexString = "000" + hexString;
-        } else if (hexString.length() == 2) {
-            hexString = "00" + hexString;
-        } else if (hexString.length() == 3) {
-            hexString = "0" + hexString;
-        }
-        byte[] bytes = HexConvert.hexStringToBytes(previousData + hexString);
-        String validatedData = CRC16.getCRC3(bytes);
-        String result = previousData + hexString + validatedData;
-        return result;
-    }
 
     public static void main(String[] args) {
 //        SystemClient client = new SystemClient("192.168.0.106", 9090);
