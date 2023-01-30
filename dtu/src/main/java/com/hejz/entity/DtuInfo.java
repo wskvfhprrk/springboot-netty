@@ -37,7 +37,13 @@ public class DtuInfo implements Serializable {
             columnDefinition="varchar(15)"+" COMMENT 'imei'"
     )
     private String imei;
-
+    //感应器地址顺序
+    @Column(
+            name = "sensor_address_order",
+            nullable = false,
+            columnDefinition="varchar(60)"+" COMMENT '感应器地址顺序'"
+    )
+    private String sensorAddressOrder;
     /**
      * dtu注册信息的长度
      */
@@ -106,7 +112,7 @@ public class DtuInfo implements Serializable {
     public DtuInfo() {
     }
 
-    public DtuInfo(String imei, Integer registrationLength, Integer imeiLength, String relayCheckingRulesIds, String sensorCheckingRulesIds, Integer heartbeatLength, Integer intervalTime, Boolean automaticAdjustment,Boolean noImei) {
+    public DtuInfo(String imei, Integer registrationLength, Integer imeiLength, String relayCheckingRulesIds, String sensorCheckingRulesIds, Integer heartbeatLength, Integer intervalTime, Boolean automaticAdjustment,Boolean noImei,String sensorAddressOrder) {
         this.imei = imei;
         this.registrationLength = registrationLength;
         this.imeiLength = imeiLength;
@@ -116,5 +122,6 @@ public class DtuInfo implements Serializable {
         this.intervalTime = intervalTime;
         this.automaticAdjustment = automaticAdjustment;
         this.noImei = noImei;
+        this.sensorAddressOrder = sensorAddressOrder;
     }
 }

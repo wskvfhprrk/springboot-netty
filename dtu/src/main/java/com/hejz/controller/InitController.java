@@ -90,7 +90,7 @@ public class InitController {
         sensorRepository.save(new Sensor((long) (i + 1), 2, "土壤钾   ", "02 03 02 06 00 01 65 80", "D/1", "mg/L", 100, 50, 0L, 0L));
         sensorRepository.save(new Sensor((long) (i + 1), 2, "土壤电导率", "02 03 02 02 00 01 24 41", "D/1", "us/cm", 250, 80, 0L, 0L));
         //处理dtu信息
-        dtuInfoRepository.save(new DtuInfo(imei, 89, 15, "3-2", "1-1,2-1", 2, 30000, true, true));
+        dtuInfoRepository.save(new DtuInfo(imei, 89, 15, "3-2", "1-1,2-1", 2, 30000, true, true,"112222222"));
     }
 
 }

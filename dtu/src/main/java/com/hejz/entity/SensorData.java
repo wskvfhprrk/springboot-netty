@@ -17,8 +17,11 @@ import java.io.Serializable;
 public class SensorData implements Serializable {
     private Integer id;
     private String name;
+    /**
+     * 地址编码
+     */
+    private Integer address;
     private Double data;
-
     /**
      * 接收到数据的单位
      */

@@ -2,6 +2,7 @@ package com.hejz.nettyserver;
 
 import com.hejz.common.Constant;
 import com.hejz.entity.CheckingRules;
+import com.hejz.entity.DtuInfo;
 import com.hejz.service.CheckingRulesService;
 import com.hejz.service.DtuInfoService;
 import com.hejz.utils.CRC16;
@@ -63,19 +64,25 @@ public class NettyServiceCommon {
     }
 
 
-//    /**
-//     * 计算dtuId
-//     *
-//     * @param bytes
-//     * @return
-//     */
-//    public static DtuInfo calculationDtuInfo(byte[] bytes) {
-//        byte[] imeiBytes = new byte[Constant.IMEI_LENGTH];
-//        System.arraycopy(bytes, 0, imeiBytes, 0, Constant.IMEI_LENGTH);
-//        String imei = HexConvert.hexStringToString(HexConvert.BinaryToHexString(imeiBytes).replaceAll(" ", ""));
-//        DtuInfo dtuInfo = dtuInfoService.findByImei(imei.trim());
-//        return dtuInfo;
-//    }
+    /**
+     * 指令的地址值
+     *
+     * @param dtuInfo
+     * @param bytes   16进制指令
+     * @return
+     */
+    public static Integer addressValueOfInstruction(DtuInfo dtuInfo, byte[] bytes) {
+        String hexStr = HexConvert.BinaryToHexString(bytes);
+        Integer address;
+        if (dtuInfo.getNoImei()) {
+            String hex = "0x" + hexStr.substring(0, 2);
+            address = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
+        } else {
+            String hex = "0x" + hexStr.substring(0, 2);
+            address = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
+        }
+        return address;
+    }
 
     /**
      * 必须检测是有用的数据才可以，如果不能够使用才不可以

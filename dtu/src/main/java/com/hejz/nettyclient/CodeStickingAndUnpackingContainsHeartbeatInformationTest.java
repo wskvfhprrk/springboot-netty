@@ -25,7 +25,7 @@ public class CodeStickingAndUnpackingContainsHeartbeatInformationTest {
         List<String> instructionsSent = new ArrayList<>();
         List<Integer> data = Arrays.asList(100, 610, 1200, 70, 300, 30, 30, 170, 20);
         for (int i = 0; i < data.size(); i++) {
-            instructionsSent.add(calculateRrc16ValidatedData(i>2?"010302":"020302", data.get(i)));
+            instructionsSent.add(calculateRrc16ValidatedData(i<2?"010302":"020302", data.get(i)));
             //加入心跳数据
             if(i==5){
                 instructionsSent.add("0001");

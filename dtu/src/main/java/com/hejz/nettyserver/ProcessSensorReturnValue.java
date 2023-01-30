@@ -88,6 +88,16 @@ public class ProcessSensorReturnValue {
             log.info("======{}=>{}=>解析一组出数据=========", ctx.channel().id().toString(), dtuInfo.getId());
             try {
                 List<SensorData> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
+                //检查地址位排列顺序
+                StringBuffer sb=new StringBuffer();
+                for (SensorData sensorData : sensorDataList) {
+                    sb.append(sensorData.getAddress());
+                }
+                //如果没有按顺序排列，不要此组数据
+                if(!dtuInfo.getSensorAddressOrder().equals(sb.toString())){
+                    log.error("此组数据没有按顺序上报作废！");
+                    return;
+                }
                 //插入数据库
                 if (sensorDataList != null) {
                     insertDatabase(dtuInfo.getId(), sensorDataList);
@@ -114,13 +124,14 @@ public class ProcessSensorReturnValue {
         List<SensorData> doubleList = new ArrayList<>();
         //按顺序解析，根据sensor顺序解析找对应关系
         for (int i = 0; i < list.size(); i++) {
+            Integer address = NettyServiceCommon.addressValueOfInstruction(dtuInfo, list.get(i));
             Double aDouble = parseSensorOneData(list.get(i), i, ctx, dtuInfo);
             if (aDouble == null) {
                 return null;
             }
             List<Sensor> sensors = sensorService.findAllByDtuId(dtuInfo.getId());
             Sensor sensor = sensors.get(i);
-            SensorData sensorData = new SensorData(i, sensor.getName(), aDouble, sensor.getUnit());
+            SensorData sensorData = new SensorData(i, sensor.getName(), address, aDouble, sensor.getUnit());
             doubleList.add(sensorData);
         }
         return doubleList;

@@ -75,7 +75,7 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
      */
     private void splitInstruction(List out, DtuInfo dtuInfo, byte[] bytes) {
         //计算出实际地址
-        Integer address = addressValueOfInstruction(dtuInfo, bytes);
+        Integer address = NettyServiceCommon.addressValueOfInstruction(dtuInfo, bytes);
         //根据地址位得出应该截取的长度
         Integer commonLength = calculatedLength(dtuInfo, address);
         //bytes值——计算长度都以bytes计算的
@@ -100,25 +100,7 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
         }
     }
 
-    /**
-     * 指令的地址值
-     *
-     * @param dtuInfo
-     * @param bytes   16进制指令
-     * @return
-     */
-    private Integer addressValueOfInstruction(DtuInfo dtuInfo, byte[] bytes) {
-        String hexStr = HexConvert.BinaryToHexString(bytes);
-        Integer address;
-        if (dtuInfo.getNoImei()) {
-            String hex = "0x" + hexStr.substring(0, 2);
-            address = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
-        } else {
-            String hex = "0x" + hexStr.substring(0, 2);
-            address = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
-        }
-        return address;
-    }
+
 
     /**
      * 根据dtuInfo信息和地址计算指令长度
