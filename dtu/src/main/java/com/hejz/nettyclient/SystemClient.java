@@ -108,11 +108,11 @@ public class SystemClient {
         System.out.println("您选择的imei值===>"+imei);
         SystemClient.imei = imei;
         //发送的正常指令测试
-        NormalCommandTest.instructionsSent(future, imei);
+//        NormalCommandTest.instructionsSent(future, imei);
         //编码粘包拆包测试
 //        CodeStickingAndUnpackingTest.instructionsSent(future, imei);
         ///编码粘包拆包含有心跳信息测试
-//        CodeStickingAndUnpackingContainsHeartbeatInformationTest.instructionsSent(future, imei);
+        CodeStickingAndUnpackingContainsHeartbeatInformationTest.instructionsSent(future, imei);
         br.close();
         is.close();
     }

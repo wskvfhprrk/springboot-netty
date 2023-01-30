@@ -16,22 +16,23 @@ partition "**注册处理器**" {
     endif
 }
 partition "**编码处理器**" {
-    :拆包;
-    :先根据imei拆分成数组进行遍历;
-    :计算出实际地址;
-    :根据地址位得出应该截取的长度;
+        :拆包;
+        :先根据imei拆分成数组进行遍历;
+    repeat
+        :计算出实际地址;
+        :根据地址位得出应该截取的长度;
     if(地址位==0)then(是的)
-    :应截取长度=2;
+        :应截取长度=2;
     endif
-    while (剩余长度>=应截取长度?)
+    if (剩余长度>=应截取长度)then(是的)
         :截取相应长度向后传送数据;
         :根据地地址位截取有用的bytes信息;
         :直接传给下一个处理;
         :计算截取后剩余长度;
-    endwhile
-    if(剩余长度<应截取长度)then(是的)
-    :打印错误日志;
+    else(剩余长度<应截取长度)
+        :打印错误日志即可;
     endif
+    repeat while
 }
 partition "**总数据处理器**" {
     :收集数据区分;
@@ -47,39 +48,28 @@ partition "**总数据处理器**" {
     endswitch
 }
 partition "**感应器数据处理器**" {
-        :按轮询时间为一个周期收集一组数据;
-        if (是否是单个485传感器设备) then (是单个设备)
-        label sp_lab0
-            label sp_lab1
-            label sp_lab1
-            label sp_lab1
-            label sp_lab1
-            label sp_lab1
-            label sp_lab1
-            label sp_lab1
-            label sp_lab1
+    :按轮询时间为一个周期收集一组数据;
+    if (是否是单个485传感器设备) then (是单个设备)
           label lab
-          :三次上报数据取中间一次数据;
-          :排顺序后取中间数据;
-          :记录到数据库中
-          :与感应器值全理的区间进行比较;
           if(超过区间?)then(没有)
           else(超过区间)
           :发出——继电器响应信号;
           endif
-          stop
-        else(多个感应器)
+    else(多个感应器)
           :轮询访问时，设备顺序打乱;
-          if(上报数据时地址位是否按询问顺序上报) then (不是)
-          :不按顺序上报不考虑;
-          stop
-          else(是的)
-          :选取按顺序询问排列的数据;
-          endif
+        if(上报数据时地址位是否按询问顺序上报) then (不是)
+              :不按顺序上报不考虑;
+              stop
+              else(是的)
+              :选取按顺序询问排列的数据;
+        endif
+    endif
           if(是否三次数据取中间一次数据)then(是的)
-          label sp_lab2
-           goto lab
-          else(不是)
+           label lab
+          :三次上报数据取中间一次数据;
+          :排顺序后取中间数据;
+          :记录到数据库中
+          :与感应器值全理的区间进行比较;
           endif
           stop
 @enduml
