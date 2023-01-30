@@ -25,10 +25,14 @@ public class DeployServerController {
         //p = Runtime.getRuntime().exec(SHELL_FILE_DIR + RUNNING_SHELL_FILE + " "+param1+" "+param2+" "+param3);
         //p.waitFor();
         try {
-            Runtime.getRuntime().exec("sh /root/start.sh").waitFor();
+//            Runtime.getRuntime().exec("sh /root/start.sh").waitFor();
 //            log.info("代码重新部署服务器成功……");
 //            return "代码重新部署服务器成功！";
-        } catch (IOException | InterruptedException e) {
+            Runtime rt = Runtime.getRuntime();
+            String[] cmd = {"/bin/sh","-c","source /root/start.sh test.exe"};
+            Process proc = rt.exec(cmd);
+
+        } catch (IOException  e) {
             log.error("代码重新部署服务器失败",e.fillInStackTrace());
         }
     }
