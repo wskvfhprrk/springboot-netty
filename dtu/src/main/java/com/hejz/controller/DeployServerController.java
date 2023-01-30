@@ -21,17 +21,15 @@ import java.io.IOException;
 public class DeployServerController {
     @GetMapping
     @ApiOperation("部署服务器")
-    public String deployServer(){
+    public void deployServer(){
         //p = Runtime.getRuntime().exec(SHELL_FILE_DIR + RUNNING_SHELL_FILE + " "+param1+" "+param2+" "+param3);
         //p.waitFor();
         try {
             Runtime.getRuntime().exec("sh /root/start.sh").waitFor();
-            log.info("代码重新部署服务器成功……");
-            return "代码重新部署服务器成功！";
+//            log.info("代码重新部署服务器成功……");
+//            return "代码重新部署服务器成功！";
         } catch (IOException | InterruptedException e) {
             log.error("代码重新部署服务器失败",e.fillInStackTrace());
-//            e.printStackTrace();
         }
-        return "代码重新部署服务器失败！";
     }
 }
