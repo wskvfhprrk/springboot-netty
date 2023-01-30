@@ -3,8 +3,6 @@ package com.hejz.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -91,16 +89,10 @@ public class Menu {
     @Column(
             name = "order_by_no",
             nullable = false,
-            columnDefinition="int"+" COMMENT '排序编号'"
+            columnDefinition = "int" + " COMMENT '排序编号'"
     )
     private Integer orderByNo;
     //多对多关系映射
-    @ManyToMany
-    @JoinTable(name="tb_role_menu",//中间表的名称
-            //中间表tb_role_menu字段关联tb_role表的主键字段id
-            joinColumns={@JoinColumn(name="tb_role",referencedColumnName="id")},
-            //中间表tb_role_menu的字段关联tb_menu表的主键menu_id
-            inverseJoinColumns={@JoinColumn(name="tb_menu",referencedColumnName="id")}
-    )
-    private Set<Role> roles=new HashSet<>();
+//    @ManyToMany(mappedBy = "roles")
+//    private Set<Role> roles=new HashSet<>();
 }

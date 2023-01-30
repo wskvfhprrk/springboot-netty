@@ -1,8 +1,9 @@
 package com.hejz.entity;
 
 import lombok.Data;
-import java.io.Serializable;
+
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * 数据字典实体类

@@ -1,7 +1,7 @@
 package com.hejz.vo;
 
-import io.swagger.annotations.ApiModelProperty;
 import com.hejz.common.Page;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data

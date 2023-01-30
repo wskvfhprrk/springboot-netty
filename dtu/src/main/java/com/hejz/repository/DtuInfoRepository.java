@@ -4,8 +4,6 @@ import com.hejz.entity.DtuInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import java.util.List;
-
 /**
  * 用户信息 dao层
  * author: hejz

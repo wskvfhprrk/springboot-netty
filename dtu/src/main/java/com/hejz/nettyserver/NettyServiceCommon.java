@@ -2,7 +2,6 @@ package com.hejz.nettyserver;
 
 import com.hejz.common.Constant;
 import com.hejz.entity.CheckingRules;
-import com.hejz.entity.DtuInfo;
 import com.hejz.service.CheckingRulesService;
 import com.hejz.service.DtuInfoService;
 import com.hejz.utils.CRC16;

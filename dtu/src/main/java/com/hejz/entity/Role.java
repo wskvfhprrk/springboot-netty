@@ -1,10 +1,11 @@
 package com.hejz.entity;
 
 import lombok.Data;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
 
 /**
  * 角色实体类
@@ -50,6 +51,12 @@ public class Role implements Serializable{
     private Set<User> users = new HashSet<User>(0);
 
     //多对多关系映射
-    @ManyToMany(mappedBy = "roles")
-    private Set<Menu> menus=new HashSet<>();
+    @ManyToMany
+    @JoinTable(name = "tb_role_menu",//中间表的名称
+            //中间表tb_role_menu字段关联tb_role表的主键字段id
+            joinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")},
+            //中间表tb_role_menu的字段关联tb_menu表的主键menu_id
+            inverseJoinColumns = {@JoinColumn(name = "menu_id", referencedColumnName = "id")}
+    )
+    private Set<Menu> menus = new HashSet<>();
 }

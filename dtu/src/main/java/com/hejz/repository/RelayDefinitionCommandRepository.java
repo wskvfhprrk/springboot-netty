@@ -1,7 +1,6 @@
 package com.hejz.repository;
 
 import com.hejz.entity.RelayDefinitionCommand;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 

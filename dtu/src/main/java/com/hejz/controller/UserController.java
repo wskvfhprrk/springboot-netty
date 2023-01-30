@@ -1,11 +1,13 @@
 package com.hejz.controller;
 
 import com.hejz.common.PageResult;
+import com.hejz.common.Result;
 import com.hejz.dto.*;
 import com.hejz.entity.User;
 import com.hejz.service.UserService;
-import com.hejz.common.Result;
-import com.hejz.vo.*;
+import com.hejz.vo.UserAllVo;
+import com.hejz.vo.UserFindByPageVo;
+import com.hejz.vo.UserInfoVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
@@ -39,7 +41,7 @@ public class UserController {
 
     @ApiOperation("登陆")
     @PostMapping("login")
-    public Result login(@RequestBody LoginUserDto loginUserDto,HttpServletResponse response) {
+    public Result login(@RequestBody LoginUserDto loginUserDto, HttpServletResponse response) {
         Map<String, String> map = new HashMap<>();
         map.put("\"token\"", token);
         //操作cookies
@@ -87,7 +89,7 @@ public class UserController {
 
     @GetMapping("fingPage")
     @ApiOperation("条件查询用户信息")
-    public Result<PageResult<UserFindByPageVo>> findBypage( @Valid UserFindByPageDto dto){
+    public Result<PageResult<UserFindByPageVo>> findBypage(@Valid UserFindByPageDto dto){
         User user=new User();
         BeanUtils.copyProperties(dto,user);
         Page<User> userPage = userService.findPage(user, dto.getPage(), dto.getPage());

@@ -14,8 +14,6 @@ import org.springframework.util.Assert;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CheckingRulesServiceTest {

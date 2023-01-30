@@ -1,11 +1,10 @@
 package com.hejz.controller;
-
+import org.springframework.web.bind.annotation.*;
 import com.hejz.entity.DtuInfo;
 import com.hejz.service.DtuInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * @author:hejz 75412985@qq.com

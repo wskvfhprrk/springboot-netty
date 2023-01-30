@@ -1,11 +1,6 @@
 package com.hejz.nettyclient;
 
-import com.hejz.common.Constant;
-import com.hejz.utils.CRC16;
-import com.hejz.utils.HexConvert;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -18,10 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -117,11 +108,11 @@ public class SystemClient {
         System.out.println("您选择的imei值===>"+imei);
         SystemClient.imei = imei;
         //发送的正常指令测试
-//        NormalCommandTest.instructionsSent(future, imei);
+        NormalCommandTest.instructionsSent(future, imei);
         //编码粘包拆包测试
 //        CodeStickingAndUnpackingTest.instructionsSent(future, imei);
         ///编码粘包拆包含有心跳信息测试
-        CodeStickingAndUnpackingContainsHeartbeatInformationTest.instructionsSent(future, imei);
+//        CodeStickingAndUnpackingContainsHeartbeatInformationTest.instructionsSent(future, imei);
         br.close();
         is.close();
     }

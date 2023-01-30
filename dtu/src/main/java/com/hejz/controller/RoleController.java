@@ -1,18 +1,21 @@
 package com.hejz.controller;
 
 import com.hejz.common.PageResult;
-import com.hejz.dto.*;
+import com.hejz.common.Result;
+import com.hejz.dto.RoleCreateDto;
+import com.hejz.dto.RoleFindAllDto;
+import com.hejz.dto.RoleFindByPageDto;
+import com.hejz.dto.RoleUpdateDto;
 import com.hejz.entity.Role;
 import com.hejz.service.RoleService;
-import com.hejz.common.Result;
-import com.hejz.vo.*;
+import com.hejz.vo.RoleAllVo;
+import com.hejz.vo.RoleFindByPageVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +59,7 @@ public class RoleController {
 
     @GetMapping("fingPage")
     @ApiOperation("条件查询角色")
-    public Result<PageResult<RoleFindByPageVo>> findBypage( @Valid RoleFindByPageDto dto){
+    public Result<PageResult<RoleFindByPageVo>> findBypage(@Valid RoleFindByPageDto dto){
         Role role=new Role();
         BeanUtils.copyProperties(dto,role);
         Page<Role> rolePage = roleService.findPage(role, dto.getPage(), dto.getLimit());

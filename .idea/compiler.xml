@@ -7,17 +7,19 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="dtu" />
+        <module name="dtu1" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="dtu" target="1.8" />
+      <module name="dtu1" target="1.8" />
       <module name="studay" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="dtu" options="-parameters" />
+      <module name="dtu1" options="-parameters" />
       <module name="studay" options="-parameters" />
     </option>
   </component>

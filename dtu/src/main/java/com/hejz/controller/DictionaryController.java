@@ -1,11 +1,15 @@
 package com.hejz.controller;
 
 import com.hejz.common.PageResult;
-import com.hejz.dto.*;
+import com.hejz.common.Result;
+import com.hejz.dto.DictionaryCreateDto;
+import com.hejz.dto.DictionaryFindAllDto;
+import com.hejz.dto.DictionaryFindByPageDto;
+import com.hejz.dto.DictionaryUpdateDto;
 import com.hejz.entity.Dictionary;
 import com.hejz.service.DictionaryService;
-import com.hejz.common.Result;
-import com.hejz.vo.*;
+import com.hejz.vo.DictionaryAllVo;
+import com.hejz.vo.DictionaryFindByPageVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
@@ -56,7 +60,7 @@ public class DictionaryController {
 
     @GetMapping("fingPage")
     @ApiOperation("条件查询数据字典")
-    public Result<PageResult<DictionaryFindByPageVo>> findBypage( @Valid DictionaryFindByPageDto dto){
+    public Result<PageResult<DictionaryFindByPageVo>> findBypage(@Valid DictionaryFindByPageDto dto){
         Dictionary dictionary=new Dictionary();
         BeanUtils.copyProperties(dto,dictionary);
         Page<Dictionary> dictionaryPage = dictionaryService.findPage(dictionary, dto.getPage(), dto.getPage());

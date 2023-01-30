@@ -1,7 +1,5 @@
 package com.hejz.utils;
 
-import static jdk.internal.dynalink.support.NameCodec.encode;
-
 /**
  * @author:hejz 75412985@qq.com
  * @create: 2023-01-01 09:59

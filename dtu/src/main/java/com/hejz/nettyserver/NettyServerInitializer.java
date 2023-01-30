@@ -33,6 +33,7 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         ChannelPipeline pipeline = ch.pipeline();
         //定义读写空闲时间——（单位秒）
         pipeline.addLast(new IdleStateHandler(180, 60,180));
+        //空闲拦截器
         pipeline.addLast(serverHeartBeatHandler);
         //注册拦截器
         pipeline.addLast(registerHandler);

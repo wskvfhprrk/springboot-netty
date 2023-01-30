@@ -1,9 +1,7 @@
 package com.hejz.dto;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import javax.validation.constraints.NotEmpty;
 
 @Data
 public class DictionaryFindAllDto {
