@@ -12,11 +12,11 @@ import java.util.List;
 /**
  * @author:hejz 75412985@qq.com
  * @create: 2023-01-12 07:44
- * @Description: 继电器参数控制器
+ * @Description: 命令状态
  */
 @RestController
 @RequestMapping("commandStatus")
-@Api(tags ="继电器参数控制器")
+@Api(tags ="命令状态")
 public class CommandStatusController {
 
     @Autowired

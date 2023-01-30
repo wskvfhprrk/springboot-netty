@@ -1,6 +1,10 @@
 package com.hejz.repository;
 
 import com.hejz.entity.SensorDataDb;
+import com.hejz.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 
@@ -20,4 +24,5 @@ public interface SensorDataDbRepository extends CrudRepository<SensorDataDb, Dat
     void deleteById(Long id);
 
     void deleteAllByDtuId(Long dutId);
+
 }

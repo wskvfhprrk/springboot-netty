@@ -2,6 +2,7 @@ package com.hejz.common;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.data.domain.Sort;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -18,5 +19,5 @@ public class Page {
     @NotEmpty
     private Integer limit;
     @ApiModelProperty(value = "排序",required = true,example = "")
-    private String sort;
+    private Sort sort;
 }

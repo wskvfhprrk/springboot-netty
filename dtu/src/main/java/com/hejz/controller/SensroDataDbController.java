@@ -1,5 +1,8 @@
 package com.hejz.controller;
 
+import com.hejz.common.Page;
+import com.hejz.common.PageResult;
+import com.hejz.common.Result;
 import com.hejz.entity.SensorDataDb;
 import com.hejz.service.SensorDataDbService;
 import io.swagger.annotations.Api;
@@ -11,11 +14,11 @@ import java.util.List;
 /**
  * @author:hejz 75412985@qq.com
  * @create: 2023-01-12 07:44
- * @Description: dtu参数控制器
+ * @Description: 感应器上报数据
  */
 @RestController
 @RequestMapping("densorDataDb")
-@Api(tags ="dtu参数控制器")
+@Api(tags ="感应器上报数据")
 public class SensroDataDbController {
 
     @Autowired
@@ -43,6 +46,12 @@ public class SensroDataDbController {
     @PutMapping
     public SensorDataDb update(@RequestBody SensorDataDb densorDataDb) {
         return densorDataDbService.update(densorDataDb);
+    }
+
+    @ApiOperation("分页倒序查询")
+    @GetMapping("page")
+    public Result<PageResult> getPage(Page page){
+        return densorDataDbService.getPage(page);
     }
 
     @ApiOperation("根据id删除感器信息")

@@ -1,6 +1,9 @@
 package com.hejz.service;
 
 
+import com.hejz.common.Page;
+import com.hejz.common.PageResult;
+import com.hejz.common.Result;
 import com.hejz.entity.SensorDataDb;
 
 import java.util.List;
@@ -22,4 +25,6 @@ public interface SensorDataDbService {
     void delete(Long id);
 
     void deleteAllByDtuId(Long dtuId);
+
+    Result<PageResult> getPage(Page page);
 }
