@@ -15,7 +15,7 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
     @Autowired
     private TotalDataProcessorHandler totalDataProcessorHandler;
     @Autowired
-    private NettyMsgDecoder nettyMsgDecoder;
+    private NettyDecoder nettyDecoder;
     @Autowired
     private RegisterHandler registerHandler;
     @Autowired
@@ -36,8 +36,8 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(serverHeartBeatHandler);
         //注册拦截器
         pipeline.addLast(registerHandler);
-        //自定义解码器——解决拆包粘包问题
-        pipeline.addLast(nettyMsgDecoder);
+        //解决拆包粘包问题
+        pipeline.addLast(nettyDecoder);
         //总数据处理器
         pipeline.addLast(totalDataProcessorHandler);
     }

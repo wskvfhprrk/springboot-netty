@@ -8,6 +8,7 @@ import com.hejz.service.DtuInfoService;
 import com.hejz.utils.HexConvert;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ import java.util.List;
 @Component
 @ChannelHandler.Sharable
 @Slf4j
-public class NettyMsgDecoder extends MessageToMessageDecoder<byte[]> {
+public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
 
     @Autowired
     private DtuInfoService dtuInfoService;
@@ -64,12 +65,12 @@ public class NettyMsgDecoder extends MessageToMessageDecoder<byte[]> {
         int length = bytes.length;
         //剩余包的长度
         int remainingLength = length - commonLength;
-        if (address.equals("0")) {
+        if (address==0) {
             //心跳不作处理
             log.info("检测到客户端imei:{}心跳：{}", dtuInfo.getImei(), hexStr);
         }
         //拆包
-        if (remainingLength == 0) {
+        else if (remainingLength == 0) {
             //只要有用的才可以用
             out.add(bytes);
         } else if (remainingLength > 0) {
