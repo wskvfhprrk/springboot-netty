@@ -25,7 +25,7 @@ public class DeployServerController {
         //p = Runtime.getRuntime().exec(SHELL_FILE_DIR + RUNNING_SHELL_FILE + " "+param1+" "+param2+" "+param3);
         //p.waitFor();
         try {
-            Runtime.getRuntime().exec("/root/start.sh").waitFor();
+            Runtime.getRuntime().exec("sh /root/start.sh").waitFor();
             log.info("代码重新部署服务器成功……");
             return "代码重新部署服务器成功！";
         } catch (IOException | InterruptedException e) {
