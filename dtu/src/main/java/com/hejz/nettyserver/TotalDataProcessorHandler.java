@@ -58,19 +58,21 @@ public class TotalDataProcessorHandler extends SimpleChannelInboundHandler {
             Integer address = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
             if (address == 0 && bytes.length == 2) {
                 log.info("心跳信息不作处理:{}", HexConvert.BinaryToHexString(bytes));
-            }
-            for (String s : dtuInfo.getSensorCheckingRulesIds().split(",")) {
-                String[] split = s.split("-");
-                if (Integer.valueOf(split[0]).equals(address)) {
-                    processSensorReturnValue.start(ctx, bytes);
-                    return;
+                return;
+            } else {
+                for (String s : dtuInfo.getSensorCheckingRulesIds().split(",")) {
+                    String[] split = s.split("-");
+                    if (Integer.valueOf(split[0]).equals(address)) {
+                        processSensorReturnValue.start(ctx, bytes);
+                        return;
+                    }
                 }
-            }
-            for (String s : dtuInfo.getRelayCheckingRulesIds().split(",")) {
-                String[] split = s.split("-");
-                if (Integer.valueOf(split[0]).equals(address)) {
-                    processRelayCommands.start(ctx, bytes);
-                    return;
+                for (String s : dtuInfo.getRelayCheckingRulesIds().split(",")) {
+                    String[] split = s.split("-");
+                    if (Integer.valueOf(split[0]).equals(address)) {
+                        processRelayCommands.start(ctx, bytes);
+                        return;
+                    }
                 }
             }
             log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), bytes.length, HexConvert.BinaryToHexString(bytes));

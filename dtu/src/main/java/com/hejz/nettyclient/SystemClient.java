@@ -109,9 +109,15 @@ public class SystemClient {
         SystemClient.imei = imei;
         //发送的正常指令测试
 //        NormalCommandTest.instructionsSent(future, imei);
+        //正常指令测试——imei注册后数据不带imei
+//        NormalCommandTest1.instructionsSent(future, imei);
         //编码粘包拆包测试
 //        CodeStickingAndUnpackingTest.instructionsSent(future, imei);
+        //编码粘包拆包测试——imei注册后数据不带imei
+//        CodeStickingAndUnpackingTest1.instructionsSent(future, imei);
         ///编码粘包拆包含有心跳信息测试
+//        CodeStickingAndUnpackingContainsHeartbeatInformationTest.instructionsSent(future, imei);
+        ///编码粘包拆包含有心跳信息测试——imei注册后数据不带imei
         CodeStickingAndUnpackingContainsHeartbeatInformationTest.instructionsSent(future, imei);
         br.close();
         is.close();
