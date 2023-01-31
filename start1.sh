@@ -1,8 +1,6 @@
 #!/bin/bash
-
-#echo -e "\033[3${i};4${j}m文字色值 ${i}, 背景色值 ${j}\033[0m"
-#cho -e "\033[3${0};4${7}m文字色值 ${0}, 背景色值 ${7}\033[0m"
 #后台启动小米球
+echo -e  ======================0.后台启动小米球======================
 cd /root/linux_xiaomiqu
 nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &
 #删除服务器
@@ -39,30 +37,5 @@ mvn clean package -Dmaven.test.skip=true
 echo -e ======================8.重启服务======================
 cd target
 nohup java -jar -Dserver.port=8080 dtu-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
-#echo -e
-#echo -e
-#echo -e =================请自行打开小米球操作======================
-#echo -e
-#echo -e --- "开新窗口:输入screen -S xiaomiqiu"
-#echo -e
-#echo -e --- "会弹出新的窗口,在里面输入启动指令"
-#echo -e
-#echo -e --- "启动指令:    ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all"
-#echo -e
-#echo -e
-#echo -e
-#sleep 10
 echo -e ======================10.自动打开日志======================
 tail -f /home/logs/dtu/logback_info.log
-#接下来在服务器上安装screen
-#yum install screen
-#cd /root/linux_xiaomiqu
-#screen -S xiaomiqiu
-#启动小米球
-#./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all
-#如何关闭？
-#ssh上主机
-#screen -r xiaomiqiu
-#删除screen
-#screen -S name -X quit
-#此时就会出现你刚才的端口
