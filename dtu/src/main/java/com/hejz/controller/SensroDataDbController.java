@@ -64,6 +64,7 @@ public class SensroDataDbController {
             return vo;
         }).collect(Collectors.toList());
         PageResult<SensorDataDbFindByPageVo> pages=new PageResult<>();
+        pages.setTotal(sensorDataDbPage.getTotalElements());
         pages.setPage(dto.getPage());
         pages.setLimit(dto.getLimit());
         pages.setItems(list);

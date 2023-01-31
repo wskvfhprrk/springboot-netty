@@ -4,7 +4,6 @@ import com.hejz.common.Constant;
 import com.hejz.dto.CommandStatusFindByPageDto;
 import com.hejz.entity.CommandStatus;
 import com.hejz.entity.DtuInfo;
-import com.hejz.entity.CommandStatus;
 import com.hejz.repository.CommandStatusRepository;
 import com.hejz.service.CommandStatusService;
 import com.hejz.service.DtuInfoService;

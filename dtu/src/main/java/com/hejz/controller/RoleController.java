@@ -69,6 +69,7 @@ public class RoleController {
             return vo;
         }).collect(Collectors.toList());
         PageResult<RoleFindByPageVo> pages=new PageResult<>();
+        pages.setTotal(rolePage.getTotalElements());
         pages.setPage(dto.getPage());
         pages.setLimit(dto.getLimit());
         pages.setItems(list);

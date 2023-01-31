@@ -1,13 +1,23 @@
 package com.hejz.controller;
 
+import com.hejz.common.PageResult;
+import com.hejz.common.Result;
+import com.hejz.dto.RelayDefinitionCommandFindByPageDto;
+import com.hejz.entity.RelayDefinitionCommand;
 import com.hejz.entity.RelayDefinitionCommand;
 import com.hejz.service.RelayDefinitionCommandService;
+import com.hejz.vo.RelayDefinitionCommandFindByPageVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -57,5 +67,23 @@ public class RelayDefinitionCommandController {
     @Transactional
     public void deleteAllByDtuId(@PathVariable("dtuId") Long dtuId) {
         relayDefinitionCommandService.deleteAllByDtuId(dtuId);
+    }
+    @GetMapping("fingPage")
+    @ApiOperation("条件查询用户信息")
+    public Result<PageResult<RelayDefinitionCommandFindByPageVo>> findBypage(@Valid RelayDefinitionCommandFindByPageDto dto){
+        RelayDefinitionCommand relayDefinitionCommand=new RelayDefinitionCommand();
+        BeanUtils.copyProperties(dto,relayDefinitionCommand);
+        Page<RelayDefinitionCommand> relayDefinitionCommandPage = relayDefinitionCommandService.findPage(dto);
+        List<RelayDefinitionCommandFindByPageVo> list = relayDefinitionCommandPage.getContent().stream().map(d -> {
+            RelayDefinitionCommandFindByPageVo vo = new RelayDefinitionCommandFindByPageVo();
+            BeanUtils.copyProperties(d,vo);
+            return vo;
+        }).collect(Collectors.toList());
+        PageResult<RelayDefinitionCommandFindByPageVo> pages=new PageResult<>();
+        pages.setTotal(relayDefinitionCommandPage.getTotalElements());
+        pages.setPage(dto.getPage());
+        pages.setLimit(dto.getLimit());
+        pages.setItems(list);
+        return Result.ok(pages);
     }
 }

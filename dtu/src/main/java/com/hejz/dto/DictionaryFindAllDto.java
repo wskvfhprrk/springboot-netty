@@ -2,6 +2,7 @@ package com.hejz.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 public class DictionaryFindAllDto {
@@ -30,5 +31,6 @@ public class DictionaryFindAllDto {
     @ApiModelProperty(value = "删除标记")
     private Integer isDeleted;
     @ApiModelProperty(value = "创建时间")
+    @DateTimeFormat(pattern ="yyyy-MM-dd HH:mm:ss")
     private java.util.Date createTime;
 }

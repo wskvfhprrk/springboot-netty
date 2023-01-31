@@ -1,5 +1,6 @@
 package com.hejz.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -32,6 +33,6 @@ public class DictionaryUpdateVo {
     @ApiModelProperty(value = "删除标记")
     private Integer isDeleted;
     @ApiModelProperty(value = "创建时间")
-    @com.fasterxml.jackson.annotation.JsonFormat(pattern ="yyyy-MM-dd HH:mm:ss",timezone ="GMT+8")
+    @JsonFormat(pattern ="yyyy-MM-dd HH:mm:ss",timezone ="GMT+8")
     private java.util.Date createTime;
 }

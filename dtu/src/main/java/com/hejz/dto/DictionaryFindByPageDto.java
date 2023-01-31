@@ -3,6 +3,7 @@ package com.hejz.dto;
 import com.hejz.common.Page;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 public class DictionaryFindByPageDto extends Page {
@@ -31,5 +32,6 @@ public class DictionaryFindByPageDto extends Page {
     @ApiModelProperty(value = "删除标记")
     private Integer isDeleted;
     @ApiModelProperty(value = "创建时间")
+    @DateTimeFormat(pattern ="yyyy-MM-dd HH:mm:ss")
     private java.util.Date createTime;
 }

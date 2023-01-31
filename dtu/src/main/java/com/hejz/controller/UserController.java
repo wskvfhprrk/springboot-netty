@@ -99,6 +99,7 @@ public class UserController {
             return vo;
         }).collect(Collectors.toList());
         PageResult<UserFindByPageVo> pages=new PageResult<>();
+        pages.setTotal(userPage.getTotalElements());
         pages.setPage(dto.getPage());
         pages.setLimit(dto.getLimit());
         pages.setItems(list);

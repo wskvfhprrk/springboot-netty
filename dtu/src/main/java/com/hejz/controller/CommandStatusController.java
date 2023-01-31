@@ -71,6 +71,7 @@ public class CommandStatusController {
             return vo;
         }).collect(Collectors.toList());
         PageResult<CommandStatusFindByPageVo> pages=new PageResult<>();
+        pages.setTotal(commandStatusPage.getTotalElements());
         pages.setPage(dto.getPage());
         pages.setLimit(dto.getLimit());
         pages.setItems(list);

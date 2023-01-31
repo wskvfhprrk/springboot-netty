@@ -2,6 +2,7 @@ package com.hejz.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -47,5 +48,6 @@ public class DictionaryUpdateDto {
     private Integer isDeleted;
     @ApiModelProperty(value = "创建时间",required = true)
     @NotEmpty
+    @DateTimeFormat(pattern ="yyyy-MM-dd HH:mm:ss")
     private java.util.Date createTime;
 }

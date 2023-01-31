@@ -65,6 +65,7 @@ public class DtuInfoController {
             return vo;
         }).collect(Collectors.toList());
         PageResult<DtuInfoFindByPageVo> pages=new PageResult<>();
+        pages.setTotal(dtuInfoPage.getTotalElements());
         pages.setPage(dto.getPage());
         pages.setLimit(dto.getLimit());
         pages.setItems(list);

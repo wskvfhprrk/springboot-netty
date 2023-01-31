@@ -1,13 +1,23 @@
 package com.hejz.controller;
 
+import com.hejz.common.PageResult;
+import com.hejz.common.Result;
+import com.hejz.dto.RelayFindByPageDto;
+import com.hejz.entity.Relay;
 import com.hejz.entity.Relay;
 import com.hejz.service.RelayService;
+import com.hejz.vo.RelayFindByPageVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -57,5 +67,21 @@ public class RelayController {
     @Transactional
     public void deleteAllByImei(@PathVariable("dtuId") Long dtuId) {
         relayService.deleteAlByDtuId(dtuId);
+    }
+    @ApiOperation("分页条件查询")
+    @GetMapping("page")
+    public Result<PageResult<RelayFindByPageVo>> findBypage(@Valid RelayFindByPageDto dto){
+        Page<Relay> relayPage = relayService.findPage(dto);
+        List<RelayFindByPageVo> list = relayPage.getContent().stream().map(d -> {
+            RelayFindByPageVo vo = new RelayFindByPageVo();
+            BeanUtils.copyProperties(d,vo);
+            return vo;
+        }).collect(Collectors.toList());
+        PageResult<RelayFindByPageVo> pages=new PageResult<>();
+        pages.setTotal(relayPage.getTotalElements());
+        pages.setPage(dto.getPage());
+        pages.setLimit(dto.getLimit());
+        pages.setItems(list);
+        return Result.ok(pages);
     }
 }

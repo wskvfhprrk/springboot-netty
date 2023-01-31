@@ -1,6 +1,8 @@
 package com.hejz.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 public class DictionaryAllDto {
@@ -17,5 +19,6 @@ public class DictionaryAllDto {
     private Integer isEditable;
     private Integer isDeletable;
     private Integer isDeleted;
+    @DateTimeFormat(pattern ="yyyy-MM-dd HH:mm:ss")
     private java.util.Date createTime;
 }

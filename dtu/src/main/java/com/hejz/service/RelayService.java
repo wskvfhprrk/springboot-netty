@@ -1,6 +1,8 @@
 package com.hejz.service;
 
+import com.hejz.dto.RelayFindByPageDto;
 import com.hejz.entity.Relay;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -21,4 +23,6 @@ public interface RelayService {
     void delete(Long id);
 
     void deleteAlByDtuId(Long dtuId);
+
+    Page<Relay> findPage(RelayFindByPageDto dto);
 }

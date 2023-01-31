@@ -3,6 +3,7 @@ package com.hejz.dto;
 import com.hejz.common.Page;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -20,8 +21,10 @@ public class CommandStatusFindByPageDto extends Page {
     @ApiModelProperty(value = "继电器命令ID")
     private Long commonId;
     @ApiModelProperty(value = "创建时间")
+    @DateTimeFormat(pattern ="yyyy-MM-dd HH:mm:ss")
     private Date createDate;
     @ApiModelProperty(value = "修改时间")
+    @DateTimeFormat(pattern ="yyyy-MM-dd HH:mm:ss")
     private Date updateDate;
     @ApiModelProperty(value = "当前状态——true是新的状态，false是过期的状态")
     private Boolean status;
