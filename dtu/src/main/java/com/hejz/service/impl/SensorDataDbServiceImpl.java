@@ -63,9 +63,6 @@ public class SensorDataDbServiceImpl implements SensorDataDbService {
     public Page<SensorDataDb> findPage(SensorDataDbFindByPageDto dto) {
         Specification<SensorDataDb> sp = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (dto.getId() != null && dto.getId() != 0) {
-                predicates.add(cb.equal(root.get("id"), dto.getId()));
-            }
             if (dto.getDtuId() != null && dto.getDtuId() != 0) {
                 predicates.add(cb.equal(root.get("dtuId"), dto.getDtuId()));
             }
