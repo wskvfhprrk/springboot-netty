@@ -7,10 +7,6 @@ import com.hejz.entity.SensorDataDb;
 import com.hejz.repository.SensorDataDbRepository;
 import com.hejz.service.SensorDataDbService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,7 +57,6 @@ public class SensorDataDbServiceImpl implements SensorDataDbService {
     @Override
     public Result<PageResult> getPage(Page page) {
 
-//        List<SensorDataDb> sensorDataDbs = sensorDataDbRepository.findAll(Sort.by("create_date").descending());
         return null;
     }
 
