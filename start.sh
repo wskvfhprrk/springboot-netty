@@ -21,7 +21,7 @@ cd /root/springboot-netty/
 #先删除源文件再拷贝
 rm -rf /root/start.sh
 cp -rf start.sh /root/
-chmod +x start.sh
+chmod +x /root/start.sh
 #进入目录中
 cd dtu
 echo -e ======================6.修改application.yml文件======================
