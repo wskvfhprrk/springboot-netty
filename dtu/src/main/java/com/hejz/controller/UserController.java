@@ -90,8 +90,6 @@ public class UserController {
     @GetMapping("fingPage")
     @ApiOperation("条件查询用户信息")
     public Result<PageResult<UserFindByPageVo>> findBypage(@Valid UserFindByPageDto dto){
-        User user=new User();
-        BeanUtils.copyProperties(dto,user);
         Page<User> userPage = userService.findPage(dto);
         List<UserFindByPageVo> list = userPage.getContent().stream().map(d -> {
             UserFindByPageVo vo = new UserFindByPageVo();
@@ -107,7 +105,7 @@ public class UserController {
     }
 
     @GetMapping
-    @ApiOperation("分布条件查询用户信息所有的数据")
+    @ApiOperation("条件查询用户信息所有的数据")
     public Result<List<UserAllVo>> findAll(@Valid UserFindAllDto dto){
         User user=new User();
         BeanUtils.copyProperties(dto,user);
