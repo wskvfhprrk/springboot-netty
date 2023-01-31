@@ -14,7 +14,4 @@ import java.util.Date;
 public class SensorDataDbFindByPageDto extends Page {
     private Date createDate;
     private Long dtuId;
-//    private String names;
-//    private String data;
-//    private String units;
 }

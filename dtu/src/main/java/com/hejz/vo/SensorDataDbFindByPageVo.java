@@ -1,7 +1,7 @@
 package com.hejz.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 public class SensorDataDbFindByPageVo {
     private Long id;
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date createDate;
     private String names;
     private String data;
