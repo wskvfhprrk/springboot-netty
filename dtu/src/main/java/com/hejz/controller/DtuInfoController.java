@@ -1,10 +1,21 @@
 package com.hejz.controller;
+import com.hejz.common.PageResult;
+import com.hejz.common.Result;
+import com.hejz.dto.DtuInfoFindByPageDto;
+import com.hejz.entity.DtuInfo;
+import com.hejz.vo.DtuInfoFindByPageVo;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import com.hejz.entity.DtuInfo;
 import com.hejz.service.DtuInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -43,5 +54,20 @@ public class DtuInfoController {
     @DeleteMapping("{id}")
     public void delete(@PathVariable("id") Long id){
         dtuInfoService.delete(id);
+    }
+    @ApiOperation("分页条件查询")
+    @GetMapping("page")
+    public Result<PageResult<DtuInfoFindByPageVo>> findBypage(@Valid DtuInfoFindByPageDto dto){
+        Page<DtuInfo> dtuInfoPage = dtuInfoService.findPage(dto);
+        List<DtuInfoFindByPageVo> list = dtuInfoPage.getContent().stream().map(d -> {
+            DtuInfoFindByPageVo vo = new DtuInfoFindByPageVo();
+            BeanUtils.copyProperties(d,vo);
+            return vo;
+        }).collect(Collectors.toList());
+        PageResult<DtuInfoFindByPageVo> pages=new PageResult<>();
+        pages.setPage(dto.getPage());
+        pages.setLimit(dto.getLimit());
+        pages.setItems(list);
+        return Result.ok(pages);
     }
 }

@@ -1,14 +1,24 @@
 package com.hejz.service.impl;
 
 import com.hejz.common.Constant;
+import com.hejz.dto.DtuInfoFindByPageDto;
+import com.hejz.entity.DtuInfo;
 import com.hejz.entity.DtuInfo;
 import com.hejz.repository.DtuInfoRepository;
 import com.hejz.service.DtuInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -25,6 +35,24 @@ public class DtuInfoServiceImpl implements DtuInfoService {
     @Override
     public DtuInfo findByImei(String imei) {
         return dtuInfoRepository.findAllByImei(imei);
+    }
+
+    @Override
+    public Page<DtuInfo> findPage(DtuInfoFindByPageDto dto) {
+        Specification<DtuInfo> sp = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (dto.getImei() != null && dto.getImei().length()>0) {
+                predicates.add(cb.equal(root.get("imei"), dto.getImei()));
+            }
+            Predicate[] andPredicate = new Predicate[predicates.size()];
+            return cb.and(predicates.toArray(andPredicate));
+        };
+        //截取第一个字符，为-是倒序，为+正排序,后面为字段名称
+        Sort.Direction direction = dto.getSort().substring(0, 1).equals("+") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, dto.getSort().substring(1));
+        Page<DtuInfo> all = dtuInfoRepository.findAll(sp, PageRequest.of(dto.getPage(), dto.getLimit(), sort));
+        System.out.println(all);
+        return all;
     }
 
     @Cacheable(value = Constant.DTU_INFO_CACHE_KEY, key = "#p0", unless = "#result == null")

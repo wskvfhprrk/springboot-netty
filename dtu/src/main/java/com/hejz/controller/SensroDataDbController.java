@@ -57,8 +57,6 @@ public class SensroDataDbController {
     @ApiOperation("fingPage")
     @GetMapping("page")
     public Result<PageResult<SensorDataDbFindByPageVo>> findBypage(@Valid SensorDataDbFindByPageDto dto){
-//        SensorDataDb sensorDataDb=new SensorDataDb();
-//        BeanUtils.copyProperties(dto,sensorDataDb);
         Page<SensorDataDb> sensorDataDbPage = sensorDataDbService.findPage(dto);
         List<SensorDataDbFindByPageVo> list = sensorDataDbPage.getContent().stream().map(d -> {
             SensorDataDbFindByPageVo vo = new SensorDataDbFindByPageVo();

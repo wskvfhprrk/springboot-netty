@@ -1,7 +1,9 @@
 package com.hejz.service;
 
 
+import com.hejz.dto.CommandStatusFindByPageDto;
 import com.hejz.entity.CommandStatus;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -21,4 +23,5 @@ public interface CommandStatusService {
 
     void delete(Long id);
 
+    Page<CommandStatus> findPage(CommandStatusFindByPageDto dto);
 }

@@ -1,6 +1,8 @@
 package com.hejz.service;
 
+import com.hejz.dto.DtuInfoFindByPageDto;
 import com.hejz.entity.DtuInfo;
+import org.springframework.data.domain.Page;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -17,4 +19,6 @@ public interface DtuInfoService {
     void delete(Long id);
 
     DtuInfo findByImei(String Imei);
+
+    Page<DtuInfo> findPage(DtuInfoFindByPageDto dto);
 }

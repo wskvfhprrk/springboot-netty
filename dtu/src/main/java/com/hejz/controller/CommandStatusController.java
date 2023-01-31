@@ -1,13 +1,22 @@
 package com.hejz.controller;
 
+import com.hejz.common.PageResult;
+import com.hejz.common.Result;
+import com.hejz.dto.CommandStatusFindByPageDto;
+import com.hejz.entity.CommandStatus;
 import com.hejz.entity.CommandStatus;
 import com.hejz.service.CommandStatusService;
+import com.hejz.vo.CommandStatusFindByPageVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -50,6 +59,22 @@ public class CommandStatusController {
     @DeleteMapping("{id}")
     public void delete(@PathVariable("id") Long id) {
         commandStatusService.delete(id);
+    }
+
+    @ApiOperation("分页条件查询")
+    @GetMapping("page")
+    public Result<PageResult<CommandStatusFindByPageVo>> findBypage(@Valid CommandStatusFindByPageDto dto){
+        Page<CommandStatus> commandStatusPage = commandStatusService.findPage(dto);
+        List<CommandStatusFindByPageVo> list = commandStatusPage.getContent().stream().map(d -> {
+            CommandStatusFindByPageVo vo = new CommandStatusFindByPageVo();
+            BeanUtils.copyProperties(d,vo);
+            return vo;
+        }).collect(Collectors.toList());
+        PageResult<CommandStatusFindByPageVo> pages=new PageResult<>();
+        pages.setPage(dto.getPage());
+        pages.setLimit(dto.getLimit());
+        pages.setItems(list);
+        return Result.ok(pages);
     }
 
 }
