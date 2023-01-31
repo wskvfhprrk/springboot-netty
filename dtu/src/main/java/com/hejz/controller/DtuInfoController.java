@@ -7,7 +7,6 @@ import com.hejz.vo.DtuInfoFindByPageVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import com.hejz.entity.DtuInfo;
 import com.hejz.service.DtuInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -70,5 +69,20 @@ public class DtuInfoController {
         pages.setLimit(dto.getLimit());
         pages.setItems(list);
         return Result.ok(pages);
+    }
+    @ApiOperation("手动模式关闭大棚")
+    @GetMapping("closeTheCanopyInManualMode/{dtuId}")
+    public Result closeTheCanopyInManualMode(@PathVariable Long dtuId){
+        return dtuInfoService.closeTheCanopyInManualMode(dtuId);
+    }
+    @ApiOperation("手动模式开启大棚")
+    @GetMapping("openTheCanopyInManualMode/{dtuId}")
+    public Result openTheCanopyInManualMode(@PathVariable Long dtuId){
+        return dtuInfoService.openTheCanopyInManualMode(dtuId);
+    }
+    @ApiOperation("切换大棚自动调整模式")
+    @GetMapping("automaticAdjustment/{dtuId}")
+    public Result automaticAdjustment(@PathVariable Long dtuId){
+        return dtuInfoService.changeAutomaticAdjustment(dtuId);
     }
 }

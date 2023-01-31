@@ -1,11 +1,12 @@
 package com.hejz.service.impl;
 
 import com.hejz.common.Constant;
+import com.hejz.common.Result;
 import com.hejz.dto.DtuInfoFindByPageDto;
-import com.hejz.entity.DtuInfo;
 import com.hejz.entity.DtuInfo;
 import com.hejz.repository.DtuInfoRepository;
 import com.hejz.service.DtuInfoService;
+import com.hejz.service.RelayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -30,7 +32,10 @@ public class DtuInfoServiceImpl implements DtuInfoService {
     @Autowired
     private DtuInfoRepository dtuInfoRepository;
     @Autowired
+    private RelayService relayService;
+    @Autowired
     RedisTemplate redisTemplate;
+
     @Cacheable(value = Constant.DTU_INFO_IMEI_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
     public DtuInfo findByImei(String imei) {
@@ -53,6 +58,43 @@ public class DtuInfoServiceImpl implements DtuInfoService {
         Page<DtuInfo> all = dtuInfoRepository.findAll(sp, PageRequest.of(dto.getPage(), dto.getLimit(), sort));
         System.out.println(all);
         return all;
+    }
+
+    @Override
+    public Result closeTheCanopyInManualMode(Long dtuId) {
+        //先变手动模式，然后再发命令
+        Optional<DtuInfo> optionalDtuInfo = dtuInfoRepository.findById(dtuId);
+        if(optionalDtuInfo.isPresent()){
+            DtuInfo dtuInfo = optionalDtuInfo.get();
+            dtuInfo.setAutomaticAdjustment(false);
+            this.update(dtuInfo);
+            relayService.closeTheCanopy(dtuId);
+        }
+        return Result.ok();
+    }
+
+    @Override
+    public Result openTheCanopyInManualMode(Long dtuId) {
+        //先变手动模式，然后再发命令
+        Optional<DtuInfo> optionalDtuInfo = dtuInfoRepository.findById(dtuId);
+        if(optionalDtuInfo.isPresent()){
+            DtuInfo dtuInfo = optionalDtuInfo.get();
+            dtuInfo.setAutomaticAdjustment(false);
+            this.update(dtuInfo);
+            relayService.openTheCanopy(dtuId);
+        }
+        return Result.ok();
+    }
+
+    @Override
+    public Result changeAutomaticAdjustment(Long dtuId) {
+        Optional<DtuInfo> optionalDtuInfo = dtuInfoRepository.findById(dtuId);
+        if(optionalDtuInfo.isPresent()){
+            Boolean aBoolean = optionalDtuInfo.get().getAutomaticAdjustment();
+            optionalDtuInfo.get().setAutomaticAdjustment(aBoolean?false:true);
+            this.update(optionalDtuInfo.get());
+        }
+        return Result.ok();
     }
 
     @Cacheable(value = Constant.DTU_INFO_CACHE_KEY, key = "#p0", unless = "#result == null")

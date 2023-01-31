@@ -1,5 +1,6 @@
 package com.hejz.service;
 
+import com.hejz.common.Result;
 import com.hejz.dto.RelayFindByPageDto;
 import com.hejz.entity.Relay;
 import org.springframework.data.domain.Page;
@@ -25,4 +26,6 @@ public interface RelayService {
     void deleteAlByDtuId(Long dtuId);
 
     Page<Relay> findPage(RelayFindByPageDto dto);
+    Result closeTheCanopy(Long dtuId) ;
+    Result openTheCanopy(Long dtuId) ;
 }

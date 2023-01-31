@@ -1,6 +1,7 @@
 package com.hejz.service.impl;
 
 import com.hejz.common.Constant;
+import com.hejz.common.Result;
 import com.hejz.dto.RelayFindByPageDto;
 import com.hejz.entity.Relay;
 import com.hejz.entity.DtuInfo;
@@ -96,6 +97,16 @@ public class RelayServiceImpl implements RelayService {
         Page<Relay> all = relayRepository.findAll(sp, PageRequest.of(dto.getPage(), dto.getLimit(), sort));
         System.out.println(all);
         return all;
+    }
+
+    @Override
+    public Result closeTheCanopy(Long dtuId) {
+        return null;
+    }
+
+    @Override
+    public Result openTheCanopy(Long dtuId) {
+        return null;
     }
 
 }
