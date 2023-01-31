@@ -92,7 +92,7 @@ public class UserController {
     public Result<PageResult<UserFindByPageVo>> findBypage(@Valid UserFindByPageDto dto){
         User user=new User();
         BeanUtils.copyProperties(dto,user);
-        Page<User> userPage = userService.findPage(user, dto.getPage(), dto.getPage());
+        Page<User> userPage = userService.findPage(dto);
         List<UserFindByPageVo> list = userPage.getContent().stream().map(d -> {
             UserFindByPageVo vo = new UserFindByPageVo();
             BeanUtils.copyProperties(d,vo);

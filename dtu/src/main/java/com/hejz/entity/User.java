@@ -36,5 +36,5 @@ public class User implements Serializable{
 
     //多对多关系映射
     @ManyToMany(mappedBy = "users")
-    private Set<Role> roles = new HashSet<Role>(0);
+    private Set<Role> roles = new HashSet<>(0);
 }
