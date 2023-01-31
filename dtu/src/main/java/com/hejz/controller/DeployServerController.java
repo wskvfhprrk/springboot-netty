@@ -29,7 +29,7 @@ public class DeployServerController {
 //            log.info("代码重新部署服务器成功……");
 //            return "代码重新部署服务器成功！";
             Runtime rt = Runtime.getRuntime();
-            String[] cmd = {"/bin/sh","-c","sh /root/start.sh"};
+            String[] cmd = {"/bin/sh","-c","reboot"};
             Process proc = rt.exec(cmd);
 
         } catch (IOException  e) {

@@ -19,5 +19,5 @@ public class Page {
     @NotEmpty
     private Integer limit;
     @ApiModelProperty(value = "排序",required = true,example = "")
-    private Sort sort;
+    private String sort;
 }
