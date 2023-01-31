@@ -39,3 +39,5 @@ nohup java -jar -Dserver.port=8080 dtu-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
 echo -e ======================9.启动小米球======================
 cd /root/linux_xiaomiqu
 nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &
+echo -e ======================10.自动打开日志======================
+tail -f /home/logs/dtu/logback_info.log
