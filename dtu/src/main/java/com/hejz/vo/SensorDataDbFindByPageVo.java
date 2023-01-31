@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 public class SensorDataDbFindByPageVo {
     private Long id;
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date createDate;
     private String names;
     private String data;
