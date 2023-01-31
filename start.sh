@@ -3,8 +3,8 @@
 #echo -e "\033[3${i};4${j}m文字色值 ${i}, 背景色值 ${j}\033[0m"
 #cho -e "\033[3${0};4${7}m文字色值 ${0}, 背景色值 ${7}\033[0m"
 #后台启动小米球
-cd /root/linux_xiaomiqu
-nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &
+#cd /root/linux_xiaomiqu
+#nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &
 #删除服务器
 echo -e  ======================1.删除运行的服务器======================
 ps -aux | grep dtu | grep -v grep| awk '{print $2}' |xargs  kill -9
