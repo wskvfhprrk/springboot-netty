@@ -3,10 +3,10 @@ package com.hejz.controller;
 import com.hejz.common.Constant;
 import com.hejz.entity.*;
 import com.hejz.repository.*;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import java.util.Comparator;
 import java.util.List;
@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
  * @Description: 启动时初始化数据
  */
 @RestController
+@Api(tags = "初始化数据")
 public class InitController {
     @Autowired
     SensorRepository sensorRepository;

@@ -54,7 +54,7 @@ public class SensroDataDbController {
         return sensorDataDbService.update(densorDataDb);
     }
 
-    @ApiOperation("fingPage")
+    @ApiOperation("分页条件查询")
     @GetMapping("page")
     public Result<PageResult<SensorDataDbFindByPageVo>> findBypage(@Valid SensorDataDbFindByPageDto dto){
         Page<SensorDataDb> sensorDataDbPage = sensorDataDbService.findPage(dto);
