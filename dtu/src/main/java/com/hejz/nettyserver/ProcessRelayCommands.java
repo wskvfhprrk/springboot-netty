@@ -93,13 +93,12 @@ public class ProcessRelayCommands {
         //保存当前状态
         commandStatusService.save(new CommandStatus(dtuInfo.getId(), relayDefinitionCommand.getId(), new Date(), new Date(), true));
         Long commonId = relayDefinitionCommand.getCommonId();
-        //把要重新处理的relayDefinitionCommand再给原来的relayDefinitionCommand
         RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.findByAllDtuId(dtuInfo.getId()).stream()
                 .filter(r -> r.getId().equals(commonId)).findFirst().get();
         ctx.channel().eventLoop().schedule(() -> {
             log.info("通道==》{}开始延时任务，延时：{}", ctx.channel().id().toString(), relayDefinitionCommand1.getProcessingWaitingTime());
             NettyServiceCommon.sendRelayCommandAccordingToLayIds(ctx.channel(), relayDefinitionCommand1);
-        }, relayDefinitionCommand.getProcessingWaitingTime(), TimeUnit.MILLISECONDS);
+        }, relayDefinitionCommand1.getProcessingWaitingTime(), TimeUnit.MILLISECONDS);
     }
 
     /**
