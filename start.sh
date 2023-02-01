@@ -35,5 +35,6 @@ echo -e ======================8.重启服务======================
 cd target
 nohup java -jar -Dserver.port=8080 dtu-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
 echo -e ======================9.启动小米球======================
+ps -aux | grep xiaomiqiu | grep -v grep| awk '{print $2}' |xargs  kill -9
 cd /root/linux_xiaomiqu
 nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &
