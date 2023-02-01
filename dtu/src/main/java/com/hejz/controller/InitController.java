@@ -4,11 +4,12 @@ import com.hejz.common.Constant;
 import com.hejz.enm.InstructionTypeEnum;
 import com.hejz.entity.*;
 import com.hejz.repository.*;
-import com.hejz.service.UserService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.annotation.PostConstruct;
 import java.util.Comparator;
 import java.util.List;
@@ -37,7 +38,7 @@ public class InitController {
     @Autowired
     RedisTemplate redisTemplate;
 
-    @PostConstruct
+    @GetMapping("init")
     public void initData() {
         checkingRulesRepository.save(new CheckingRules("7位MODBUS协议111122", 7, 1, 1, 1, 2, 2));
         checkingRulesRepository.save(new CheckingRules("8位MODBUS协议1111222", 8, 1, 1, 2, 2, 2));
