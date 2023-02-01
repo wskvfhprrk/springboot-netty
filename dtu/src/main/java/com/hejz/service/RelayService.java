@@ -1,7 +1,9 @@
 package com.hejz.service;
 
 import com.hejz.common.Result;
+import com.hejz.dto.ManualCommandDto;
 import com.hejz.dto.RelayFindByPageDto;
+import com.hejz.enm.InstructionTypeEnum;
 import com.hejz.entity.Relay;
 import org.springframework.data.domain.Page;
 
@@ -28,16 +30,10 @@ public interface RelayService {
     Page<Relay> findPage(RelayFindByPageDto dto);
 
     /**
-     * 手动模式关闭大棚
+     * 手动指令
      * @param dtuId
      * @return
      */
-    Result closeTheCanopyInManualMode(Long dtuId);
+    Result manualCommand(ManualCommandDto manualCommandDto);
 
-    /**
-     * 手动模式开启大棚
-     * @param dtuId
-     * @return
-     */
-    Result openTheCanopyInManualMode(Long dtuId);
 }

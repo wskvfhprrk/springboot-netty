@@ -3,8 +3,11 @@ package com.hejz.nettyserver;
 import com.hejz.common.Constant;
 import com.hejz.entity.CheckingRules;
 import com.hejz.entity.DtuInfo;
+import com.hejz.entity.Relay;
+import com.hejz.entity.RelayDefinitionCommand;
 import com.hejz.service.CheckingRulesService;
 import com.hejz.service.DtuInfoService;
+import com.hejz.service.RelayService;
 import com.hejz.utils.CRC16;
 import com.hejz.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
@@ -37,6 +40,10 @@ public class NettyServiceCommon {
     @Autowired
     private CheckingRulesService checkingRulesService1;
     private static CheckingRulesService checkingRulesService;
+    @Autowired
+    private RelayService relayService1;
+    private static RelayService relayService;
+
     @Resource(name = "redisTemplate")
     private RedisTemplate redisTemplate1;
     private static RedisTemplate redisTemplate;
@@ -62,6 +69,8 @@ public class NettyServiceCommon {
         this.dtuInfoService = dtuInfoService1;
         this.checkingRulesService = checkingRulesService1;
         this.redisTemplate = redisTemplate1;
+        this.relayService = relayService1;
+
     }
 
 
@@ -157,5 +166,44 @@ public class NettyServiceCommon {
             bufff.writeBytes(HexConvert.hexStringToBytes(hex.replaceAll(" ", "")));
             channel.writeAndFlush(bufff);
         }
+    }
+    /**
+     * 根据layIds发送继电器指令
+     *
+     * @param channel
+     * @param relayDefinitionCommand
+     */
+    public static void sendRelayCommandAccordingToLayIds(Channel channel, RelayDefinitionCommand
+            relayDefinitionCommand) {
+        String[] r = relayDefinitionCommand.getRelayIds().split(",");
+        List<Relay> relayList = relayService.findAllByDtuId(relayDefinitionCommand.getDtuId());
+        for (String s : r) {
+            String[] s1 = s.split("-");
+            loop:
+            for (Relay relay : relayList) {
+                if (String.valueOf(relay.getId()).equals(s1[0])) {
+                    String sendHex = s1[1].equals("1") ? relay.getOpneHex() : relay.getCloseHex();
+                    //缓存需要继续处理的指令，如果不再处理不缓存——为程序收到继电器信号（继电器发送什么信号接收到什么信号）能联系在一起
+                    if (relayDefinitionCommand.getIsProcessTheReturnValue()) {
+                        cacheInstructionsThatNeedToContinueProcessing(channel, sendHex, relayDefinitionCommand);
+                    }
+                    NettyServiceCommon.write(sendHex, channel);
+                    // TODO: 2023/1/4 处理url发出指令
+                    break loop;
+                }
+            }
+        }
+    }
+    /**
+     * 缓存需要继续处理的指令，如果不再处理不缓存——为程序收到继电器信号（继电器发送什么信号接收到什么信号）能联系在一起
+     *
+     * @param channel
+     * @param sendHex
+     * @param relayDefinitionCommand
+     */
+    private static void cacheInstructionsThatNeedToContinueProcessing(Channel channel, String
+            sendHex, RelayDefinitionCommand relayDefinitionCommand) {
+        //设置10分钟
+        redisTemplate.opsForValue().set(Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY + "::" + channel.id() + "::" + sendHex, relayDefinitionCommand, Duration.ofMillis(Constant.EXPIRATION_TIME_OF_CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEYS));
     }
 }

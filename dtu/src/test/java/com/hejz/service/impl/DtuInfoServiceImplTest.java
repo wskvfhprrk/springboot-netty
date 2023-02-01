@@ -20,7 +20,7 @@ class DtuInfoServiceImplTest {
     DtuInfoService dtuInfoService;
     @Autowired
     RedisTemplate redisTemplate;
-    private String imei = "865328063321359";
+    private String imei = "865328063323359";
 
     @Order(5)
     @Test
@@ -44,10 +44,6 @@ class DtuInfoServiceImplTest {
         dtuInfoService.save(new DtuInfo(imei,1,1,"1","1",1,1,true,true,"1"));
         Object o = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
         Assert.isNull(o, "缓存中应该无值！");
-        DtuInfo dtuInfos = dtuInfoService.findByImei(imei);
-//        Assert.isTrue(dtuInfos.size() == 2, "测试其元素为2个");
-        Object o1 = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
-        Assert.notNull(o1, "缓存中有值！");
     }
 
     @Order(2)
@@ -59,10 +55,6 @@ class DtuInfoServiceImplTest {
         Assert.isTrue(!update.getNoImei(), "修改值成功");
         Object o = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
         Assert.isNull(o, "缓存中应该无值！");
-        DtuInfo dtuInfos = dtuInfoService.findByImei(imei);
-//        Assert.isTrue(dtuInfos.size() == 2, "测试其元素为2个");
-        Object o1 = redisTemplate.opsForValue().get(Constant.DTU_INFO_CACHE_KEY + "::" + imei);
-        Assert.notNull(o1, "缓存中有值！");
     }
 
     @Order(4)

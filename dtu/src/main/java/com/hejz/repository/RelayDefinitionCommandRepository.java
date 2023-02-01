@@ -1,5 +1,6 @@
 package com.hejz.repository;
 
+import com.hejz.enm.InstructionTypeEnum;
 import com.hejz.entity.RelayDefinitionCommand;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -17,4 +18,6 @@ public interface RelayDefinitionCommandRepository extends CrudRepository<RelayDe
     List<RelayDefinitionCommand> findByDtuId(Long dtuId);
 
     void deleteAllByDtuId(Long dtuId);
+
+    List<RelayDefinitionCommand> findByDtuIdAndInstructionTypeEnum(Long dtuId, InstructionTypeEnum instructionTypeEnum);
 }

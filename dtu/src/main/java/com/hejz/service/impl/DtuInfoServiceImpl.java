@@ -6,6 +6,7 @@ import com.hejz.dto.DtuInfoFindByPageDto;
 import com.hejz.entity.DtuInfo;
 import com.hejz.repository.DtuInfoRepository;
 import com.hejz.service.DtuInfoService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -82,7 +83,7 @@ public class DtuInfoServiceImpl implements DtuInfoService {
         return dtuInfoRepository.save(dtuInfo);
     }
 
-    @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#po.id")
+    @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#result.id")
     @Override
     public DtuInfo update(DtuInfo dtuInfo) {
         redisTemplate.delete(Constant.DTU_INFO_IMEI_CACHE_KEY+"::"+dtuInfo.getImei());

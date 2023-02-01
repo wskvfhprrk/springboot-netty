@@ -2,6 +2,7 @@ package com.hejz.service.impl;
 
 import com.hejz.common.Constant;
 import com.hejz.dto.RelayDefinitionCommandFindByPageDto;
+import com.hejz.enm.InstructionTypeEnum;
 import com.hejz.entity.RelayDefinitionCommand;
 import com.hejz.entity.RelayDefinitionCommand;
 import com.hejz.entity.DtuInfo;
@@ -44,6 +45,11 @@ public class RelayDefinitionCommandServiceImpl implements RelayDefinitionCommand
     @Override
     public List<RelayDefinitionCommand> findByAllDtuId(Long dtuId) {
         return relayDefinitionCommandRepository.findByDtuId(dtuId);
+    }
+
+    @Override
+    public List<RelayDefinitionCommand> findByAllDtuId(Long dtuId, InstructionTypeEnum instructionTypeEnum) {
+        return relayDefinitionCommandRepository.findByDtuIdAndInstructionTypeEnum(dtuId,instructionTypeEnum);
     }
 
     @Override

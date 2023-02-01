@@ -1,6 +1,7 @@
 package com.hejz.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.hejz.enm.InstructionTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -89,9 +90,15 @@ public class RelayDefinitionCommand implements Serializable {
             columnDefinition="bigint default 0"+" COMMENT '相对应的命令id'"
     )
     private Long correspondingCommandId;
+    @Column(
+            name = "instruction_type_enum",
+            nullable = false,
+            columnDefinition="int(2)"+" COMMENT '指令类型枚举'"
+    )
+    private InstructionTypeEnum instructionTypeEnum;
 
 
-    public RelayDefinitionCommand(Long dtuId, String name, String remarks, String relayIds, boolean isProcessTheReturnValue, long processingWaitingTime, Long commonId, Long correspondingCommandId) {
+    public RelayDefinitionCommand(Long dtuId, String name, String remarks, String relayIds, boolean isProcessTheReturnValue, long processingWaitingTime, Long commonId, Long correspondingCommandId,InstructionTypeEnum instructionTypeEnum) {
         this.dtuId=dtuId;
         this.name=name;
         this.remarks=remarks;
@@ -100,6 +107,7 @@ public class RelayDefinitionCommand implements Serializable {
         this.processingWaitingTime = processingWaitingTime;
         this.commonId = commonId;
         this.correspondingCommandId = correspondingCommandId;
+        this.instructionTypeEnum = instructionTypeEnum;
 
     }
 }

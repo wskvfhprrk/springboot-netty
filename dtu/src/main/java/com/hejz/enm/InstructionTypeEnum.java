@@ -19,5 +19,7 @@ public enum InstructionTypeEnum {
     //打开其它
     OPEN_OTHER,
     //关闭其它
-    CLOSE_OTHERS;
+    CLOSE_OTHERS,
+    //重置指令
+    RESET_COMMAND;
 }

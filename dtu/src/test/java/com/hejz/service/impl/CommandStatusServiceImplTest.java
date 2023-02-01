@@ -1,6 +1,7 @@
 package com.hejz.service.impl;
 
 import com.hejz.common.Constant;
+import com.hejz.enm.InstructionTypeEnum;
 import com.hejz.entity.CommandStatus;
 import com.hejz.service.CommandStatusService;
 import org.junit.jupiter.api.MethodOrderer;

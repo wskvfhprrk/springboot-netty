@@ -1,6 +1,7 @@
 package com.hejz.controller;
 
 import com.hejz.common.Constant;
+import com.hejz.enm.InstructionTypeEnum;
 import com.hejz.entity.*;
 import com.hejz.repository.*;
 import com.hejz.service.UserService;
@@ -73,16 +74,16 @@ public class InitController {
         relayRepository.save(new Relay((long) (i + 1), 3, "第4个继电器", "03 05 00 03 FF 00 7D D8", "03 05 00 03 00 00 3C 28", "lcaolhost:8080/hello", "备用"));
         List<Relay> relays = relayRepository.findAlByDtuId((long) (i + 1)).stream().sorted(Comparator.comparing(Relay::getId)).collect(Collectors.toList());
         //处理编辑继电器命令的信息
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "重置大棚指令", "停止大棚电机指令", relays.get(1).getId() + "-0," + relays.get(0).getId() + "-0", false, 3000L, 0L, 0L));
-        Optional<RelayDefinitionCommand> relayDefinitionCommandOptional = relayDefinitionCommandRepository.findByDtuId((long) (i + 1)).stream().filter(r -> r.getName().equals("重置大棚指令")).findFirst();
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "打开大棚指令", "打开左右大棚", relays.get(1).getId() + "-1," + relays.get(0).getId() + "-0", true, 3000L, relayDefinitionCommandOptional.get().getId(), i * 3 + 3L));
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "关闭大棚指令", "关闭左右大棚", relays.get(1).getId() + "-1," + relays.get(0).getId() + "-1", true, 3000L, relayDefinitionCommandOptional.get().getId(), i * 3 + 2L));
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "重置通风指令", "停止打开和关闭通风电机指令", relays.get(1).getId() + "-0," + relays.get(0).getId() + "-0", false, 3000L, 0L, 0L, InstructionTypeEnum.RESET_COMMAND));
+        Optional<RelayDefinitionCommand> relayDefinitionCommandOptional = relayDefinitionCommandRepository.findByDtuId((long) (i + 1)).stream().filter(r -> r.getName().equals("重置通风指令")).findFirst();
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "打开通风指令", "打开左右通风", relays.get(1).getId() + "-1," + relays.get(0).getId() + "-0", true, 3000L, relayDefinitionCommandOptional.get().getId(), i * 3 + 3L,InstructionTypeEnum.OPEN_VENTILATION));
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "关闭通风指令", "关闭左右通风", relays.get(1).getId() + "-1," + relays.get(0).getId() + "-1", true, 3000L, relayDefinitionCommandOptional.get().getId(), i * 3 + 2L,InstructionTypeEnum.CLOSE_VENTILATION));
         if (!relayDefinitionCommandOptional.isPresent()) return;
         //处理感应器信息
         List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandRepository.findByDtuId((long) (i + 1));
-        Optional<RelayDefinitionCommand> open = relayDefinitionCommands.stream().filter(r -> r.getName().equals("打开大棚指令")).findFirst();
+        Optional<RelayDefinitionCommand> open = relayDefinitionCommands.stream().filter(r -> r.getName().equals("打开通风指令")).findFirst();
         if (!open.isPresent()) return;
-        Optional<RelayDefinitionCommand> close = relayDefinitionCommands.stream().filter(r -> r.getName().equals("关闭大棚指令")).findFirst();
+        Optional<RelayDefinitionCommand> close = relayDefinitionCommands.stream().filter(r -> r.getName().equals("关闭通风指令")).findFirst();
         sensorRepository.save(new Sensor((long) (i + 1), 1, "空气温度 ", "01 03 03 00 00 01 84 4E", "D/10", "ºC", 25, 15, open.get().getId(), close.get().getId()));
         sensorRepository.save(new Sensor((long) (i + 1), 1, "空气湿度 ", "01 03 03 01 00 01 D5 8E", "D/10", "%", 90, 70, 0L, 0L));
         sensorRepository.save(new Sensor((long) (i + 1), 2, "土壤PH  ", "02 03 02 03 00 01 75 81", "D/10", "", 9, 6, 0L, 0L));

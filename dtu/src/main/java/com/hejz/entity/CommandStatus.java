@@ -1,6 +1,7 @@
 package com.hejz.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.hejz.enm.InstructionTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

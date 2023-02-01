@@ -2,14 +2,20 @@ package com.hejz.service.impl;
 
 import com.hejz.common.Constant;
 import com.hejz.common.Result;
+import com.hejz.dto.ManualCommandDto;
 import com.hejz.dto.RelayFindByPageDto;
+import com.hejz.enm.InstructionTypeEnum;
 import com.hejz.entity.ChatMsg;
 import com.hejz.entity.DtuInfo;
 import com.hejz.entity.Relay;
+import com.hejz.entity.RelayDefinitionCommand;
+import com.hejz.nettyserver.NettyServiceCommon;
 import com.hejz.nettyserver.PushMsgService;
 import com.hejz.repository.RelayRepository;
 import com.hejz.service.DtuInfoService;
+import com.hejz.service.RelayDefinitionCommandService;
 import com.hejz.service.RelayService;
+import io.netty.channel.Channel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,6 +45,8 @@ public class RelayServiceImpl implements RelayService {
     private DtuInfoService dtuInfoService;
     @Autowired
     private PushMsgService pushMsgService;
+    @Autowired
+    private RelayDefinitionCommandService relayDefinitionCommandService;
     @Autowired
     RedisTemplate redisTemplate;
 
@@ -105,32 +113,23 @@ public class RelayServiceImpl implements RelayService {
 
 
     @Override
-    public Result closeTheCanopyInManualMode(Long dtuId) {
+    public Result manualCommand(ManualCommandDto dto) {
         //先变手动模式，然后再发命令
-        DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
+        DtuInfo dtuInfo = dtuInfoService.findById(dto.getDtuId());
         dtuInfo.setAutomaticAdjustment(false);
         dtuInfoService.update(dtuInfo);
+        //判断是否在线
+        Channel channel = Constant.USER_CHANNEL.get(dto.getDtuId());
+        if (channel==null) {
+            return Result.error(500,"客户端未连接服务器");
+        }
+        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByAllDtuId(dto.getDtuId(), dto.getInstructionTypeEnum());
         //发命令
-        String msg=null;
-        ChatMsg chatMsg=new ChatMsg();
-        chatMsg.setDtuId(dtuId);
-        chatMsg.setMsg(msg);
-        pushMsgService.pushMsgToChannel(chatMsg);
+        if(relayDefinitionCommands.isEmpty()) return Result.error(500,"没有相应的指令");
+        for (RelayDefinitionCommand relayDefinitionCommand : relayDefinitionCommands) {
+            NettyServiceCommon.sendRelayCommandAccordingToLayIds(Constant.USER_CHANNEL.get(dto.getDtuId()), relayDefinitionCommand);
+        }
         return Result.ok();
     }
 
-    @Override
-    public Result openTheCanopyInManualMode(Long dtuId) {
-        //先变手动模式，然后再发命令
-        DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
-        dtuInfo.setAutomaticAdjustment(false);
-        dtuInfoService.update(dtuInfo);
-        //发命令
-        String msg=null;
-        ChatMsg chatMsg=new ChatMsg();
-        chatMsg.setDtuId(dtuId);
-        chatMsg.setMsg(msg);
-        pushMsgService.pushMsgToChannel(chatMsg);
-        return Result.ok();
-    }
 }

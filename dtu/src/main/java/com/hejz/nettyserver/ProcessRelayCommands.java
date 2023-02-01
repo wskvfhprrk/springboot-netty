@@ -1,6 +1,7 @@
 package com.hejz.nettyserver;
 
 import com.hejz.common.Constant;
+import com.hejz.enm.InstructionTypeEnum;
 import com.hejz.entity.*;
 import com.hejz.service.CommandStatusService;
 import com.hejz.service.DtuInfoService;
@@ -97,7 +98,7 @@ public class ProcessRelayCommands {
                 .filter(r -> r.getId().equals(commonId)).findFirst().get();
         ctx.channel().eventLoop().schedule(() -> {
             log.info("通道==》{}开始延时任务，延时：{}", ctx.channel().id().toString(), relayDefinitionCommand1.getProcessingWaitingTime());
-            sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand1);
+            NettyServiceCommon.sendRelayCommandAccordingToLayIds(ctx.channel(), relayDefinitionCommand1);
         }, relayDefinitionCommand.getProcessingWaitingTime(), TimeUnit.MILLISECONDS);
     }
 
@@ -125,50 +126,12 @@ public class ProcessRelayCommands {
                 return;
             }
         }
-        sendRelayCommandAccordingToLayIds(ctx, relayDefinitionCommand);
+        NettyServiceCommon.sendRelayCommandAccordingToLayIds(ctx.channel(), relayDefinitionCommand);
     }
 
-    /**
-     * 根据layIds发送继电器指令
-     *
-     * @param ctx
-     * @param relayDefinitionCommand
-     */
-    private void sendRelayCommandAccordingToLayIds(ChannelHandlerContext ctx, RelayDefinitionCommand
-            relayDefinitionCommand) {
-        String[] r = relayDefinitionCommand.getRelayIds().split(",");
-        List<Relay> relayList = relayService.findAllByDtuId(relayDefinitionCommand.getDtuId());
-        for (String s : r) {
-            String[] s1 = s.split("-");
-            loop:
-            for (Relay relay : relayList) {
-                if (String.valueOf(relay.getId()).equals(s1[0])) {
-                    String sendHex = s1[1].equals("1") ? relay.getOpneHex() : relay.getCloseHex();
-                    //缓存需要继续处理的指令，如果不再处理不缓存——为程序收到继电器信号（继电器发送什么信号接收到什么信号）能联系在一起
-                    if (relayDefinitionCommand.getIsProcessTheReturnValue()) {
-                        cacheInstructionsThatNeedToContinueProcessing(ctx, sendHex, relayDefinitionCommand);
-                    }
-                    NettyServiceCommon.write(sendHex, ctx.channel());
-                    // TODO: 2023/1/4 处理url发出指令
-                    break loop;
-                }
-            }
-        }
 
-    }
 
-    /**
-     * 缓存需要继续处理的指令，如果不再处理不缓存——为程序收到继电器信号（继电器发送什么信号接收到什么信号）能联系在一起
-     *
-     * @param ctx
-     * @param sendHex
-     * @param relayDefinitionCommand
-     */
-    private void cacheInstructionsThatNeedToContinueProcessing(ChannelHandlerContext ctx, String
-            sendHex, RelayDefinitionCommand relayDefinitionCommand) {
-        //设置10分钟
-        redisTemplate.opsForValue().set(Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY + "::" + ctx.channel().id() + "::" + sendHex, relayDefinitionCommand, Duration.ofMillis(Constant.EXPIRATION_TIME_OF_CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEYS));
-    }
+
 
     /**
      * 根据继电器指令处理
