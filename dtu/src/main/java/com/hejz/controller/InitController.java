@@ -36,8 +36,7 @@ public class InitController {
     CheckingRulesRepository checkingRulesRepository;
     @Autowired
     RedisTemplate redisTemplate;
-    @Autowired
-    private UserService userService;
+
     @PostConstruct
     public void initData() {
         checkingRulesRepository.save(new CheckingRules("7位MODBUS协议111122", 7, 1, 1, 1, 2, 2));
@@ -95,17 +94,6 @@ public class InitController {
         sensorRepository.save(new Sensor((long) (i + 1), 2, "土壤电导率", "02 03 02 02 00 01 24 41", "D/1", "us/cm", 250, 80, 0L, 0L));
         //处理dtu信息
         dtuInfoRepository.save(new DtuInfo(imei, 89, 15, "3-2", "1-1,2-1", 2, 30000, true, true,"112222222"));
-
-
-//        //添加user数据
-//        for (int i1 = 0; i1 < 1000; i1++) {
-//            User user=new User();
-//            user.setAge(20);
-//            user.setUsername("username"+i);
-//            userService.Save(user);
-//        }
-
-
 
     }
 
