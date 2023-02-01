@@ -36,6 +36,8 @@ public class Constant {
 
     //已处理相应的ID锁
     public static final String PROCESSED_THE_CORRESPONDING_ID_LOCK = "processedTheCorrespondingIdLock";
+    //channel绑定的dtuId的Key
+    public static final String CHANNEl_KEY = "dtuId";
     //IMEI长度
     public static final int IMEI_LENGTH = 15;
     //dut注册bytes长度
@@ -46,6 +48,5 @@ public class Constant {
     public static final long EXPIRATION_TIME_OF_CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEYS = 600000;
     //netty客户端所有的连接绑定信息
     public static final Map<Long, Channel> USER_CHANNEL = new ConcurrentHashMap<>();
-    //channel绑定的dtuId的Key
-    public static final String CHANNEl_KEY = "dtuId";
+
 }

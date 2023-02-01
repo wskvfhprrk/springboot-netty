@@ -51,7 +51,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 case WRITER_IDLE:
                     log.info("写入程序空闲");
                     //给服务器心跳
-                    NettyServiceCommon.write("0000",ctx);
+                    NettyServiceCommon.write("0000",ctx.channel());
                     break;
                 case ALL_IDLE:
                     log.info("全部闲置");

@@ -26,6 +26,18 @@ public interface RelayService {
     void deleteAlByDtuId(Long dtuId);
 
     Page<Relay> findPage(RelayFindByPageDto dto);
-    Result closeTheCanopy(Long dtuId) ;
-    Result openTheCanopy(Long dtuId) ;
+
+    /**
+     * 手动模式关闭大棚
+     * @param dtuId
+     * @return
+     */
+    Result closeTheCanopyInManualMode(Long dtuId);
+
+    /**
+     * 手动模式开启大棚
+     * @param dtuId
+     * @return
+     */
+    Result openTheCanopyInManualMode(Long dtuId);
 }

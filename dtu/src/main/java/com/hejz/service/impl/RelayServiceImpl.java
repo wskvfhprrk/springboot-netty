@@ -3,9 +3,10 @@ package com.hejz.service.impl;
 import com.hejz.common.Constant;
 import com.hejz.common.Result;
 import com.hejz.dto.RelayFindByPageDto;
-import com.hejz.entity.Relay;
+import com.hejz.entity.ChatMsg;
 import com.hejz.entity.DtuInfo;
 import com.hejz.entity.Relay;
+import com.hejz.nettyserver.PushMsgService;
 import com.hejz.repository.RelayRepository;
 import com.hejz.service.DtuInfoService;
 import com.hejz.service.RelayService;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -35,6 +37,8 @@ public class RelayServiceImpl implements RelayService {
     private RelayRepository relayRepository;
     @Autowired
     private DtuInfoService dtuInfoService;
+    @Autowired
+    private PushMsgService pushMsgService;
     @Autowired
     RedisTemplate redisTemplate;
 
@@ -99,14 +103,34 @@ public class RelayServiceImpl implements RelayService {
         return all;
     }
 
+
     @Override
-    public Result closeTheCanopy(Long dtuId) {
-        return null;
+    public Result closeTheCanopyInManualMode(Long dtuId) {
+        //先变手动模式，然后再发命令
+        DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
+        dtuInfo.setAutomaticAdjustment(false);
+        dtuInfoService.update(dtuInfo);
+        //发命令
+        String msg=null;
+        ChatMsg chatMsg=new ChatMsg();
+        chatMsg.setDtuId(dtuId);
+        chatMsg.setMsg(msg);
+        pushMsgService.pushMsgToChannel(chatMsg);
+        return Result.ok();
     }
 
     @Override
-    public Result openTheCanopy(Long dtuId) {
-        return null;
+    public Result openTheCanopyInManualMode(Long dtuId) {
+        //先变手动模式，然后再发命令
+        DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
+        dtuInfo.setAutomaticAdjustment(false);
+        dtuInfoService.update(dtuInfo);
+        //发命令
+        String msg=null;
+        ChatMsg chatMsg=new ChatMsg();
+        chatMsg.setDtuId(dtuId);
+        chatMsg.setMsg(msg);
+        pushMsgService.pushMsgToChannel(chatMsg);
+        return Result.ok();
     }
-
 }

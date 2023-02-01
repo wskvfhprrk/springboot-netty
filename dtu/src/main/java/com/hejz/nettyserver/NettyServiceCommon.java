@@ -9,6 +9,7 @@ import com.hejz.utils.CRC16;
 import com.hejz.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,16 +135,16 @@ public class NettyServiceCommon {
      * 向dtu发送指令
      *
      * @param hex
-     * @param ctx 通道上下文
+     * @param channel 通道
      */
-    public static void write(final String hex, ChannelHandlerContext ctx) {
+    public static void write(final String hex, Channel channel) {
         //加锁——根据通道加锁
-        synchronized (ctx.channel()) {
+        synchronized (channel) {
             //重复指令一个轮询周期只发一次
-            int time = Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(ctx.channel().id().toString());
-            Boolean pollingPeriod = redisTemplate.opsForValue().setIfAbsent(ctx.channel().id().toString() + "::" + hex, hex, Duration.ofMillis(time));
+            int time = Constant.INTERVAL_TIME_MAP.get(channel.id().toString()) == null ? Constant.INTERVAL_TIME : Constant.INTERVAL_TIME_MAP.get(channel.id().toString());
+            Boolean pollingPeriod = redisTemplate.opsForValue().setIfAbsent(channel.id().toString() + "::" + hex, hex, Duration.ofMillis(time));
             if (!pollingPeriod) return;
-            log.info("向通道：{} 发送指令：{}", ctx.channel().id().toString(), hex);
+            log.info("向通道：{} 发送指令：{}", channel.id().toString(), hex);
             //每个通道间隔一秒发送一条数据
             try {
                 Thread.sleep(1000L);
@@ -154,7 +155,7 @@ public class NettyServiceCommon {
             ByteBuf bufff = Unpooled.buffer();
             //对接需要16进制的byte[],不需要16进制字符串有空格
             bufff.writeBytes(HexConvert.hexStringToBytes(hex.replaceAll(" ", "")));
-            ctx.writeAndFlush(bufff);
+            channel.writeAndFlush(bufff);
         }
     }
 }

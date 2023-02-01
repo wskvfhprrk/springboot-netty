@@ -148,7 +148,7 @@ public class ProcessRelayCommands {
                     if (relayDefinitionCommand.getIsProcessTheReturnValue()) {
                         cacheInstructionsThatNeedToContinueProcessing(ctx, sendHex, relayDefinitionCommand);
                     }
-                    NettyServiceCommon.write(sendHex, ctx);
+                    NettyServiceCommon.write(sendHex, ctx.channel());
                     // TODO: 2023/1/4 处理url发出指令
                     break loop;
                 }

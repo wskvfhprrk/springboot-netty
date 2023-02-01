@@ -96,13 +96,13 @@ public class InitController {
         dtuInfoRepository.save(new DtuInfo(imei, 89, 15, "3-2", "1-1,2-1", 2, 30000, true, true,"112222222"));
 
 
-        //添加user数据
-        for (int i1 = 0; i1 < 1000; i1++) {
-            User user=new User();
-            user.setAge(20);
-            user.setUsername("username"+i);
-            userService.Save(user);
-        }
+//        //添加user数据
+//        for (int i1 = 0; i1 < 1000; i1++) {
+//            User user=new User();
+//            user.setAge(20);
+//            user.setUsername("username"+i);
+//            userService.Save(user);
+//        }
 
 
 

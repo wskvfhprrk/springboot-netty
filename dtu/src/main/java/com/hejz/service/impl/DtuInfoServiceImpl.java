@@ -6,7 +6,6 @@ import com.hejz.dto.DtuInfoFindByPageDto;
 import com.hejz.entity.DtuInfo;
 import com.hejz.repository.DtuInfoRepository;
 import com.hejz.service.DtuInfoService;
-import com.hejz.service.RelayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,8 +30,6 @@ import java.util.Optional;
 public class DtuInfoServiceImpl implements DtuInfoService {
     @Autowired
     private DtuInfoRepository dtuInfoRepository;
-    @Autowired
-    private RelayService relayService;
     @Autowired
     RedisTemplate redisTemplate;
 
@@ -60,31 +57,6 @@ public class DtuInfoServiceImpl implements DtuInfoService {
         return all;
     }
 
-    @Override
-    public Result closeTheCanopyInManualMode(Long dtuId) {
-        //先变手动模式，然后再发命令
-        Optional<DtuInfo> optionalDtuInfo = dtuInfoRepository.findById(dtuId);
-        if(optionalDtuInfo.isPresent()){
-            DtuInfo dtuInfo = optionalDtuInfo.get();
-            dtuInfo.setAutomaticAdjustment(false);
-            this.update(dtuInfo);
-            relayService.closeTheCanopy(dtuId);
-        }
-        return Result.ok();
-    }
-
-    @Override
-    public Result openTheCanopyInManualMode(Long dtuId) {
-        //先变手动模式，然后再发命令
-        Optional<DtuInfo> optionalDtuInfo = dtuInfoRepository.findById(dtuId);
-        if(optionalDtuInfo.isPresent()){
-            DtuInfo dtuInfo = optionalDtuInfo.get();
-            dtuInfo.setAutomaticAdjustment(false);
-            this.update(dtuInfo);
-            relayService.openTheCanopy(dtuId);
-        }
-        return Result.ok();
-    }
 
     @Override
     public Result changeAutomaticAdjustment(Long dtuId) {

@@ -50,6 +50,17 @@ public class RelayController {
         return relayService.save(relay);
     }
 
+    @ApiOperation("手动模式关闭大棚")
+    @GetMapping("closeTheCanopyInManualMode/{dtuId}")
+    public Result closeTheCanopyInManualMode(@PathVariable Long dtuId){
+        return relayService.closeTheCanopyInManualMode(dtuId);
+    }
+    @ApiOperation("手动模式开启大棚")
+    @GetMapping("openTheCanopyInManualMode/{dtuId}")
+    public Result openTheCanopyInManualMode(@PathVariable Long dtuId){
+        return relayService.openTheCanopyInManualMode(dtuId);
+    }
+
     @ApiOperation("更新继电器信息")
     @PutMapping
     public Relay update(@RequestBody Relay relay) {
