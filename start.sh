@@ -1,9 +1,5 @@
 #!/bin/bash
 
-echo -e ======================9.启动小米球======================
-cd /root/linux_xiaomiqu
-nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &
-#删除服务器
 echo -e  ======================1.删除运行的服务器======================
 ps -aux | grep dtu | grep -v grep| awk '{print $2}' |xargs  kill -9
 #启动docker
@@ -38,5 +34,6 @@ mvn clean package -Dmaven.test.skip=true
 echo -e ======================8.重启服务======================
 cd target
 nohup java -jar -Dserver.port=8080 dtu-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
-echo -e ======================10.自动打开日志======================
-tail -f /home/logs/dtu/logback_info.log
+echo -e ======================9.启动小米球======================
+cd /root/linux_xiaomiqu
+nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &
