@@ -4,13 +4,10 @@ import com.hejz.common.Constant;
 import com.hejz.common.Result;
 import com.hejz.dto.ManualCommandDto;
 import com.hejz.dto.RelayFindByPageDto;
-import com.hejz.enm.InstructionTypeEnum;
-import com.hejz.entity.ChatMsg;
 import com.hejz.entity.DtuInfo;
 import com.hejz.entity.Relay;
 import com.hejz.entity.RelayDefinitionCommand;
 import com.hejz.nettyserver.NettyServiceCommon;
-import com.hejz.nettyserver.PushMsgService;
 import com.hejz.repository.RelayRepository;
 import com.hejz.service.DtuInfoService;
 import com.hejz.service.RelayDefinitionCommandService;
@@ -30,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -43,8 +39,6 @@ public class RelayServiceImpl implements RelayService {
     private RelayRepository relayRepository;
     @Autowired
     private DtuInfoService dtuInfoService;
-    @Autowired
-    private PushMsgService pushMsgService;
     @Autowired
     private RelayDefinitionCommandService relayDefinitionCommandService;
     @Autowired
