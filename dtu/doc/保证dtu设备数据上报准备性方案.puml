@@ -8,16 +8,15 @@ partition "**注册处理器**" {
     else
     :收到第一个通道数据进行注册;
     :通道绑定设备信息;
-        if(是否仅是注册信息)then(不是)
+        if(是否仅是注册信息)then(不是注册信息)
         label next
-        else
+        else(仅注册信息)
         stop
         endif
     endif
 }
 partition "**编码处理器**" {
-        :拆包;
-        :先根据imei拆分成数组进行遍历;
+        :拆包——先根据imei拆分成数组进行遍历;
     repeat
         :计算出实际地址;
         :根据地址位得出应该截取的长度;

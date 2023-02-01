@@ -50,6 +50,7 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
     @Override
     protected void decode(ChannelHandlerContext ctx, byte[] bytes, List list) {
         try {
+            //根据channel取出dtuId，查到dtuInfo信息，拿到imei值
             AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
             Long dtuId = ctx.channel().attr(key).get();
             DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
@@ -57,7 +58,7 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
             String[] hexArr = HexConvert.BinaryToHexString(bytes).replaceAll(" ", "").split(HexConvert.convertStringToHex(dtuInfo.getImei()));
             for (String hexStr : hexArr) {
                 if (hexStr.length() != 0) {
-                    //拆分指令
+                    //拆分指令——根据指令地址找到批令长度，截取相应长度的bytes
                     splitInstruction(list, dtuInfo, HexConvert.hexStringToBytes(hexStr));
                 }
             }
@@ -96,7 +97,7 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
             }
         }else {
             //todo 不够再粘包了——以后再开发此指令
-            log.info("长度不够，不要此值：{}", bytes);
+            log.info("长度不够，不要此值：{}", HexConvert.BinaryToHexString(bytes));
         }
     }
 
