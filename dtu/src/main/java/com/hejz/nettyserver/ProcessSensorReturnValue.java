@@ -88,6 +88,7 @@ public class ProcessSensorReturnValue {
             log.info("======{}=>{}=>解析一组出数据=========", ctx.channel().id().toString(), dtuInfo.getId());
             try {
                 List<SensorData> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
+                if(sensorDataList.isEmpty())return;
                 //检查地址位排列顺序
                 StringBuffer sb=new StringBuffer();
                 for (SensorData sensorData : sensorDataList) {
@@ -99,9 +100,7 @@ public class ProcessSensorReturnValue {
                     return;
                 }
                 //插入数据库
-                if (sensorDataList != null) {
-                    insertDatabase(dtuInfo.getId(), sensorDataList);
-                }
+                insertDatabase(dtuInfo.getId(), sensorDataList);
             } catch (Exception e) {
                 log.info(e.toString());
             }
