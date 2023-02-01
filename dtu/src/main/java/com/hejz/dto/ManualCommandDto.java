@@ -14,10 +14,10 @@ import javax.validation.constraints.NotEmpty;
 @Data
 public class ManualCommandDto {
 
-    @ApiModelProperty(value = "ManualCommandDto manualCommandDto")
+    @ApiModelProperty(value = "dtuId",example = "1")
     @NotEmpty(message = "dtuId不能为空值")
     private Long dtuId;
-    @ApiModelProperty(value = "指令类型枚举")
+    @ApiModelProperty(value = "指令类型枚举",example = "CLOSE_VENTILATION")
     @NotEmpty(message = "指令类型枚举不能为空值")
     private InstructionTypeEnum instructionTypeEnum;
 }
