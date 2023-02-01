@@ -38,7 +38,8 @@ public class InitController {
     @Autowired
     RedisTemplate redisTemplate;
 
-    @GetMapping("init")
+//    @GetMapping("init")
+    @PostConstruct
     public void initData() {
         checkingRulesRepository.save(new CheckingRules("7位MODBUS协议111122", 7, 1, 1, 1, 2, 2));
         checkingRulesRepository.save(new CheckingRules("8位MODBUS协议1111222", 8, 1, 1, 2, 2, 2));
