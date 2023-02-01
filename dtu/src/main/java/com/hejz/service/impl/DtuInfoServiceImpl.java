@@ -6,7 +6,6 @@ import com.hejz.dto.DtuInfoFindByPageDto;
 import com.hejz.entity.DtuInfo;
 import com.hejz.repository.DtuInfoRepository;
 import com.hejz.service.DtuInfoService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -58,14 +57,15 @@ public class DtuInfoServiceImpl implements DtuInfoService {
         return all;
     }
 
-
+    @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#p0")
     @Override
     public Result changeAutomaticAdjustment(Long dtuId) {
         Optional<DtuInfo> optionalDtuInfo = dtuInfoRepository.findById(dtuId);
         if(optionalDtuInfo.isPresent()){
-            Boolean aBoolean = optionalDtuInfo.get().getAutomaticAdjustment();
-            optionalDtuInfo.get().setAutomaticAdjustment(aBoolean?false:true);
-            this.update(optionalDtuInfo.get());
+            DtuInfo dtuInfo = optionalDtuInfo.get();
+            Boolean aBoolean = dtuInfo.getAutomaticAdjustment();
+            dtuInfo.setAutomaticAdjustment(aBoolean?false:true);
+            dtuInfoRepository.save(dtuInfo);
         }
         return Result.ok();
     }

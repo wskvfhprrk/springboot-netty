@@ -99,7 +99,7 @@ public class DtuInfo implements Serializable {
     @Column(
             name = "automatic_adjustment",
             nullable = true,
-            columnDefinition="bit(1)"+" COMMENT '是否自动控制——1是自动0是手动控制'"
+            columnDefinition="bit(1)"+" COMMENT '是否自动控制——true是自动false是手动控制'"
     )
     private Boolean automaticAdjustment = true;
     @Column(
