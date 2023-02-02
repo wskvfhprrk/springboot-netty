@@ -15,9 +15,8 @@ rm -rf /root/springboot-netty
 echo -e ======================4.git拉取代码======================
 git clone git@github.com:wskvfhprrk/springboot-netty.git
 echo -e ======================5.先删除start.sh源文件再拷贝======================r
-rm -rf /root/springboot-netty/
-cd /root/springboot-netty/
 #先删除源文件再拷贝
+cd /root/springboot-netty/
 rm -rf /root/start.sh
 cp -rf start.sh /root/
 chmod +x /root/start.sh
