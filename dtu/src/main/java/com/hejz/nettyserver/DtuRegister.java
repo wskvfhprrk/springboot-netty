@@ -77,6 +77,8 @@ public class DtuRegister {
         ctx.channel().attr(key).set(dtuInfo.getId());
 
         // dtuId -> channel
+        Constant.USER_CHANNEL.put(dtuInfo.getId(), ctx.channel());
+
         log.info("=========={}====dtu注册完成=============",ctx.channel().id().toString());
     }
 }
