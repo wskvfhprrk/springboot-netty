@@ -75,10 +75,10 @@ public class InitController {
         relayRepository.save(new Relay((long) (i + 1), 3, "第4个继电器", "03 05 00 03 FF 00 7D D8", "03 05 00 03 00 00 3C 28", "lcaolhost:8080/hello", "备用"));
         List<Relay> relays = relayRepository.findAlByDtuId((long) (i + 1)).stream().sorted(Comparator.comparing(Relay::getId)).collect(Collectors.toList());
         //处理编辑继电器命令的信息
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "重置通风指令", "停止打开和关闭通风电机指令", relays.get(1).getId() + "-0," + relays.get(0).getId() + "-0", false, 3000L, 0L, 0L, InstructionTypeEnum.RESET_COMMAND));
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "重置通风指令", "停止打开和关闭通风电机指令", relays.get(1).getId() + "-0," + relays.get(0).getId() + "-0", false, 0L, 0L, 0L, InstructionTypeEnum.RESET_COMMAND));
         Optional<RelayDefinitionCommand> relayDefinitionCommandOptional = relayDefinitionCommandRepository.findByDtuId((long) (i + 1)).stream().filter(r -> r.getName().equals("重置通风指令")).findFirst();
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "打开通风指令", "打开左右通风", relays.get(1).getId() + "-1," + relays.get(0).getId() + "-0", true, 3000L, relayDefinitionCommandOptional.get().getId(), i * 3 + 3L,InstructionTypeEnum.OPEN_VENTILATION));
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "关闭通风指令", "关闭左右通风", relays.get(1).getId() + "-1," + relays.get(0).getId() + "-1", true, 3000L, relayDefinitionCommandOptional.get().getId(), i * 3 + 2L,InstructionTypeEnum.CLOSE_VENTILATION));
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "打开通风指令", "打开左右通风", relays.get(1).getId() + "-1," + relays.get(0).getId() + "-0", true, 80000L, relayDefinitionCommandOptional.get().getId(), i * 3 + 3L,InstructionTypeEnum.OPEN_VENTILATION));
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "关闭通风指令", "关闭左右通风", relays.get(1).getId() + "-1," + relays.get(0).getId() + "-1", true, 80000L, relayDefinitionCommandOptional.get().getId(), i * 3 + 2L,InstructionTypeEnum.CLOSE_VENTILATION));
         if (!relayDefinitionCommandOptional.isPresent()) return;
         //处理感应器信息
         List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandRepository.findByDtuId((long) (i + 1));
@@ -95,7 +95,7 @@ public class InitController {
         sensorRepository.save(new Sensor((long) (i + 1), 2, "土壤钾   ", "02 03 02 06 00 01 65 80", "D/1", "mg/L", 100, 50, 0L, 0L));
         sensorRepository.save(new Sensor((long) (i + 1), 2, "土壤电导率", "02 03 02 02 00 01 24 41", "D/1", "us/cm", 250, 80, 0L, 0L));
         //处理dtu信息
-        dtuInfoRepository.save(new DtuInfo(imei, 89, 15, "3-2", "1-1,2-1", 2, 30000, true, true,"112222222"));
+        dtuInfoRepository.save(new DtuInfo(imei, 89, 15, "3-2", "1-1,2-1", 2, 30000, false, true,"112222222"));
 
     }
 
