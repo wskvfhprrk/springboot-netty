@@ -2,7 +2,7 @@
 
 echo -e  ======================1.删除运行的服务器======================
 ps -aux | grep dtu | grep -v grep| awk '{print $2}' |xargs  kill -9
-#ps -aux | grep ngrok | grep -v grep| awk '{print $2}' |xargs  kill -9
+ps -aux | grep ngrok | grep -v grep| awk '{print $2}' |xargs  kill -9
 #启动docker
 echo -e ======================2.启动docker:为了启动mysql和redis======================
 systemctl start docker
@@ -14,8 +14,8 @@ rm -rf /root/springboot-netty
 #git拉取代码
 echo -e ======================4.git拉取代码======================
 git clone git@github.com:wskvfhprrk/springboot-netty.git
-echo -e ======================5.先删除start.sh源文件再拷贝======================
-
+echo -e ======================5.先删除start.sh源文件再拷贝======================r
+rm -rf /root/springboot-netty/
 cd /root/springboot-netty/
 #先删除源文件再拷贝
 rm -rf /root/start.sh
@@ -37,5 +37,5 @@ cd target
 nohup java -jar -Dserver.port=8080 dtu-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
 echo -e ======================9.启动小米球======================
 
-#cd /root/linux_xiaomiqu
-#nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &
+cd /root/linux_xiaomiqu
+nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &
