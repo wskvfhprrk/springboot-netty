@@ -1,6 +1,10 @@
 package com.hejz.service;
 
+import com.hejz.dto.CheckingRulesDto;
+import com.hejz.dto.CheckingRulesFindByPageDto;
+import com.hejz.dto.CheckingRulesUpdateDto;
 import com.hejz.entity.CheckingRules;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -17,10 +21,11 @@ public interface CheckingRulesService {
 
     List<CheckingRules> getByCommonLength(Integer commonLength);
 
-    CheckingRules save(CheckingRules relay);
+    CheckingRules save(CheckingRulesDto relay);
 
-    CheckingRules update(CheckingRules relay);
+    CheckingRules update(CheckingRulesUpdateDto relay);
 
     void delete(Integer id);
 
+    Page<CheckingRules> findPage(CheckingRulesFindByPageDto dto);
 }

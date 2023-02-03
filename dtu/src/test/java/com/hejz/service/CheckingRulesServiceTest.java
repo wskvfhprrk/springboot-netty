@@ -1,11 +1,14 @@
 package com.hejz.service;
 
 import com.hejz.common.Constant;
+import com.hejz.dto.CheckingRulesDto;
+import com.hejz.dto.CheckingRulesUpdateDto;
 import com.hejz.entity.CheckingRules;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -48,7 +51,9 @@ class CheckingRulesServiceTest {
     @Test
     void save() {
         CheckingRules checkingRules = new CheckingRules(5, "1", 1, 1, 1, 1, 1, 1);
-        CheckingRules save = checkingRulesService.save(checkingRules);
+        CheckingRulesDto dto=new CheckingRulesDto();
+        BeanUtils.copyProperties(checkingRules,dto);
+        CheckingRules save = checkingRulesService.save(dto);
         Assert.notNull(save, "数据已经保存");
         Object o = redisTemplate.opsForValue().get(Constant.CHECKING_RULES_CACHE_KEY + "::" + save.getCommonLength());
         Assert.isNull(o, "缓存中为空值");
@@ -62,7 +67,9 @@ class CheckingRulesServiceTest {
         List<CheckingRules> checkingRuless = checkingRulesService.getByCommonLength(checkingRules.getCommonLength());
         Assert.isTrue(checkingRuless.size() > 0, "查询到结果");
         checkingRules.setCommonLength(5);
-        CheckingRules update = checkingRulesService.update(checkingRules);
+        CheckingRulesUpdateDto dto=new CheckingRulesUpdateDto();
+        BeanUtils.copyProperties(checkingRules,dto);
+        CheckingRules update = checkingRulesService.update(dto);
         Assert.isTrue(update.getCommonLength()==5, "修改成功");
         Object o1 = redisTemplate.opsForValue().get(Constant.CHECKING_RULES_CACHE_KEY + "::" + update.getCommonLength());
         Assert.isNull(o1, "缓存中为空值");
