@@ -163,7 +163,7 @@ public class ProcessSensorReturnValue {
      * @param dtuInfo
      */
     private Double parseSensorOneData(byte[] useBytes, int arrayNumber, ChannelHandlerContext ctx, DtuInfo dtuInfo) throws Exception {
-        // TODO: 2023/1/13 计算返回值
+        //计算返10进制的返回值
         Integer x = calculateReturnValue(useBytes);
         //获取数据值
         double d = Double.parseDouble(String.valueOf(x));
@@ -179,13 +179,17 @@ public class ProcessSensorReturnValue {
             }
         }
         if (dtuInfo.getAutomaticAdjustment()) {
-//            new Thread(() -> {
             processRelayCommands.handleAccordingToRelayCommand(sensor, actualResults, ctx);
-//            }).start();
         }
         return actualResults;
     }
 
+    /**
+     * 计算内含10进制数据
+     * @param bytes
+     * @return
+     * @throws Exception
+     */
     private Integer calculateReturnValue(byte[] bytes) throws Exception {
         List<CheckingRules> checkingRules = checkingRulesService.getByCommonLength(bytes.length);
         List<Integer> list = checkingRules.stream().map(checkingRule -> {
@@ -223,8 +227,9 @@ public class ProcessSensorReturnValue {
             JSFunction = compilable.compile(formula);
             bindings.put("D", measureData);
             Object result = JSFunction.eval(bindings);
-//            log.info(result); //调用缓存着的脚本函数对象，Bindings作为参数容器传入
-            return Double.valueOf(result.toString());
+            //截取保留两位小数
+            String re=String.format("%.2f", result.toString());
+            return Double.valueOf(re);
         } catch (ScriptException e) {
             e.printStackTrace();
         }
