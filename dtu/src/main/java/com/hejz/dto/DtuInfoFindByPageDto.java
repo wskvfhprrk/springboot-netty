@@ -13,4 +13,6 @@ import lombok.Data;
 public class DtuInfoFindByPageDto extends Page {
     @ApiModelProperty(value = "imei")
     private String imei;
+    @ApiModelProperty(value = "指令前是否带imei")
+    private Boolean noImei = true;
 }

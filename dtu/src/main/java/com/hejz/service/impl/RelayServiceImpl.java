@@ -2,6 +2,7 @@ package com.hejz.service.impl;
 
 import com.hejz.common.Constant;
 import com.hejz.common.Result;
+import com.hejz.dto.DtuInfoUpdateDto;
 import com.hejz.dto.ManualCommandDto;
 import com.hejz.dto.RelayFindByPageDto;
 import com.hejz.entity.DtuInfo;
@@ -13,6 +14,7 @@ import com.hejz.service.DtuInfoService;
 import com.hejz.service.RelayDefinitionCommandService;
 import com.hejz.service.RelayService;
 import io.netty.channel.Channel;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -111,7 +113,9 @@ public class RelayServiceImpl implements RelayService {
         //先变手动模式，然后再发命令
         DtuInfo dtuInfo = dtuInfoService.findById(dto.getDtuId());
         dtuInfo.setAutomaticAdjustment(false);
-        dtuInfoService.update(dtuInfo);
+        DtuInfoUpdateDto dtuInfoUpdateDto=new DtuInfoUpdateDto();
+        BeanUtils.copyProperties(dtuInfo,dtuInfoUpdateDto);
+        dtuInfoService.update(dtuInfoUpdateDto);
         //判断是否在线
         Channel channel = Constant.USER_CHANNEL.get(dto.getDtuId());
         if (channel==null) {

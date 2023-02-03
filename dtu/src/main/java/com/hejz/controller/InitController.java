@@ -44,7 +44,7 @@ public class InitController {
         checkingRulesRepository.save(new CheckingRules("7位MODBUS协议111122", 7, 1, 1, 1, 2, 2));
         checkingRulesRepository.save(new CheckingRules("8位MODBUS协议1111222", 8, 1, 1, 2, 2, 2));
         Long imei = 865328063321359L;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 30; i++) {
             start(String.valueOf(imei), i);
             imei++;
         }

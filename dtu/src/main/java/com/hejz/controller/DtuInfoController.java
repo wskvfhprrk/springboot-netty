@@ -1,7 +1,9 @@
 package com.hejz.controller;
 import com.hejz.common.PageResult;
 import com.hejz.common.Result;
+import com.hejz.dto.DtuInfoDto;
 import com.hejz.dto.DtuInfoFindByPageDto;
+import com.hejz.dto.DtuInfoUpdateDto;
 import com.hejz.entity.DtuInfo;
 import com.hejz.vo.DtuInfoFindByPageVo;
 import org.springframework.beans.BeanUtils;
@@ -31,32 +33,33 @@ public class DtuInfoController {
 
     @ApiOperation("根据imei查询所有dtu信息")
     @GetMapping("all/{imei}")
-    public DtuInfo findAllByDtuId(@PathVariable String imei){
-        return dtuInfoService.findByImei(imei);
+    public Result findAllByDtuId(@PathVariable String imei){
+        return Result.ok(dtuInfoService.findByImei(imei));
     }
     @ApiOperation("根据id查询感器信息")
     @GetMapping("{id}")
-    public DtuInfo getDtuInfoById(@PathVariable("id") Long id){
-        return dtuInfoService.findById(id);
+    public Result getDtuInfoById(@PathVariable("id") Long id){
+        return Result.ok(dtuInfoService.findById(id));
     }
     @ApiOperation("添加感器信息")
     @PostMapping
-    public DtuInfo save(@RequestBody DtuInfo dtuInfo){
-        return dtuInfoService.save(dtuInfo);
+    public Result save(@RequestBody DtuInfoDto dtuInfo){
+        return Result.ok(dtuInfoService.save(dtuInfo));
     }
     @ApiOperation("更新dtu信息")
     @PutMapping
-    public DtuInfo update(@RequestBody DtuInfo dtuInfo){
-        return dtuInfoService.update(dtuInfo);
+    public Result update(@RequestBody DtuInfoUpdateDto dtuInfo){
+        return Result.ok(dtuInfoService.update(dtuInfo));
     }
     @ApiOperation("根据id删除感器信息")
     @DeleteMapping("{id}")
-    public void delete(@PathVariable("id") Long id){
+    public Result delete(@PathVariable("id") Long id){
         dtuInfoService.delete(id);
+        return Result.ok();
     }
     @ApiOperation("分页条件查询")
     @GetMapping("page")
-    public Result<PageResult<DtuInfoFindByPageVo>> findBypage(@Valid DtuInfoFindByPageDto dto){
+    public Result<PageResult<DtuInfoFindByPageVo>> findBypage( DtuInfoFindByPageDto dto){
         Page<DtuInfo> dtuInfoPage = dtuInfoService.findPage(dto);
         List<DtuInfoFindByPageVo> list = dtuInfoPage.getContent().stream().map(d -> {
             DtuInfoFindByPageVo vo = new DtuInfoFindByPageVo();

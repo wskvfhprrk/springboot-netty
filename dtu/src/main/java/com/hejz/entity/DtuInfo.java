@@ -90,7 +90,7 @@ public class DtuInfo implements Serializable {
     @Column(
             name = "interval_time",
             nullable = true,
-            columnDefinition="int(10)"+" COMMENT '每组发送接收间隔时间(毫秒)——与dtu每组间隔时间要一致'"
+            columnDefinition="int(10)"+" COMMENT '每组轮询指令隔时间(毫秒)——与dtu每组间隔时间要一致'"
     )
     private Integer intervalTime;
     /**
@@ -105,7 +105,7 @@ public class DtuInfo implements Serializable {
     @Column(
             name = "no_imei",
             nullable = true,
-            columnDefinition="bit(1)"+" COMMENT '返回值是否带imei:true带imei,false不带'"
+            columnDefinition="bit(1)"+" COMMENT '返回值指令前是否带imei:true带imei,false不带'"
     )
     private Boolean noImei = true;
 

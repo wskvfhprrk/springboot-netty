@@ -1,4 +1,8 @@
 spring:
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
   main:
     #当遇到同样名字的时候，是否允许覆盖注册——解决redisTemplate重名问题
     allow-bean-definition-overriding: true

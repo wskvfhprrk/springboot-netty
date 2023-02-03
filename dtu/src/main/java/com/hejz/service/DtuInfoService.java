@@ -1,7 +1,9 @@
 package com.hejz.service;
 
 import com.hejz.common.Result;
+import com.hejz.dto.DtuInfoDto;
 import com.hejz.dto.DtuInfoFindByPageDto;
+import com.hejz.dto.DtuInfoUpdateDto;
 import com.hejz.entity.DtuInfo;
 import org.springframework.data.domain.Page;
 
@@ -13,9 +15,9 @@ import org.springframework.data.domain.Page;
 public interface DtuInfoService {
     DtuInfo findById(Long id);
 
-    DtuInfo save(DtuInfo dtuInfo);
+    DtuInfo save(DtuInfoDto dtuInfo);
 
-    DtuInfo update(DtuInfo dtuInfo);
+    DtuInfo update(DtuInfoUpdateDto dtuInfo);
 
     void delete(Long id);
 

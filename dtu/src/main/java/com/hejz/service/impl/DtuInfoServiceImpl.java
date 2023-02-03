@@ -2,10 +2,13 @@ package com.hejz.service.impl;
 
 import com.hejz.common.Constant;
 import com.hejz.common.Result;
+import com.hejz.dto.DtuInfoDto;
 import com.hejz.dto.DtuInfoFindByPageDto;
+import com.hejz.dto.DtuInfoUpdateDto;
 import com.hejz.entity.DtuInfo;
 import com.hejz.repository.DtuInfoRepository;
 import com.hejz.service.DtuInfoService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -46,6 +49,9 @@ public class DtuInfoServiceImpl implements DtuInfoService {
             if (dto.getImei() != null && dto.getImei().length()>0) {
                 predicates.add(cb.equal(root.get("imei"), dto.getImei()));
             }
+            if (dto.getNoImei() != null ) {
+                predicates.add(cb.equal(root.get("noImei"), dto.getNoImei()));
+            }
             Predicate[] andPredicate = new Predicate[predicates.size()];
             return cb.and(predicates.toArray(andPredicate));
         };
@@ -78,14 +84,18 @@ public class DtuInfoServiceImpl implements DtuInfoService {
 
     @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#result.id")
     @Override
-    public DtuInfo save(DtuInfo dtuInfo) {
-        redisTemplate.delete(Constant.DTU_INFO_IMEI_CACHE_KEY+"::"+dtuInfo.getImei());
+    public DtuInfo save(DtuInfoDto dtuInfoDto) {
+        redisTemplate.delete(Constant.DTU_INFO_IMEI_CACHE_KEY+"::"+dtuInfoDto.getImei());
+        DtuInfo dtuInfo= new DtuInfo();
+        BeanUtils.copyProperties(dtuInfoDto,dtuInfo);
         return dtuInfoRepository.save(dtuInfo);
     }
 
     @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#result.id")
     @Override
-    public DtuInfo update(DtuInfo dtuInfo) {
+    public DtuInfo update(DtuInfoUpdateDto dtuInfoUpdateDto) {
+        DtuInfo dtuInfo=new DtuInfo();
+        BeanUtils.copyProperties(dtuInfoUpdateDto,dtuInfo);
         redisTemplate.delete(Constant.DTU_INFO_IMEI_CACHE_KEY+"::"+dtuInfo.getImei());
         return dtuInfoRepository.save(dtuInfo);
     }
