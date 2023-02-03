@@ -228,8 +228,9 @@ public class ProcessSensorReturnValue {
             bindings.put("D", measureData);
             Object result = JSFunction.eval(bindings);
             //截取保留两位小数
-            String re=String.format("%.2f", result.toString());
-            return Double.valueOf(re);
+            double one = Double.valueOf(result.toString());
+            String  str = String.format("%.2f",one);
+            return Double.parseDouble(str);
         } catch (ScriptException e) {
             e.printStackTrace();
         }
