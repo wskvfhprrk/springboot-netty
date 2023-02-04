@@ -15,6 +15,7 @@ public class SensorDataDbFindByPageVo {
     private Long id;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
+    private Long dtuId;
     private String names;
     private String data;
     private String units;

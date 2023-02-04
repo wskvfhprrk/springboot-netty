@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.Predicate;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +66,9 @@ public class SensorDataDbServiceImpl implements SensorDataDbService {
             List<Predicate> predicates = new ArrayList<>();
             if (dto.getDtuId() != null && dto.getDtuId() != 0) {
                 predicates.add(cb.equal(root.get("dtuId"), dto.getDtuId()));
+            }
+            if (dto.getBeginDate() != null && dto.getEndDate() != null) {
+                predicates.add(cb.between(root.get("createDate"), dto.getBeginDate(), dto.getEndDate()));
             }
             Predicate[] andPredicate = new Predicate[predicates.size()];
             return cb.and(predicates.toArray(andPredicate));

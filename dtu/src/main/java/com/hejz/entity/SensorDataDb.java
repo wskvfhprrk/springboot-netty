@@ -37,7 +37,7 @@ public class SensorDataDb implements Serializable {
     @Column(
             name = "create_date",
             nullable = false,
-            columnDefinition="datetime"+" COMMENT '接收到数据的单位'"
+            columnDefinition="datetime"+" COMMENT '接收时间'"
     )
     private Date createDate;
     @Column(

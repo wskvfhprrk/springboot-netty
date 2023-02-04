@@ -2,6 +2,7 @@ package com.hejz.dto;
 
 import com.hejz.common.Page;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -12,6 +13,9 @@ import java.util.Date;
  */
 @Data
 public class SensorDataDbFindByPageDto extends Page {
-    private Date createDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date beginDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date endDate;
     private Long dtuId;
 }
