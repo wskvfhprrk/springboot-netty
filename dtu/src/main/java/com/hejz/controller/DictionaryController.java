@@ -58,7 +58,7 @@ public class DictionaryController {
         return Result.ok();
     }
 
-    @GetMapping("fingPage")
+    @GetMapping("findPage")
     @ApiOperation("条件查询数据字典")
     public Result<PageResult<DictionaryFindByPageVo>> findBypage(@Valid DictionaryFindByPageDto dto){
         Dictionary dictionary=new Dictionary();

@@ -57,7 +57,7 @@ public class RoleController {
         return Result.ok();
     }
 
-    @GetMapping("fingPage")
+    @GetMapping("findPage")
     @ApiOperation("条件查询角色")
     public Result<PageResult<RoleFindByPageVo>> findBypage(@Valid RoleFindByPageDto dto){
         Role role=new Role();

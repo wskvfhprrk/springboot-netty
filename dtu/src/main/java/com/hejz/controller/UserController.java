@@ -87,7 +87,7 @@ public class UserController {
         return Result.ok();
     }
 
-    @GetMapping("fingPage")
+    @GetMapping("findPage")
     @ApiOperation("条件查询用户信息")
     public Result<PageResult<UserFindByPageVo>> findBypage(@Valid UserFindByPageDto dto){
         Page<User> userPage = userService.findPage(dto);

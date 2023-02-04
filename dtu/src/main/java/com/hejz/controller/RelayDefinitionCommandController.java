@@ -68,7 +68,7 @@ public class RelayDefinitionCommandController {
     public void deleteAllByDtuId(@PathVariable("dtuId") Long dtuId) {
         relayDefinitionCommandService.deleteAllByDtuId(dtuId);
     }
-    @GetMapping("fingPage")
+    @GetMapping("findPage")
     @ApiOperation("条件查询用户信息")
     public Result<PageResult<RelayDefinitionCommandFindByPageVo>> findBypage(@Valid RelayDefinitionCommandFindByPageDto dto){
         RelayDefinitionCommand relayDefinitionCommand=new RelayDefinitionCommand();

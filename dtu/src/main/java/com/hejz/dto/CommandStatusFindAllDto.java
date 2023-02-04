@@ -2,12 +2,11 @@ package com.hejz.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import com.hejz.common.Page;
 import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class CommandStatusFindByPageDto extends Page {
+public class CommandStatusFindAllDto {
     @ApiModelProperty(value = "继电器命令ID")
     private Long commonId;
     @ApiModelProperty(value = "创建时间")

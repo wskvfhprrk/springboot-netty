@@ -55,7 +55,7 @@ public class SensroDataDbController {
     }
 
     @ApiOperation("分页条件查询")
-    @GetMapping("page")
+    @GetMapping("findPage")
     public Result<PageResult<SensorDataDbFindByPageVo>> findBypage(@Valid SensorDataDbFindByPageDto dto){
         Page<SensorDataDb> sensorDataDbPage = sensorDataDbService.findPage(dto);
         List<SensorDataDbFindByPageVo> list = sensorDataDbPage.getContent().stream().map(d -> {

@@ -58,7 +58,7 @@ public class DtuInfoController {
         return Result.ok();
     }
     @ApiOperation("分页条件查询")
-    @GetMapping("page")
+    @GetMapping("findPage")
     public Result<PageResult<DtuInfoFindByPageVo>> findBypage( DtuInfoFindByPageDto dto){
         Page<DtuInfo> dtuInfoPage = dtuInfoService.findPage(dto);
         List<DtuInfoFindByPageVo> list = dtuInfoPage.getContent().stream().map(d -> {

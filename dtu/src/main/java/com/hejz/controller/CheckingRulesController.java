@@ -53,7 +53,7 @@ public class CheckingRulesController {
         return Result.ok();
     }
     @ApiOperation("分页条件查询")
-    @GetMapping("page")
+    @GetMapping("findPage")
     public Result<PageResult<CheckingRulesFindByPageVo>> findBypage( CheckingRulesFindByPageDto dto){
         Page<CheckingRules> checkingRulesPage = checkingRulesService.findPage(dto);
         List<CheckingRulesFindByPageVo> list = checkingRulesPage.getContent().stream().map(d -> {

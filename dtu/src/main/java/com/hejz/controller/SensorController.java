@@ -1,59 +1,89 @@
 package com.hejz.controller;
 
+import com.hejz.common.PageResult;
+import com.hejz.dto.*;
 import com.hejz.entity.Sensor;
 import com.hejz.service.SensorService;
+import com.hejz.common.Result;
+import com.hejz.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * @author:hejz 75412985@qq.com
- * @create: 2023-01-12 07:44
- * @Description: 感应器参数控制器
+ * 传感器控制器
+ * author: hejz
+ * data: 2023-2-4
  */
 @RestController
 @RequestMapping("sensor")
-@Api(tags ="感应器参数控制器")
+@Api(tags="传感器")
 public class SensorController {
 
     @Autowired
     private SensorService sensorService;
 
-    @ApiOperation("根据dtuId查询所有感器信息")
-    @GetMapping("all/{dtuId}")
-    public List<Sensor> findAllByDtuId(@PathVariable Long dtuId) {
-        return sensorService.findAllByDtuId(dtuId);
-    }
+    @PostMapping()
+    @ApiOperation("添加传感器")
+    public Result createSensor(@Valid @RequestBody SensorCreateDto dto){
+        Sensor sensor=new Sensor();
+        BeanUtils.copyProperties(dto,sensor);
+        sensor = sensorService.save(sensor);
+        return Result.ok(sensor);
 
-    @ApiOperation("根据id查询感器信息")
-    @GetMapping("{id}")
-    public Sensor getSensorById(@PathVariable("id") Long id) {
-        return sensorService.findById(id);
     }
-
-    @ApiOperation("添加感器信息")
-    @PostMapping
-    public Sensor save(@RequestBody Sensor sensor) {
-        return sensorService.save(sensor);
-    }
-
-    @ApiOperation("更新感应器信息")
     @PutMapping
-    public Sensor update(@RequestBody Sensor sensor) {
-        return sensorService.update(sensor);
+    @ApiOperation("修改传感器")
+    public Result updateSensor(@Valid @RequestBody SensorUpdateDto dto){
+        Sensor sensor=new Sensor();
+        BeanUtils.copyProperties(dto,sensor);
+        sensor = sensorService.update(sensor);
+        return Result.ok(sensor);
     }
-
-    @ApiOperation("根据id删除感器信息")
-    @DeleteMapping("{id}")
-    public void delete(@PathVariable("id") Long id) {
+    @DeleteMapping
+    @ApiOperation("删除传感器")
+    public Result DeleteSensor(Long id){
         sensorService.delete(id);
+        return Result.ok();
     }
 
-    @ApiOperation("根据dtuId删除所有感器信息")
-    @DeleteMapping("deleteAllByImei/{dtuId}")
-    public void deleteAllByImei(@PathVariable("dtuId") Long dtuId) {
-        sensorService.deleteAllByDtuId(dtuId);
+    @GetMapping("findPage")
+    @ApiOperation("条件查询传感器")
+    public Result<PageResult<SensorFindByPageVo>> findBypage( @Valid SensorFindByPageDto dto){
+        Sensor sensor=new Sensor();
+        BeanUtils.copyProperties(dto,sensor);
+        Page<Sensor> sensorPage = sensorService.findPage(dto);
+        List<SensorFindByPageVo> list = sensorPage.getContent().stream().map(d -> {
+            SensorFindByPageVo vo = new SensorFindByPageVo();
+            BeanUtils.copyProperties(d,vo);
+            return vo;
+        }).collect(Collectors.toList());
+        PageResult<SensorFindByPageVo> pages=new PageResult<>();
+        pages.setPage(dto.getPage());
+        pages.setLimit(dto.getLimit());
+        pages.setTotal(sensorPage.getTotalElements());
+        pages.setItems(list);
+        return Result.ok(pages);
     }
+
+//    @GetMapping
+//    @ApiOperation("分布条件查询传感器所有的数据")
+//    public Result<List<SensorAllVo>> findAll(@Valid SensorFindAllDto dto){
+//        Sensor sensor=new Sensor();
+//        BeanUtils.copyProperties(dto,sensor);
+//        List<Sensor> dictionaries = sensorService.findAll(sensor);
+//        List<SensorAllVo> list = dictionaries.stream().map(d -> {
+//            SensorAllVo vo = new SensorAllVo();
+//            BeanUtils.copyProperties(d,vo);
+//            return vo;
+//        }).collect(Collectors.toList());
+//        return Result.ok(list);
+//    }
 }

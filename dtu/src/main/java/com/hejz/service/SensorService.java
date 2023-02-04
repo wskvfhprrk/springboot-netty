@@ -1,6 +1,8 @@
 package com.hejz.service;
 
+import com.hejz.dto.SensorFindByPageDto;
 import com.hejz.entity.Sensor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -21,4 +23,6 @@ public interface SensorService {
     void delete(Long id);
 
     void deleteAllByDtuId(Long dtuId);
+
+    Page<Sensor> findPage(SensorFindByPageDto dto);
 }
