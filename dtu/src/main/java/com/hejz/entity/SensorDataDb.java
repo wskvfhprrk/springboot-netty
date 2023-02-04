@@ -10,10 +10,11 @@ import java.util.Date;
 /**
  * @author:hejz 75412985@qq.com
  * @create: 2023-01-09 10:00
- * @Description: 传感器数据存放进数据库
+ * @Description: 传感器数据
  */
 @Data
 @Entity(name = "sensor_data")
+@org.hibernate.annotations.Table(appliesTo = "sensor_data", comment = "传感器数据")
 @NoArgsConstructor
 @AllArgsConstructor
 public class SensorDataDb implements Serializable {

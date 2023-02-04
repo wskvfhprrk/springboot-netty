@@ -17,6 +17,7 @@ import java.util.Date;
  */
 @Data
 @Entity(name = "command_status")
+@org.hibernate.annotations.Table(appliesTo = "command_status", comment = "继电器命令状态")
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
 @NoArgsConstructor
 @AllArgsConstructor

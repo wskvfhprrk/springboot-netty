@@ -16,6 +16,7 @@ import java.io.Serializable;
  */
 @Data
 @Entity(name = "relay_definition_command")
+@org.hibernate.annotations.Table(appliesTo = "relay_definition_command", comment = "继电器定义指令")
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})

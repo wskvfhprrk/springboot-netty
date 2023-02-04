@@ -34,52 +34,56 @@ public class RelayController {
 
     @ApiOperation("根据dtuId查询所有感器信息")
     @GetMapping("all/{dtuId}")
-    public List<Relay> findAllByDtuId(@PathVariable Long dtuId) {
-        return relayService.findAllByDtuId(dtuId);
+    public Result findAllByDtuId(@PathVariable Long dtuId) {
+        return Result.ok(relayService.findAllByDtuId(dtuId));
     }
 
     @ApiOperation("根据id查询感器信息")
     @GetMapping("{id}")
-    public Relay getRelayById(@PathVariable("id") Long id) {
-        return relayService.findById(id);
+    public Result getRelayById(@PathVariable("id") Long id) {
+        return Result.ok(relayService.findById(id));
     }
 
     @ApiOperation("添加感器信息")
     @PostMapping
-    public Relay save(@RequestBody Relay relay) {
-        return relayService.save(relay);
+    public Result save(@RequestBody Relay relay) {
+        return Result.ok(relayService.save(relay));
     }
 
     @ApiOperation("手动指令")
     @PostMapping("manualCommand")
-    public Result manualCommand(@RequestBody ManualCommandDto manualCommandDto){
+    public Result manualCommand(@RequestBody ManualCommandDto manualCommandDto) {
         return relayService.manualCommand(manualCommandDto);
     }
+
     @ApiOperation("更新继电器信息")
     @PutMapping
-    public Relay update(@RequestBody Relay relay) {
-        return relayService.update(relay);
+    public Result update(@RequestBody Relay relay) {
+        return Result.ok(relayService.update(relay));
     }
 
     @ApiOperation("根据id删除感器信息")
     @DeleteMapping("{id}")
-    public void delete(@PathVariable("id") Long id) {
+    public Result delete(@PathVariable("id") Long id) {
         relayService.delete(id);
+        return Result.ok();
     }
 
     @ApiOperation("根据dtuId删除所有感器信息")
     @DeleteMapping("deleteAllByImei/{dtuId}")
     @Transactional
-    public void deleteAllByImei(@PathVariable("dtuId") Long dtuId) {
+    public Result deleteAllByImei(@PathVariable("dtuId") Long dtuId) {
         relayService.deleteAlByDtuId(dtuId);
+        return Result.ok();
     }
+
     @ApiOperation("分页条件查询")
     @GetMapping("page")
-    public Result<PageResult<RelayFindByPageVo>> findBypage(@Valid RelayFindByPageDto dto){
+    public Result<PageResult<RelayFindByPageVo>> findBypage(@Valid RelayFindByPageDto dto) {
         Page<Relay> relayPage = relayService.findPage(dto);
         List<RelayFindByPageVo> list = relayPage.getContent().stream().map(d -> {
             RelayFindByPageVo vo = new RelayFindByPageVo();
-            BeanUtils.copyProperties(d,vo);
+            BeanUtils.copyProperties(d, vo);
             return vo;
         }).collect(Collectors.toList());
         PageResult<RelayFindByPageVo> pages=new PageResult<>();

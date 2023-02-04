@@ -14,6 +14,7 @@ import java.util.Set;
  */
 @Data
 @Entity(name = "tb_user")
+@org.hibernate.annotations.Table(appliesTo = "tb_user", comment = "用户信息")
 public class User implements Serializable{
 
     @Id

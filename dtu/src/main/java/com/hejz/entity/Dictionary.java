@@ -12,6 +12,7 @@ import java.io.Serializable;
  */
 @Data
 @Entity(name = "dictionary")
+@org.hibernate.annotations.Table(appliesTo = "dictionary", comment = "数据字典实体类")
 public class Dictionary implements Serializable{
 
     @Id

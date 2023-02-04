@@ -11,6 +11,7 @@ import javax.persistence.*;
  */
 @Data
 @Entity(name = "tb_menu")
+@org.hibernate.annotations.Table(appliesTo = "tb_menu", comment = "菜单")
 public class Menu {
     @Id
     //ID

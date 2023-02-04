@@ -13,6 +13,7 @@ import java.io.Serializable;
  */
 @Data
 @Entity(name = "dtu_info")
+@org.hibernate.annotations.Table(appliesTo = "dtu_info", comment = "dtu信息")
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
 public class DtuInfo implements Serializable {
     @Id

@@ -15,6 +15,7 @@ import java.io.Serializable;
  */
 @Data
 @Entity(name = "sensor")
+@org.hibernate.annotations.Table(appliesTo = "sensor", comment = "传感器")
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer"})

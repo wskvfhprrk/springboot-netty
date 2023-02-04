@@ -14,6 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @Entity(name = "checking_rules")
+@org.hibernate.annotations.Table(appliesTo = "checking_rules", comment = "数据校检规则")
 @NoArgsConstructor
 @AllArgsConstructor
 public class CheckingRules implements Serializable {

@@ -14,6 +14,7 @@ import java.util.Set;
  */
 @Data
 @Entity(name = "tb_role")
+@org.hibernate.annotations.Table(appliesTo = "tb_role", comment = "角色实体类")
 public class Role implements Serializable{
 
     @Id
