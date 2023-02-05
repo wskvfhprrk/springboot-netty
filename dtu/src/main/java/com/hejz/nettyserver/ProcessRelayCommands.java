@@ -1,7 +1,6 @@
 package com.hejz.nettyserver;
 
 import com.hejz.common.Constant;
-import com.hejz.enm.InstructionTypeEnum;
 import com.hejz.entity.*;
 import com.hejz.service.CommandStatusService;
 import com.hejz.service.DtuInfoService;
@@ -16,6 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -92,13 +92,14 @@ public class ProcessRelayCommands {
         }
         //保存当前状态
         commandStatusService.save(new CommandStatus(dtuInfo.getId(), relayDefinitionCommand.getId(), new Date(), new Date(), true));
-        Long commonId = relayDefinitionCommand.getCommonId();
+        Long commonId = relayDefinitionCommand.getNextLevelInstruction();
         RelayDefinitionCommand relayDefinitionCommand1 = relayDefinitionCommandService.findByAllDtuId(dtuInfo.getId()).stream()
                 .filter(r -> r.getId().equals(commonId)).findFirst().get();
+        relayDefinitionCommand1.setSendCommandTime(LocalDateTime.now());
         ctx.channel().eventLoop().schedule(() -> {
             log.info("通道==》{}开始延时任务，延时：{}", ctx.channel().id().toString(), relayDefinitionCommand.getProcessingWaitingTime());
-            NettyServiceCommon.sendRelayCommandAccordingToLayIds(ctx.channel(), relayDefinitionCommand1);
-        }, relayDefinitionCommand.getProcessingWaitingTime(), TimeUnit.MILLISECONDS);
+            NettyServiceCommon.sendRelayCommandAccordingToLayIds(relayDefinitionCommand1);
+        }, relayDefinitionCommand1.getProcessingWaitingTime(), TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -125,7 +126,7 @@ public class ProcessRelayCommands {
                 return;
             }
         }
-        NettyServiceCommon.sendRelayCommandAccordingToLayIds(ctx.channel(), relayDefinitionCommand);
+        NettyServiceCommon.sendRelayCommandAccordingToLayIds( relayDefinitionCommand);
     }
 
 

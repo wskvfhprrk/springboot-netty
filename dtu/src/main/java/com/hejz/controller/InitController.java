@@ -74,10 +74,10 @@ public class InitController {
         relayRepository.save(new Relay((long) (i + 1), 3, "第4个继电器", "03 05 00 03 FF 00 7D D8", "03 05 00 03 00 00 3C 28", "lcaolhost:8080/hello", "备用"));
         List<Relay> relays = relayRepository.findAlByDtuId((long) (i + 1)).stream().sorted(Comparator.comparing(Relay::getId)).collect(Collectors.toList());
         //处理编辑继电器命令的信息
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "重置通风指令", "停止打开和关闭通风电机指令", relays.get(1).getId() + "-0," + relays.get(0).getId() + "-0", false, 0L, 0L, 0L, InstructionTypeEnum.RESET_COMMAND));
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "重置通风指令", "停止打开和关闭通风电机指令", relays.get(1).getId() + "-0," + relays.get(0).getId() + "-0",  0L, 0L, 0L, InstructionTypeEnum.RESET_COMMAND));
         Optional<RelayDefinitionCommand> relayDefinitionCommandOptional = relayDefinitionCommandRepository.findByDtuId((long) (i + 1)).stream().filter(r -> r.getName().equals("重置通风指令")).findFirst();
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "打开通风指令", "打开左右通风", relays.get(1).getId() + "-1," + relays.get(0).getId() + "-0", true, 80000L, relayDefinitionCommandOptional.get().getId(), i * 3 + 3L,InstructionTypeEnum.OPEN_VENTILATION));
-        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "关闭通风指令", "关闭左右通风", relays.get(1).getId() + "-1," + relays.get(0).getId() + "-1", true, 80000L, relayDefinitionCommandOptional.get().getId(), i * 3 + 2L,InstructionTypeEnum.CLOSE_VENTILATION));
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "打开通风指令", "打开左右通风", relays.get(1).getId() + "-1," + relays.get(0).getId() + "-0", 80000L, relayDefinitionCommandOptional.get().getId(), i * 3 + 3L,InstructionTypeEnum.OPEN_VENTILATION));
+        relayDefinitionCommandRepository.save(new RelayDefinitionCommand((long) (i + 1), "关闭通风指令", "关闭左右通风", relays.get(1).getId() + "-1," + relays.get(0).getId() + "-1",  80000L, relayDefinitionCommandOptional.get().getId(), i * 3 + 2L,InstructionTypeEnum.CLOSE_VENTILATION));
         if (!relayDefinitionCommandOptional.isPresent()) return;
         //处理感应器信息
         List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandRepository.findByDtuId((long) (i + 1));

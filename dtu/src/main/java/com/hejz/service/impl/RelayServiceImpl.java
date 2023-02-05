@@ -118,14 +118,11 @@ public class RelayServiceImpl implements RelayService {
         dtuInfoService.update(dtuInfoUpdateDto);
         //判断是否在线
         Channel channel = Constant.USER_CHANNEL.get(dto.getDtuId());
-        if (channel==null) {
-            return Result.error(500,"客户端未连接服务器");
-        }
         List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByAllDtuId(dto.getDtuId(), dto.getInstructionTypeEnum());
         //发命令
         if(relayDefinitionCommands.isEmpty()) return Result.error(500,"没有相应的指令");
         for (RelayDefinitionCommand relayDefinitionCommand : relayDefinitionCommands) {
-            NettyServiceCommon.sendRelayCommandAccordingToLayIds(Constant.USER_CHANNEL.get(dto.getDtuId()), relayDefinitionCommand);
+            NettyServiceCommon.sendRelayCommandAccordingToLayIds(relayDefinitionCommand);
         }
         return Result.ok();
     }

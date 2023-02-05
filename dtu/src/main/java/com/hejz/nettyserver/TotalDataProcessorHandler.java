@@ -31,7 +31,7 @@ public class TotalDataProcessorHandler extends SimpleChannelInboundHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.getCause();
-        NettyServiceCommon.deleteKey(ctx.channel().id().toString());
+        NettyServiceCommon.deleteKey(ctx.channel());
         ctx.channel().close();
     }
 

@@ -13,7 +13,6 @@ import com.hejz.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,8 +21,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -51,16 +52,15 @@ public class NettyServiceCommon {
     /**
      * 删除所有缓存和内存中map
      *
-     * @param channelId
+     * @param channel
      */
-    public static void deleteKey(String channelId) {
-
-        Constant.INTERVAL_TIME_MAP.remove(channelId);
-        Constant.SENSOR_DATA_BYTE_LIST_MAP.remove(channelId);
-        Constant.THREE_RECORDS_MAP.remove(channelId + "min");
-        Constant.THREE_RECORDS_MAP.remove(channelId + "max");
-
-        Set<String> keys = redisTemplate.keys(Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY + "::" + channelId + ":*");
+    public static void deleteKey(Channel channel) {
+        Constant.CHANNELGROUP.remove(channel);
+        Constant.INTERVAL_TIME_MAP.remove(channel.id().toString());
+        Constant.SENSOR_DATA_BYTE_LIST_MAP.remove(channel.id().toString());
+        Constant.THREE_RECORDS_MAP.remove(channel.id().toString() + "min");
+        Constant.THREE_RECORDS_MAP.remove(channel.id().toString() + "max");
+        Set<String> keys = redisTemplate.keys(Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY + "::" + channel.id().toString() + ":*");
         redisTemplate.delete(keys);
     }
 
@@ -167,14 +167,40 @@ public class NettyServiceCommon {
             channel.writeAndFlush(bufff);
         }
     }
+
     /**
-     * 根据layIds发送继电器指令
+     * 根据继电器定义命令发送继电器指令——可以任何通道发送，但是经过命令找到dtuId再找到通道发送的，与谁发送的命令无关
      *
-     * @param channel
      * @param relayDefinitionCommand
      */
-    public static void sendRelayCommandAccordingToLayIds(Channel channel, RelayDefinitionCommand
-            relayDefinitionCommand) {
+    public static void sendRelayCommandAccordingToLayIds(RelayDefinitionCommand
+                                                                 relayDefinitionCommand) {
+        //如果过期不再发送了——超过一个小时间
+        LocalDateTime beginTime = relayDefinitionCommand.getSendCommandTime();
+        Duration duration = Duration.between(beginTime, LocalDateTime.now());
+        //指令过期时间
+        if (duration.toHours() > Constant.INSTRUCTION_EXPIRATION_TIME) {
+            log.error("指令{}已经过期：{}小时", relayDefinitionCommand, Constant.INSTRUCTION_EXPIRATION_TIME);
+            return;
+        }
+        //先判断channel是否存在，如果存在直接发，如果不存在通过dtuId找到chaannel再发，
+        Channel channel = Constant.USER_CHANNEL.get(relayDefinitionCommand.getDtuId());
+        if (channel == null) {
+            //找到任何一个活动的channel重新发一次
+            if (Constant.CHANNELGROUP.isEmpty()) {
+                log.error("没有活动的通道，消息未能发送成功！{}", relayDefinitionCommand);
+                return;
+            }
+            for (Channel channel1 : Constant.CHANNELGROUP) {
+                channel = channel1;
+                break;
+            }
+            channel.eventLoop().schedule(() -> {
+                log.info("从另一通道发送指令{}", relayDefinitionCommand.getProcessingWaitingTime());
+                NettyServiceCommon.sendRelayCommandAccordingToLayIds(relayDefinitionCommand);
+            }, relayDefinitionCommand.getProcessingWaitingTime(), TimeUnit.MILLISECONDS);
+            return;
+        }
         String[] r = relayDefinitionCommand.getRelayIds().split(",");
         List<Relay> relayList = relayService.findAllByDtuId(relayDefinitionCommand.getDtuId());
         for (String s : r) {
@@ -184,7 +210,7 @@ public class NettyServiceCommon {
                 if (String.valueOf(relay.getId()).equals(s1[0])) {
                     String sendHex = s1[1].equals("1") ? relay.getOpneHex() : relay.getCloseHex();
                     //缓存需要继续处理的指令，如果不再处理不缓存——为程序收到继电器信号（继电器发送什么信号接收到什么信号）能联系在一起
-                    if (relayDefinitionCommand.getIsProcessTheReturnValue()) {
+                    if (relayDefinitionCommand.getNextLevelInstruction()!=null) {
                         cacheInstructionsThatNeedToContinueProcessing(channel, sendHex, relayDefinitionCommand);
                     }
                     NettyServiceCommon.write(sendHex, channel);

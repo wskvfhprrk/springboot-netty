@@ -44,7 +44,7 @@ class RelayDefinitionCommandServiceImplTest {
     @Order(1)
     @Test
     void save() {
-        relayDefinitionCommandService.save(new RelayDefinitionCommand(dtuId, "打开大棚", "打开大棚", "1,2,3", true, 1L, 1L, 1L, InstructionTypeEnum.OPEN_VENTILATION));
+        relayDefinitionCommandService.save(new RelayDefinitionCommand(dtuId, "打开大棚", "打开大棚", "1,2,3",  1L, 1L, 1L, InstructionTypeEnum.OPEN_VENTILATION));
         Object o = redisTemplate.opsForValue().get(Constant.RELAY_DEFINITION_COMMAND_CACHE_KEY + "::" + dtuId);
         Assert.isNull(o, "缓存中应该无值！");
         List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByAllDtuId(dtuId);

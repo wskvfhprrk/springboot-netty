@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -64,13 +65,6 @@ public class RelayDefinitionCommand implements Serializable {
             columnDefinition="varchar(255)"+" COMMENT '继电器指令——以间隔号隔开，前面是继电器id值，后面则是1为闭合指令0为断开指令'"
     )
     private String relayIds;
-    //是否处理返回值——false表示不用，true表示必须处理
-    @Column(
-            name = "is_process_the_return_value",
-            nullable = false,
-            columnDefinition="bit"+" COMMENT '是否处理返回值——false表示不用，true表示必须处理'"
-    )
-    private Boolean isProcessTheReturnValue= false;
     //处理返回值间隔时间（毫秒）——对继电器命令进行归零操作
     @Column(
             name = "processing_waiting_time",
@@ -80,11 +74,11 @@ public class RelayDefinitionCommand implements Serializable {
     private Long processingWaitingTime;
     //处理返回值要使用继电器ids
     @Column(
-            name = "common_id",
+            name = "next_level_instruction",
             nullable = true,
-            columnDefinition="varchar(255) default 0"+" COMMENT '处理返回值要使用继电器ids——在此类表中查询,0表示没有'"
+            columnDefinition="bigint default 0"+" COMMENT '下一级指令'"
     )
-    private Long commonId =0L;
+    private Long nextLevelInstruction =0L;
     @Column(
             name = "corresponding_command_id",
             nullable = true,
@@ -97,16 +91,18 @@ public class RelayDefinitionCommand implements Serializable {
             columnDefinition="int(2)"+" COMMENT '指令类型枚举'"
     )
     private InstructionTypeEnum instructionTypeEnum;
+    //发送指令时间，超过1小时不再发送指令了
+    @Transient
+    private LocalDateTime sendCommandTime;
 
 
-    public RelayDefinitionCommand(Long dtuId, String name, String remarks, String relayIds, boolean isProcessTheReturnValue, long processingWaitingTime, Long commonId, Long correspondingCommandId,InstructionTypeEnum instructionTypeEnum) {
+    public RelayDefinitionCommand(Long dtuId, String name, String remarks, String relayIds, long processingWaitingTime, Long nextLevelInstruction, Long correspondingCommandId, InstructionTypeEnum instructionTypeEnum) {
         this.dtuId=dtuId;
         this.name=name;
         this.remarks=remarks;
         this.relayIds=relayIds;
-        this.isProcessTheReturnValue=isProcessTheReturnValue;
         this.processingWaitingTime = processingWaitingTime;
-        this.commonId = commonId;
+        this.nextLevelInstruction = nextLevelInstruction;
         this.correspondingCommandId = correspondingCommandId;
         this.instructionTypeEnum = instructionTypeEnum;
 

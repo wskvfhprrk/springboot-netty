@@ -27,7 +27,7 @@ public class NormalCommandTest {
         log.info("正常指令测试——没有注册，每组数据带imei>>>>>>>>>>>");
         List<String> instructionsSent = new ArrayList<>();
 
-        List<Integer> data = Arrays.asList(200, 610, 1200, 70, 300, 30, 30, 170, 20);
+        List<Integer> data = Arrays.asList(100, 610, 1200, 70, 300, 30, 30, 170, 20);
         for (int i = 0; i < data.size(); i++) {
             instructionsSent.add(calculateRrc16ValidatedData(i<2?"010302":"020302", data.get(i)));
         }

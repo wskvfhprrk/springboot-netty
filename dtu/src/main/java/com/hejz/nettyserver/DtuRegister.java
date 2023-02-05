@@ -59,7 +59,7 @@ public class DtuRegister {
         log.info("=========={}====dtu注册了=============",ctx.channel().id().toString());
         if (dtuInfo == null) {
             log.error("imei值:{}查询不到或没有注册，关闭通道", dtuInfo.getImei());
-            NettyServiceCommon.deleteKey(ctx.channel().id().toString());
+            NettyServiceCommon.deleteKey(ctx.channel());
             ctx.channel().close();
             return;
         }
@@ -67,7 +67,7 @@ public class DtuRegister {
         if (Constant.USER_CHANNEL.containsKey(dtuInfo.getId())) { // map  imei --> channel
             Channel oldChannel = Constant.USER_CHANNEL.get(dtuInfo.getId());
             log.info("imei:{} 冲突,原通道：{} 被关闭",dtuInfo.getImei(),oldChannel.id().toString());
-            NettyServiceCommon.deleteKey(oldChannel.id().toString());
+            NettyServiceCommon.deleteKey(oldChannel);
             oldChannel.close();
         }
 
@@ -78,6 +78,7 @@ public class DtuRegister {
 
         // dtuId -> channel
         Constant.USER_CHANNEL.put(dtuInfo.getId(), ctx.channel());
+        Constant.CHANNELGROUP.add(ctx.channel());
 
         log.info("=========={}====dtu注册完成=============",ctx.channel().id().toString());
     }

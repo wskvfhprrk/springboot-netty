@@ -4,6 +4,7 @@ import com.hejz.common.Constant;
 import com.hejz.entity.*;
 import com.hejz.service.*;
 import com.hejz.utils.HexConvert;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +95,7 @@ public class ProcessSensorReturnValue {
                 for (SensorData sensorData : sensorDataList) {
                     sb.append(sensorData.getAddress());
                 }
+                // TODO: 2023/2/5 在添加到数据库前可以根据数据做自动判断处理指令
                 //如果没有按顺序排列，不要此组数据
                 if(!dtuInfo.getSensorAddressOrder().equals(sb.toString())){
                     log.error("此组数据没有按顺序上报作废！");
@@ -164,7 +166,7 @@ public class ProcessSensorReturnValue {
      */
     private Double parseSensorOneData(byte[] useBytes, int arrayNumber, ChannelHandlerContext ctx, DtuInfo dtuInfo) throws Exception {
         //计算返10进制的返回值
-        Integer x = calculateReturnValue(useBytes);
+        Integer x = calculateReturnValue(dtuInfo,useBytes);
         //获取数据值
         double d = Double.parseDouble(String.valueOf(x));
         Sensor sensor = sensorService.findAllByDtuId(dtuInfo.getId()).get(arrayNumber);
@@ -186,11 +188,15 @@ public class ProcessSensorReturnValue {
 
     /**
      * 计算内含10进制数据
+     *
+     * @param dtuInfo
      * @param bytes
      * @return
      * @throws Exception
      */
-    private Integer calculateReturnValue(byte[] bytes) throws Exception {
+    private Integer calculateReturnValue(DtuInfo dtuInfo, byte[] bytes) throws Exception {
+        //todo 根据设备找到校验规则与指令匹配——感应器返回值检测规则,多个以逗号隔开，首个为地址位，末位为规则id
+//        String[] ensorCheckingRulesIds = dtuInfo.getSensorCheckingRulesIds().split(",");
         List<CheckingRules> checkingRules = checkingRulesService.getByCommonLength(bytes.length);
         List<Integer> list = checkingRules.stream().map(checkingRule -> {
             int dataBegin = checkingRule.getAddressBitLength() + checkingRule.getFunctionCodeLength() + checkingRule.getDataBitsLength();
