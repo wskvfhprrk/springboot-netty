@@ -1,3 +1,4 @@
+/*
 package com.hejz.vo;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -22,3 +23,4 @@ public class RelayAllVo {
     @ApiModelProperty(value = "关联发出的链接")
     private String url;
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package com.hejz.controller;
 
 import com.hejz.common.PageResult;
@@ -18,11 +19,13 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
+*/
 /**
  * @author:hejz 75412985@qq.com
  * @create: 2023-01-12 07:44
  * @Description: 继电器定义命令参数控制器
- */
+ *//*
+
 @RestController
 @RequestMapping("relayDefinitionCommand")
 @Api(tags ="继电器定义命令参数控制器")
@@ -86,3 +89,4 @@ public class RelayDefinitionCommandController {
         return Result.ok(pages);
     }
 }
+*/

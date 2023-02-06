@@ -13,11 +13,5 @@ import java.util.List;
  * author: hejz
  * data: 2022-5-9
  */
-public interface RelayDefinitionCommandRepository extends CrudRepository<InstructionDefinition,Long>,JpaSpecificationExecutor<InstructionDefinition> {
-
-
-    List<InstructionDefinition> findByDtuInfo(DtuInfo dtuInfo);
-
-
-    List<InstructionDefinition> findByDtuInfoAndInstructionType(DtuInfo dtuInfo, InstructionTypeEnum instructionTypeEnum);
+public interface InstructionDefinitionRepository extends CrudRepository<InstructionDefinition,Long>,JpaSpecificationExecutor<InstructionDefinition> {
 }

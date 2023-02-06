@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -68,39 +67,27 @@ public class Sensor implements Serializable {
     @Column(
             name = "min",
             nullable = true,
-            columnDefinition="int(15)"+" COMMENT '获取值参考最小值'"
+            columnDefinition = "int(15)" + " COMMENT '获取值参考最小值'"
     )
     private Integer min;
+    @ManyToOne
+    @JoinColumn(name = "max_instruction_definition_id", updatable = false)
+    private InstructionDefinition maxInstructionDefinitionId;
     /**
-     * 超过最大值时的指令——控制器集的指领IDs，默认值为0不作处理，一般为双数字，第一个是继电器指令，第二个1代表是合，0代表是断开
+     * 小于最小值时发出的指令
      */
-    @Column(
-            name = "max_relay_definition_command_id",
-            nullable = true,
-            columnDefinition="bigint default 0"+" COMMENT '超过最大值时的指令'"
-    )
-    private Long maxRelayDefinitionCommandId = 0L;
-    /**
-     * 小于最小值时发出的指令——控制器集的指领IDs，默认值为0不作处理，一般为双数字，第一个是继电器指令，第二个1代表是合，0代表是断开
-     */
-    @Column(
-            name = "min_relay_definition_command_id",
-            nullable = true,
-            columnDefinition = "bigint default 0" + " COMMENT '小于最小值时发出的指令'"
-    )
-    private Long minRelayDefinitionCommandId = 0L;
 
-    @ManyToMany(mappedBy = "sensors")
-    private List<InstructionDefinition> instructionDefinitions;
+    @ManyToOne
+    @JoinColumn(name = "min_instruction_definition_id", updatable = false)
+    private InstructionDefinition minInstructionDefinitionId;
 
-    public Sensor(Long dtuId, String name, Integer max, Integer min, Long maxRelayDefinitionCommandId, Long minRelayDefinitionCommandId) {
-        this.dtuInfo = new DtuInfo(dtuId);
+    public Sensor(DtuInfo dtuInfo, String name, Integer max, Integer min, InstructionDefinition maxInstructionDefinitionId, InstructionDefinition minInstructionDefinitionId) {
+        this.dtuInfo = dtuInfo;
         this.name = name;
         this.max = max;
         this.min = min;
-        this.maxRelayDefinitionCommandId = maxRelayDefinitionCommandId;
-
-        this.minRelayDefinitionCommandId = minRelayDefinitionCommandId;
+        this.maxInstructionDefinitionId = maxInstructionDefinitionId;
+        this.minInstructionDefinitionId = minInstructionDefinitionId;
     }
 
 

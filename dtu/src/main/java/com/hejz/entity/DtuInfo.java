@@ -77,7 +77,7 @@ public class DtuInfo implements Serializable {
     private Boolean automaticAdjustment = true;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",nullable = true)
+    @JoinColumn(name = "user_id")
     private User user;
 
 

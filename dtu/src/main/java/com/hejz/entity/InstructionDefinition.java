@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -25,13 +28,13 @@ import java.util.List;
 public class InstructionDefinition implements Serializable {
     @Id
     @SequenceGenerator(
-            name = "relay_definition_command_sequence",
-            sequenceName = "relay_definition_command_sequence",
+            name = "instruction_definition_sequence",
+            sequenceName = "instruction_definition_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "relay_definition_command_sequence"
+            generator = "instruction_definition_sequence"
     )
     //ID
     @Column(
@@ -62,34 +65,24 @@ public class InstructionDefinition implements Serializable {
     @ManyToOne
     @JoinColumn(name = "dtu_id", nullable = false)
     private DtuInfo dtuInfo;
-    @ManyToMany
-    @JoinTable(name = "instruction_definition_relay",joinColumns=
-            @JoinColumn(name="relay_id", referencedColumnName="id"),
-            inverseJoinColumns=
-            @JoinColumn(name="instruction_definition_id", referencedColumnName="id"))
-    private List<Relay> relays;
-    @ManyToMany
-    @JoinTable(name = "instruction_definition_sensor",joinColumns=
-            @JoinColumn(name="sensor_id", referencedColumnName="id"),
-            inverseJoinColumns=
-            @JoinColumn(name="instruction_definition_id", referencedColumnName="id"))
-    private List<Sensor> sensors;
+//    @OneToOne(optional = false,mappedBy = "instructionDefinition")
+//    private Sensor sensor;
     @ManyToMany
     @JoinTable(name = "instruction_definition_command",joinColumns=
             @JoinColumn(name="command_id", referencedColumnName="id"),
             inverseJoinColumns=
             @JoinColumn(name="instruction_definition_id", referencedColumnName="id"))
-    private List<Command> commands;
+    private Set<Command> commands;
     //发送指令时间，超过1小时不再发送指令了
     @Transient
     private LocalDateTime sendCommandTime;
 
 
-    public InstructionDefinition(DtuInfo dtuInfo, String name, String remarks, InstructionTypeEnum instructionType) {
+    public InstructionDefinition(DtuInfo dtuInfo, String name, String remarks, InstructionTypeEnum instructionType,Set<Command> commands) {
         this.dtuInfo = dtuInfo;
         this.name = name;
         this.remarks = remarks;
         this.instructionType = instructionType;
-
+        this.commands = commands;
     }
 }
