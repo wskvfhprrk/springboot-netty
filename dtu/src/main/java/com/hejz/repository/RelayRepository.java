@@ -1,5 +1,6 @@
 package com.hejz.repository;
 
+import com.hejz.entity.DtuInfo;
 import com.hejz.entity.Relay;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -13,7 +14,6 @@ import java.util.List;
  */
 public interface RelayRepository extends CrudRepository<Relay, Long>, JpaSpecificationExecutor<Relay> {
 
-    List<Relay> findAlByDtuId(Long dtuId);
+    List<Relay> findAlByDtuInfo(DtuInfo dtuInfo);
 
-    void deleteAllByDtuId(Long dtuId);
 }

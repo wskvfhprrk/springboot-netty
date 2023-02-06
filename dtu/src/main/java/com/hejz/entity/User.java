@@ -1,6 +1,8 @@
 package com.hejz.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,6 +17,8 @@ import java.util.Set;
 @Data
 @Entity(name = "tb_user")
 @org.hibernate.annotations.Table(appliesTo = "tb_user", comment = "用户信息")
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements Serializable{
 
     @Id
@@ -38,4 +42,8 @@ public class User implements Serializable{
     //多对多关系映射
     @ManyToMany(mappedBy = "users")
     private Set<Role> roles = new HashSet<>(0);
+
+    public User(Integer id) {
+        this.id = id;
+    }
 }

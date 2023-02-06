@@ -40,12 +40,9 @@ public class SensorDataDb implements Serializable {
             columnDefinition="datetime"+" COMMENT '接收时间'"
     )
     private Date createDate;
-    @Column(
-            name = "dtu_id",
-            nullable = false,
-            columnDefinition="bigint"+" COMMENT 'dtuId'"
-    )
-    private Long dtuId;
+    @ManyToOne
+    @JoinColumn(name = "dtu_id",nullable = false)
+    private DtuInfo dtuInfo;
     @Column(
             name = "names",
             nullable = false,
@@ -65,9 +62,9 @@ public class SensorDataDb implements Serializable {
     )
     private String units;
 
-    public SensorDataDb(Date createDate, Long dtuId, String names, String data, String units) {
+    public SensorDataDb(Date createDate, DtuInfo dtuInfo, String names, String data, String units) {
         this.createDate=createDate;
-        this.dtuId=dtuId;
+        this.dtuInfo=dtuInfo;
         this.names=names;
         this.data=data;
         this.units=units;

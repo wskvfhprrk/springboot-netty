@@ -3,8 +3,7 @@ package com.hejz.controller;
 import com.hejz.common.PageResult;
 import com.hejz.common.Result;
 import com.hejz.dto.RelayDefinitionCommandFindByPageDto;
-import com.hejz.entity.RelayDefinitionCommand;
-import com.hejz.entity.RelayDefinitionCommand;
+import com.hejz.entity.InstructionDefinition;
 import com.hejz.service.RelayDefinitionCommandService;
 import com.hejz.vo.RelayDefinitionCommandFindByPageVo;
 import io.swagger.annotations.Api;
@@ -34,26 +33,26 @@ public class RelayDefinitionCommandController {
 
     @ApiOperation("根据dtuId查询所有继电器定义命令信息")
     @GetMapping("all/{dtuId}")
-    public List<RelayDefinitionCommand> findByAllDtuId(@PathVariable Long dtuId) {
+    public List<InstructionDefinition> findByAllDtuId(@PathVariable Long dtuId) {
         return relayDefinitionCommandService.findByAllDtuId(dtuId);
     }
 
     @ApiOperation("根据id查询感器信息")
     @GetMapping("{id}")
-    public RelayDefinitionCommand getRelayDefinitionCommandById(@PathVariable("id") Long id) {
+    public InstructionDefinition getRelayDefinitionCommandById(@PathVariable("id") Long id) {
         return relayDefinitionCommandService.findById(id);
     }
 
     @ApiOperation("添加感器信息")
     @PostMapping
-    public RelayDefinitionCommand save(@RequestBody RelayDefinitionCommand relayDefinitionCommand) {
-        return relayDefinitionCommandService.save(relayDefinitionCommand);
+    public InstructionDefinition save(@RequestBody InstructionDefinition instructionDefinition) {
+        return relayDefinitionCommandService.save(instructionDefinition);
     }
 
     @ApiOperation("更新继电器定义命令信息")
     @PutMapping
-    public RelayDefinitionCommand update(@RequestBody RelayDefinitionCommand relayDefinitionCommand) {
-        return relayDefinitionCommandService.update(relayDefinitionCommand);
+    public InstructionDefinition update(@RequestBody InstructionDefinition instructionDefinition) {
+        return relayDefinitionCommandService.update(instructionDefinition);
     }
 
     @ApiOperation("根据id删除感器信息")
@@ -71,9 +70,9 @@ public class RelayDefinitionCommandController {
     @GetMapping("findPage")
     @ApiOperation("条件查询用户信息")
     public Result<PageResult<RelayDefinitionCommandFindByPageVo>> findBypage(@Valid RelayDefinitionCommandFindByPageDto dto){
-        RelayDefinitionCommand relayDefinitionCommand=new RelayDefinitionCommand();
-        BeanUtils.copyProperties(dto,relayDefinitionCommand);
-        Page<RelayDefinitionCommand> relayDefinitionCommandPage = relayDefinitionCommandService.findPage(dto);
+        InstructionDefinition instructionDefinition =new InstructionDefinition();
+        BeanUtils.copyProperties(dto, instructionDefinition);
+        Page<InstructionDefinition> relayDefinitionCommandPage = relayDefinitionCommandService.findPage(dto);
         List<RelayDefinitionCommandFindByPageVo> list = relayDefinitionCommandPage.getContent().stream().map(d -> {
             RelayDefinitionCommandFindByPageVo vo = new RelayDefinitionCommandFindByPageVo();
             BeanUtils.copyProperties(d,vo);

@@ -1,5 +1,6 @@
 package com.hejz.repository;
 
+import com.hejz.entity.DtuInfo;
 import com.hejz.entity.SensorDataDb;
 import com.hejz.entity.User;
 import org.springframework.data.domain.Page;
@@ -17,13 +18,7 @@ import java.util.List;
  * author: hejz
  * data: 2022-5-9
  */
-public interface SensorDataDbRepository extends CrudRepository<SensorDataDb, Date>, JpaSpecificationExecutor<SensorDataDb> {
-    List<SensorDataDb> findAllByDtuId(Long dtuId);
-
-    SensorDataDb findById(Long id);
-
-    void deleteById(Long id);
-
-    void deleteAllByDtuId(Long dutId);
+public interface SensorDataDbRepository extends CrudRepository<SensorDataDb, Long>, JpaSpecificationExecutor<SensorDataDb> {
+    List<SensorDataDb> findAllByDtuInfo(DtuInfo dtuInfo);
 
 }

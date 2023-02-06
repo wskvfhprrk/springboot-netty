@@ -3,7 +3,7 @@ package com.hejz.service;
 
 import com.hejz.dto.RelayDefinitionCommandFindByPageDto;
 import com.hejz.enm.InstructionTypeEnum;
-import com.hejz.entity.RelayDefinitionCommand;
+import com.hejz.entity.InstructionDefinition;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -14,20 +14,20 @@ import java.util.List;
  * @Description:
  */
 public interface RelayDefinitionCommandService {
-    List<RelayDefinitionCommand> findByAllDtuId(Long dtuId);
-    List<RelayDefinitionCommand> findByAllDtuId(Long dtuId, InstructionTypeEnum instructionTypeEnum);
+    List<InstructionDefinition> findByAllDtuId(Long dtuId);
+    List<InstructionDefinition> findByAllDtuId(Long dtuId, InstructionTypeEnum instructionTypeEnum);
 
-    RelayDefinitionCommand findById(Long id);
+    InstructionDefinition findById(Long id);
 
-    RelayDefinitionCommand save(RelayDefinitionCommand relayDefinitionCommand);
+    InstructionDefinition save(InstructionDefinition instructionDefinition);
 
-    RelayDefinitionCommand update(RelayDefinitionCommand relayDefinitionCommand);
+    InstructionDefinition update(InstructionDefinition instructionDefinition);
 
     void delete(Long id);
 
     void deleteAllByDtuId(Long dtuId);
 
-    Page<RelayDefinitionCommand> findPage(RelayDefinitionCommandFindByPageDto dto);
+    Page<InstructionDefinition> findPage(RelayDefinitionCommandFindByPageDto dto);
 
 
 }

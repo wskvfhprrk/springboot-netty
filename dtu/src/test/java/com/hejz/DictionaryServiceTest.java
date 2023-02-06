@@ -30,7 +30,6 @@ class DictionaryServiceTest extends DemoApplicationTests {
             dictionary.setType("ddd");
             dictionary.setItemValue("itemValue"+i);
             dictionary.setSortId(1);
-            dictionary.setParentId(0L);
             dictionaryService.Save(dictionary);
         }
     }

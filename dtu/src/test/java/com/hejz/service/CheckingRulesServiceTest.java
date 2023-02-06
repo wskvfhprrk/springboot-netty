@@ -50,7 +50,7 @@ class CheckingRulesServiceTest {
     @Order(2)
     @Test
     void save() {
-        CheckingRules checkingRules = new CheckingRules(5, "1", 1, 1, 1, 1, 1, 1);
+        CheckingRules checkingRules = new CheckingRules( "1", 1, 1, 1, 1, 1, 1);
         CheckingRulesDto dto=new CheckingRulesDto();
         BeanUtils.copyProperties(checkingRules,dto);
         CheckingRules save = checkingRulesService.save(dto);

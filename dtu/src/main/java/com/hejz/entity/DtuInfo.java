@@ -1,7 +1,9 @@
 package com.hejz.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,8 +14,10 @@ import java.io.Serializable;
  * @Description: dtu信息
  */
 @Data
-@Entity(name = "dtu_info")
-@org.hibernate.annotations.Table(appliesTo = "dtu_info", comment = "dtu信息")
+@Entity(name = "tb_dtu_info")
+@NoArgsConstructor
+@AllArgsConstructor
+@org.hibernate.annotations.Table(appliesTo = "tb_dtu_info", comment = "dtu信息")
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
 public class DtuInfo implements Serializable {
     @Id
@@ -54,38 +58,6 @@ public class DtuInfo implements Serializable {
     )
     private Integer registrationLength = 89;
     /**
-     * imei长度固定值
-     */
-    @Column(
-            name = "imei_length",
-            columnDefinition="int(2) default 15"+" COMMENT 'imei长度固定值'"
-    )
-    private Integer imeiLength = 15;
-    /**
-     * 继电器返回值检测规则id
-     */
-    @Column(
-            name = "relay_checking_rules_ids",
-            columnDefinition="varchar(100) default 8"+" COMMENT '继电器返回值检测规则,多个以逗号隔开，首个为地址位，末位为规则id'"
-    )
-    private String relayCheckingRulesIds;
-    /**
-     * 感应器返回值检测规则id
-     */
-    @Column(
-            name = "sensor_checking_rules_ids",
-            columnDefinition="varchar(100) default 7"+" COMMENT '感应器返回值检测规则,多个以逗号隔开，首个为地址位，末位为规则id'"
-    )
-    private String sensorCheckingRulesIds;
-    /**
-     * 心跳bates长度
-     */
-    @Column(
-            name = "heartbeat_length",
-            columnDefinition="int(2) default 2"+" COMMENT '心跳bates长度'"
-    )
-    private Integer heartbeatLength=2;
-    /**
      * 每组发送接收间隔时间(毫秒)和心跳时间——略小于dtu每组间隔时间，大于每组中每个发送间隔时间
      */
     @Column(
@@ -100,29 +72,24 @@ public class DtuInfo implements Serializable {
     @Column(
             name = "automatic_adjustment",
             nullable = true,
-            columnDefinition="bit(1)"+" COMMENT '是否自动控制——true是自动false是手动控制'"
+            columnDefinition = "bit(1)" + " COMMENT '是否自动控制——true是自动false是手动控制'"
     )
     private Boolean automaticAdjustment = true;
-    @Column(
-            name = "no_imei",
-            nullable = true,
-            columnDefinition="bit(1)"+" COMMENT '返回值指令前是否带imei:true带imei,false不带'"
-    )
-    private Boolean noImei = true;
 
-    public DtuInfo() {
+    @ManyToOne
+    @JoinColumn(name = "user_id",nullable = true)
+    private User user;
+
+
+    public DtuInfo(Long id) {
+        this.id = id;
     }
 
-    public DtuInfo(String imei, Integer registrationLength, Integer imeiLength, String relayCheckingRulesIds, String sensorCheckingRulesIds, Integer heartbeatLength, Integer intervalTime, Boolean automaticAdjustment,Boolean noImei,String sensorAddressOrder) {
+    public DtuInfo(String imei, Integer registrationLength, Integer intervalTime, Boolean automaticAdjustment, String sensorAddressOrder) {
         this.imei = imei;
         this.registrationLength = registrationLength;
-        this.imeiLength = imeiLength;
-        this.relayCheckingRulesIds = relayCheckingRulesIds;
-        this.sensorCheckingRulesIds = sensorCheckingRulesIds;
-        this.heartbeatLength = heartbeatLength;
         this.intervalTime = intervalTime;
         this.automaticAdjustment = automaticAdjustment;
-        this.noImei = noImei;
         this.sensorAddressOrder = sensorAddressOrder;
     }
 }

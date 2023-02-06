@@ -1,8 +1,10 @@
 package com.hejz.service.impl;
 
 import com.hejz.dto.SensorDataDbFindByPageDto;
+import com.hejz.entity.DtuInfo;
 import com.hejz.entity.SensorDataDb;
 import com.hejz.repository.SensorDataDbRepository;
+import com.hejz.service.DtuInfoService;
 import com.hejz.service.SensorDataDbService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.Predicate;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,15 +27,17 @@ import java.util.List;
 public class SensorDataDbServiceImpl implements SensorDataDbService {
     @Autowired
     private SensorDataDbRepository sensorDataDbRepository;
+    @Autowired
+    private DtuInfoService dtuService;
 
     @Override
     public List<SensorDataDb> findAllByDtuId(Long dtuId) {
-        return sensorDataDbRepository.findAllByDtuId(dtuId);
+        return sensorDataDbRepository.findAllByDtuInfo(dtuService.findById(dtuId));
     }
 
     @Override
     public SensorDataDb getById(Long id) {
-        SensorDataDb selay = sensorDataDbRepository.findById(id);
+        SensorDataDb selay = sensorDataDbRepository.findById(id).orElse(null);
         return selay;
     }
 
@@ -56,7 +59,9 @@ public class SensorDataDbServiceImpl implements SensorDataDbService {
     @Override
     @Transactional
     public void deleteAllByDtuId(Long dutId) {
-        sensorDataDbRepository.deleteAllByDtuId(dutId);
+        for (SensorDataDb sensorDataDb : sensorDataDbRepository.findAllByDtuInfo(dtuService.findById(dutId))) {
+            sensorDataDbRepository.deleteById(sensorDataDb.getId());
+        }
     }
 
 

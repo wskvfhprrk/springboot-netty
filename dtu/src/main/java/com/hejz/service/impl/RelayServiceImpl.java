@@ -6,9 +6,8 @@ import com.hejz.dto.DtuInfoUpdateDto;
 import com.hejz.dto.ManualCommandDto;
 import com.hejz.dto.RelayFindByPageDto;
 import com.hejz.entity.DtuInfo;
+import com.hejz.entity.InstructionDefinition;
 import com.hejz.entity.Relay;
-import com.hejz.entity.RelayDefinitionCommand;
-import com.hejz.nettyserver.NettyServiceCommon;
 import com.hejz.repository.RelayRepository;
 import com.hejz.service.DtuInfoService;
 import com.hejz.service.RelayDefinitionCommandService;
@@ -29,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -48,7 +48,7 @@ public class RelayServiceImpl implements RelayService {
 
     @Cacheable(value = Constant.RELAY_CACHE_KEY, key = "#p0", unless = "#result == null")
     public List<Relay> findAllByDtuId(Long dtuId) {
-        return relayRepository.findAlByDtuId(dtuId);
+        return relayRepository.findAlByDtuInfo(dtuInfoService.findById(dtuId));
     }
 
     @Override
@@ -60,7 +60,6 @@ public class RelayServiceImpl implements RelayService {
     @CacheEvict(value = Constant.RELAY_CACHE_KEY, key = "#result.dtuId")
     @Override
     public Relay save(Relay selay) {
-        selay.setCloseHex(null);
         return relayRepository.save(selay);
     }
 
@@ -74,7 +73,7 @@ public class RelayServiceImpl implements RelayService {
     public void delete(Long id) {
         //缓存同步
         Relay relay = relayRepository.findById(id).orElse(null);
-        DtuInfo dtuInfo = dtuInfoService.findById(relay.getDtuId());
+        DtuInfo dtuInfo = dtuInfoService.findById(relay.getDtuInfo().getId());
         redisTemplate.delete(Constant.RELAY_CACHE_KEY + "::" + dtuInfo.getId());
         relayRepository.deleteById(id);
     }
@@ -83,7 +82,8 @@ public class RelayServiceImpl implements RelayService {
     @Override
     @Transactional
     public void deleteAlByDtuId(Long dtuId) {
-        relayRepository.deleteAllByDtuId(dtuId);
+        List<Long> list = relayRepository.findAlByDtuInfo(dtuInfoService.findById(dtuId)).stream().map(Relay::getId).collect(Collectors.toList());
+        relayRepository.deleteAllById(list);
     }
 
     @Override
@@ -107,24 +107,29 @@ public class RelayServiceImpl implements RelayService {
         return all;
     }
 
-
     @Override
-    public Result manualCommand(ManualCommandDto dto) {
-        //先变手动模式，然后再发命令
-        DtuInfo dtuInfo = dtuInfoService.findById(dto.getDtuId());
-        dtuInfo.setAutomaticAdjustment(false);
-        DtuInfoUpdateDto dtuInfoUpdateDto=new DtuInfoUpdateDto();
-        BeanUtils.copyProperties(dtuInfo,dtuInfoUpdateDto);
-        dtuInfoService.update(dtuInfoUpdateDto);
-        //判断是否在线
-        Channel channel = Constant.USER_CHANNEL.get(dto.getDtuId());
-        List<RelayDefinitionCommand> relayDefinitionCommands = relayDefinitionCommandService.findByAllDtuId(dto.getDtuId(), dto.getInstructionTypeEnum());
-        //发命令
-        if(relayDefinitionCommands.isEmpty()) return Result.error(500,"没有相应的指令");
-        for (RelayDefinitionCommand relayDefinitionCommand : relayDefinitionCommands) {
-            NettyServiceCommon.sendRelayCommandAccordingToLayIds(relayDefinitionCommand);
-        }
-        return Result.ok();
+    public Result manualCommand(ManualCommandDto manualCommandDto) {
+        return null;
     }
+
+
+//    @Override
+//    public Result manualCommand(ManualCommandDto dto) {
+//        //先变手动模式，然后再发命令
+//        DtuInfo dtuInfo = dtuInfoService.findById(dto.getDtuId());
+//        dtuInfo.setAutomaticAdjustment(false);
+//        DtuInfoUpdateDto dtuInfoUpdateDto=new DtuInfoUpdateDto();
+//        BeanUtils.copyProperties(dtuInfo,dtuInfoUpdateDto);
+//        dtuInfoService.update(dtuInfoUpdateDto);
+//        //判断是否在线
+//        Channel channel = Constant.USER_CHANNEL.get(dto.getDtuId());
+//        List<InstructionDefinition> instructionDefinitions = relayDefinitionCommandService.findByAllDtuId(dto.getDtuId(), dto.getInstructionTypeEnum());
+//        //发命令
+//        if(instructionDefinitions.isEmpty()) return Result.error(500,"没有相应的指令");
+//        for (InstructionDefinition instructionDefinition : instructionDefinitions) {
+//            NettyServiceCommon.sendRelayCommandAccordingToLayIds(instructionDefinition);
+//        }
+//        return Result.ok();
+//    }
 
 }

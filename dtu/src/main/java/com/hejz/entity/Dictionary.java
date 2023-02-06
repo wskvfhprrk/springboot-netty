@@ -24,12 +24,6 @@ public class Dictionary implements Serializable{
     )
     private Long id;
 
-    @Column(
-            name = "parent_id",
-            nullable = false,
-            columnDefinition="bigint"+" COMMENT '父ID'"
-    )
-    private Long parentId;
 
     @Column(
             name = "tenant_id",
@@ -114,4 +108,8 @@ public class Dictionary implements Serializable{
             columnDefinition="date"+" COMMENT '创建时间'"
     )
     private java.util.Date createTime;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Dictionary dictionary;
 }

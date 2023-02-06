@@ -38,7 +38,8 @@ public class SensorServiceImpl implements SensorService {
     @Cacheable(value = Constant.SENSOR_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
     public List<Sensor> findAllByDtuId(Long dtuId) {
-        return sensorRepository.findAllByDtuId(dtuId);
+        DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
+        return sensorRepository.findAllByDtuInfo(dtuInfo);
     }
 
     @Override
@@ -62,8 +63,7 @@ public class SensorServiceImpl implements SensorService {
     @Override
     public void delete(Long id) {
         Sensor sensor = sensorRepository.findById(id).orElse(null);
-        DtuInfo dtuInfo = dtuInfoService.findById(sensor.getDtuId());
-        redisTemplate.delete(Constant.SENSOR_CACHE_KEY + "::" + sensor.getDtuId());
+        redisTemplate.delete(Constant.SENSOR_CACHE_KEY + "::" + sensor.getDtuInfo().getId());
         sensorRepository.deleteById(id);
     }
 
@@ -71,7 +71,9 @@ public class SensorServiceImpl implements SensorService {
     @Override
     @Transactional
     public void deleteAllByDtuId(Long dtuId) {
-        sensorRepository.deleteAllByDtuId(dtuId);
+        DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
+        List<Sensor> sensors = sensorRepository.findAllByDtuInfo(dtuInfo);
+        sensors.forEach(sensor -> sensorRepository.deleteById(sensor.getId()));
     }
 
     @Override

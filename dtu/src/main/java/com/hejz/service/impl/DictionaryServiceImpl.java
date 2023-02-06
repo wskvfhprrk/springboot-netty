@@ -42,9 +42,6 @@ public class DictionaryServiceImpl implements DictionaryService {
             if(dictionary.getId()!=null && dictionary.getId()!=0) {
             predicates.add(cb.equal(root.get("Id"), dictionary.getId()));
             }
-            if(dictionary.getParentId()!=null && dictionary.getParentId()!=0) {
-            predicates.add(cb.equal(root.get("ParentId"), dictionary.getParentId()));
-            }
             if(dictionary.getTenantId()!=null && dictionary.getTenantId()!=0) {
             predicates.add(cb.equal(root.get("TenantId"), dictionary.getTenantId()));
             }
@@ -95,9 +92,6 @@ public class DictionaryServiceImpl implements DictionaryService {
             List<Predicate> predicates = new ArrayList<>();
             if(dictionary.getId()!=null && dictionary.getId()!=0) {
             predicates.add(cb.equal(root.get("Id"), dictionary.getId()));
-            }
-            if(dictionary.getParentId()!=null && dictionary.getParentId()!=0) {
-            predicates.add(cb.equal(root.get("ParentId"), dictionary.getParentId()));
             }
             if(dictionary.getTenantId()!=null && dictionary.getTenantId()!=0) {
             predicates.add(cb.equal(root.get("TenantId"), dictionary.getTenantId()));

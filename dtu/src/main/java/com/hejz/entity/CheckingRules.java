@@ -34,8 +34,8 @@ public class CheckingRules implements Serializable {
             nullable = false,
             columnDefinition="int(2)"+" COMMENT 'ID'"
     )
-    //id
     private Integer id;
+
     @Column(
             name = "name",
             nullable = false,
@@ -84,6 +84,13 @@ public class CheckingRules implements Serializable {
             columnDefinition="int(2)"+" COMMENT 'crc16校验位数'"
     )
     private Integer crc16CheckDigitLength;
+    //是否正在使用
+    @Column(
+            name = "is_use",
+            nullable = false,
+            columnDefinition="bit"+" COMMENT '是否正在使用——true正在使用，flase没有使用'"
+    )
+    private Boolean isUse=false;
 
     public CheckingRules(String name, Integer commonLength, Integer addressBitLength, Integer functionCodeLength, Integer dataBitsLength, Integer dataValueLength, Integer crc16CheckDigitLength) {
         this.name = name;
@@ -93,5 +100,9 @@ public class CheckingRules implements Serializable {
         DataBitsLength = dataBitsLength;
         DataValueLength = dataValueLength;
         this.crc16CheckDigitLength = crc16CheckDigitLength;
+    }
+
+    public CheckingRules(Integer id) {
+        this.id = id;
     }
 }

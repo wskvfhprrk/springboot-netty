@@ -39,7 +39,7 @@ spring:
   #jpa 测试
   jpa:
     hibernate:
-      ddl-auto: update # 新增数据库链接必须的参数
+      ddl-auto: create-drop # 新增数据库链接必须的参数
     # 控制台显示SQL
 #    show-sql: true
     properties:

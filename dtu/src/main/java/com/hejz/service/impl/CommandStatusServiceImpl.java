@@ -39,7 +39,7 @@ public class CommandStatusServiceImpl implements CommandStatusService {
     @Cacheable(value = Constant.COMMAND_STATUS_CACHE_KEY, key = "#p0", unless = "#result == null")
     @Override
     public List<CommandStatus> findAllByDtuId(Long dtuId) {
-        List<CommandStatus> collect = commandStatusRepository.findAllByDtuId(dtuId).stream()
+        List<CommandStatus> collect = commandStatusRepository.findAllByDtuInfo(dtuInfoService.findById(dtuId)).stream()
                 .filter(commandStatus -> commandStatus.getStatus()).collect(Collectors.toList());
         if (collect.isEmpty()) {
             return new ArrayList<>();
@@ -69,7 +69,7 @@ public class CommandStatusServiceImpl implements CommandStatusService {
     @Override
     public void delete(Long id) {
         CommandStatus commandStatus = commandStatusRepository.findById(id).orElse(null);
-        DtuInfo dtuInfo = dtuInfoService.findById(commandStatus.getDtuId());
+        DtuInfo dtuInfo = dtuInfoService.findById(commandStatus.getDtuInfo().getId());
         redisTemplate.delete(Constant.COMMAND_STATUS_CACHE_KEY + "::" + dtuInfo.getId());
         commandStatusRepository.deleteById(id);
     }

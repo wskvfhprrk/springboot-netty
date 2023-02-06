@@ -3,6 +3,7 @@ package com.hejz.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -94,6 +95,6 @@ public class Menu {
     )
     private Integer orderByNo;
     //多对多关系映射
-//    @ManyToMany(mappedBy = "roles")
-//    private Set<Role> roles=new HashSet<>();
+    @ManyToMany(mappedBy = "menus")
+    private Set<Role> roles;
 }

@@ -1,5 +1,6 @@
 package com.hejz.repository;
 
+import com.hejz.entity.DtuInfo;
 import com.hejz.entity.Sensor;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -13,10 +14,5 @@ import java.util.List;
  */
 public interface SensorRepository extends CrudRepository<Sensor,Long>,JpaSpecificationExecutor<Sensor> {
 
-    void deleteById(Long id);
-
-
-    List<Sensor> findAllByDtuId(Long dtuId);
-
-    void deleteAllByDtuId(Long dtuId);
+    List<Sensor> findAllByDtuInfo(DtuInfo dtuInfo);
 }

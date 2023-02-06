@@ -59,5 +59,5 @@ public class Role implements Serializable{
             //中间表tb_role_menu的字段关联tb_menu表的主键menu_id
             inverseJoinColumns = {@JoinColumn(name = "menu_id", referencedColumnName = "id")}
     )
-    private Set<Menu> menus = new HashSet<>();
+    private Set<Menu> menus;
 }

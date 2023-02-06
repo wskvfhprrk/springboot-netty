@@ -1,7 +1,6 @@
 package com.hejz.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.hejz.enm.InstructionTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,18 +37,7 @@ public class CommandStatus implements Serializable {
             columnDefinition="bigint"+" COMMENT 'ID'"
     )
     private Long id;
-    @Column(
-            name = "dtu_id",
-            nullable = false,
-            columnDefinition="bigint"+" COMMENT 'dtuId'"
-    )
-    private Long dtuId;
-    @Column(
-            name = "common_id",
-            nullable = false,
-            columnDefinition="bigint"+" COMMENT '继电器命令ID'"
-    )
-    private Long commonId;
+
     @Column(
             name = "create_date",
             nullable = false,
@@ -69,9 +57,15 @@ public class CommandStatus implements Serializable {
     )
     private Boolean status;
 
-    public CommandStatus(Long dtuId, Long commonId, Date createDate,Date updateDate, Boolean status) {
-        this.dtuId = dtuId;
-        this.commonId = commonId;
+    @ManyToOne
+    @JoinColumn(name = "dtu_id",nullable = false)
+    private DtuInfo dtuInfo;
+    @ManyToOne
+    @JoinColumn(name = "instruction_definition_id",nullable = false)
+    private InstructionDefinition instructionDefinition;
+
+    public CommandStatus(DtuInfo dtuInfo,  Date createDate,Date updateDate, Boolean status) {
+        this.dtuInfo=dtuInfo;
         this.createDate = createDate;
         this.updateDate = updateDate;
         this.status = status;
