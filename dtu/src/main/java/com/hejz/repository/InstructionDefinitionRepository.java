@@ -14,4 +14,5 @@ import java.util.List;
  * data: 2022-5-9
  */
 public interface InstructionDefinitionRepository extends CrudRepository<InstructionDefinition,Long>,JpaSpecificationExecutor<InstructionDefinition> {
+    List<InstructionDefinition> findAllByDtuInfo(DtuInfo dtuInfo);
 }
