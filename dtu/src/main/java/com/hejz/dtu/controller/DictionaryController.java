@@ -14,13 +14,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * 数据字典实体类控制器
  * author: hejz
- * data: 2023-2-7
+ * data: 2023-2-8
  */
 @RestController
 @RequestMapping("dictionary")
@@ -35,7 +36,8 @@ public class DictionaryController {
     public Result createDictionary(@Valid @RequestBody DictionaryCreateDto dto){
         Dictionary dictionary=new Dictionary();
         BeanUtils.copyProperties(dto,dictionary);
-        dictionary = dictionaryService.Save(dictionary);
+        dictionary.setCreateTime(new Date());
+        dictionary = dictionaryService.save(dictionary);
         return Result.ok(dictionary);
 
     }
@@ -44,7 +46,7 @@ public class DictionaryController {
     public Result updateDictionary(@Valid @RequestBody DictionaryUpdateDto dto){
         Dictionary dictionary=new Dictionary();
         BeanUtils.copyProperties(dto,dictionary);
-        dictionary = dictionaryService.Save(dictionary);
+        dictionary = dictionaryService.update(dictionary);
         return Result.ok(dictionary);
     }
     @DeleteMapping
@@ -62,6 +64,7 @@ public class DictionaryController {
         Page<Dictionary> dictionaryPage = dictionaryService.findPage(dto);
         List<DictionaryFindByPageVo> list = dictionaryPage.getContent().stream().map(d -> {
             DictionaryFindByPageVo vo = new DictionaryFindByPageVo();
+            vo.setParentId(d.getDictionary().getId());
             BeanUtils.copyProperties(d,vo);
             return vo;
         }).collect(Collectors.toList());

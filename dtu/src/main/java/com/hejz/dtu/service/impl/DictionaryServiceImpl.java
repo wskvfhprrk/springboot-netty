@@ -21,7 +21,12 @@ public class DictionaryServiceImpl implements DictionaryService {
     private DictionaryRepository dictionaryRepository;
 
     @Override
-    public Dictionary Save(Dictionary dictionary) {
+    public Dictionary save(Dictionary dictionary) {
+        return dictionaryRepository.save(dictionary);
+    }
+
+    @Override
+    public Dictionary update(Dictionary dictionary) {
         return dictionaryRepository.save(dictionary);
     }
 
@@ -48,17 +53,8 @@ public class DictionaryServiceImpl implements DictionaryService {
             if(StringUtils.isNotBlank(dto.getDescription())) {
                 predicates.add(cb.like(root.get("description"), "%"+dto.getDescription()+"%"));
             }
-            if(StringUtils.isNotBlank(dto.getExtdata())) {
-                predicates.add(cb.like(root.get("extdata"), "%"+dto.getExtdata()+"%"));
-            }
-            if(dto.getIsDeletable()!=null && dto.getIsDeletable()!=0) {
-            predicates.add(cb.equal(root.get("isDeletable"), dto.getIsDeletable()));
-            }
-            if(dto.getIsDeleted()!=null && dto.getIsDeleted()!=0) {
-            predicates.add(cb.equal(root.get("isDeleted"), dto.getIsDeleted()));
-            }
-            if(dto.getIsEditable()!=null && dto.getIsEditable()!=0) {
-            predicates.add(cb.equal(root.get("isEditable"), dto.getIsEditable()));
+            if(dto.getIsUse()!=null) {
+            predicates.add(cb.equal(root.get("isUse"), dto.getIsUse()));
             }
             if(StringUtils.isNotBlank(dto.getItemName())) {
                 predicates.add(cb.like(root.get("itemName"), "%"+dto.getItemName()+"%"));
@@ -69,11 +65,8 @@ public class DictionaryServiceImpl implements DictionaryService {
             if(dto.getSortId()!=null && dto.getSortId()!=0) {
             predicates.add(cb.equal(root.get("sortId"), dto.getSortId()));
             }
-            if(dto.getTenantId()!=null && dto.getTenantId()!=0) {
-            predicates.add(cb.equal(root.get("tenantId"), dto.getTenantId()));
-            }
-            if(StringUtils.isNotBlank(dto.getType())) {
-                predicates.add(cb.like(root.get("type"), "%"+dto.getType()+"%"));
+            if(dto.getType()!=null && dto.getType()!=0) {
+            predicates.add(cb.equal(root.get("type"), dto.getType()));
             }
             if(dto.getParentId()!=null && dto.getParentId()!=0) {
             predicates.add(cb.equal(root.get("parentId"), dto.getParentId()));

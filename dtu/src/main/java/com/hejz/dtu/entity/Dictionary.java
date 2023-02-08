@@ -1,7 +1,12 @@
 package com.hejz.dtu.entity;
 
+import com.hejz.dtu.enm.DictionaryTypeEnum;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.*;
 
 /**
@@ -11,7 +16,9 @@ import javax.persistence.*;
  */
 @Data
 @Entity(name = "dictionary")
-@org.hibernate.annotations.Table(appliesTo = "dictionary", comment = "数据字典实体类")
+@NoArgsConstructor
+@AllArgsConstructor
+@org.hibernate.annotations.Table(appliesTo = "dictionary", comment = "数据字典")
 public class Dictionary implements Serializable{
 
     @Id
@@ -53,32 +60,12 @@ public class Dictionary implements Serializable{
     private String description;
 
     @Column(
-            name = "extdata",
-            nullable = true,
-            columnDefinition="varchar(200)"+" COMMENT '扩展JSON'"
-    )
-    private String extdata;
-
-    @Column(
-            name = "is_deletable",
+            name = "is_use",
             nullable = false,
-            columnDefinition="int"+" COMMENT '是否可删'"
+            columnDefinition="bit"+" COMMENT '是否已用'"
     )
-    private Integer isDeletable;
+    private Boolean isUse;
 
-    @Column(
-            name = "is_deleted",
-            nullable = false,
-            columnDefinition="int"+" COMMENT '删除标记'"
-    )
-    private Integer isDeleted;
-
-    @Column(
-            name = "is_editable",
-            nullable = false,
-            columnDefinition="int"+" COMMENT '是否可改'"
-    )
-    private Integer isEditable;
 
     @Column(
             name = "item_name",
@@ -97,34 +84,37 @@ public class Dictionary implements Serializable{
     @Column(
             name = "sort_id",
             nullable = false,
-            columnDefinition="int"+" COMMENT '排序号'"
+            columnDefinition="int(2)"+" COMMENT '排序号'"
     )
     private Integer sortId;
 
     @Column(
-            name = "tenant_id",
-            nullable = false,
-            columnDefinition="bigint"+" COMMENT '租户ID'"
-    )
-    private Long tenantId;
-
-    @Column(
             name = "type",
             nullable = false,
-            columnDefinition="varchar(50)"+" COMMENT '字典类型'"
+            columnDefinition="int(1)"+" COMMENT '字典类型'"
     )
-    private String type;
+    private DictionaryTypeEnum type;
 
-    @Column(
-            name = "parent_id",
-            nullable = true,
-            columnDefinition="bigint"+" COMMENT 'ID'"
-    )
-    private Long parentId;
     /**
      * 外键表——dictionary中的字段id
      */
     @ManyToOne
-    @JoinColumn(name = "parent_id",insertable = false,updatable = false)
+    @JoinColumn(name = "parent_id",columnDefinition = "bigint"+" COMMENT '上一级ID'")
     private Dictionary dictionary;
+
+    public Dictionary(String appModule, Date createTime, String description, Boolean isUse, String itemName, String itemValue, Integer sortId, DictionaryTypeEnum type, Dictionary dictionary) {
+        this.appModule = appModule;
+        this.createTime = createTime;
+        this.description = description;
+        this.isUse = isUse;
+        this.itemName = itemName;
+        this.itemValue = itemValue;
+        this.sortId = sortId;
+        this.type = type;
+        this.dictionary = dictionary;
+    }
+
+    public Dictionary(Long id) {
+        this.id = id;
+    }
 }

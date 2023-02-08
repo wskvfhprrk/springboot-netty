@@ -2,16 +2,19 @@ package com.hejz.dtu.controller;
 
 import com.hejz.dtu.common.Constant;
 import com.hejz.dtu.enm.CommandTypeEnum;
+import com.hejz.dtu.enm.DictionaryTypeEnum;
 import com.hejz.dtu.enm.InstructionTypeEnum;
 import com.hejz.dtu.entity.*;
 import com.hejz.dtu.repository.*;
 import com.hejz.dtu.service.CommandService;
+import com.hejz.dtu.service.DictionaryService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +36,8 @@ public class InitController {
     CheckingRulesRepository checkingRulesRepository;
     @Autowired
     CommandService commandService;
+    @Autowired
+    DictionaryService dictionaryService;
     @Autowired
     RedisTemplate redisTemplate;
 
@@ -59,6 +64,10 @@ public class InitController {
     }
 
     private void start() {
+        //字典添加内容
+        Dictionary dictionary = dictionaryService.save(new Dictionary("字典", new Date(), "字典类型", true,  "字典类型", "0", 1, DictionaryTypeEnum.TOP_LEVEL, new Dictionary(1L)));
+        dictionaryService.save(new Dictionary("字典",new Date(),"字典类型",true,"一级","0",2, DictionaryTypeEnum.SECOND_LEVEL,dictionary));
+        dictionaryService.save(new Dictionary("字典",new Date(),"字典类型",true,"二级","0",2, DictionaryTypeEnum.SECOND_LEVEL,dictionary));
 
         CheckingRules checkingRules = checkingRulesRepository.save(new CheckingRules("7位MODBUS协议111122", 7, 1, 1, 1, 2, 2,true));
         CheckingRules checkingRules1 = checkingRulesRepository.save(new CheckingRules("8位MODBUS协议1111222", 8, 1, 1, 2, 2, 2,true));

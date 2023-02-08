@@ -1,5 +1,6 @@
 package com.hejz.dtu;
 
+import com.hejz.dtu.enm.DictionaryTypeEnum;
 import com.hejz.dtu.entity.Dictionary;
 import com.hejz.dtu.service.DictionaryService;
 import org.junit.jupiter.api.Test;
@@ -20,17 +21,13 @@ class DictionaryServiceTest extends DemoApplicationTests {
             Dictionary dictionary = new Dictionary();
             dictionary.setAppModule("aaaaaas" + i);
             dictionary.setDescription("bbbb"+i);
-            dictionary.setExtdata("{a:b}");
             dictionary.setCreateTime(new Date());
-            dictionary.setIsDeletable(0);
-            dictionary.setIsDeleted(0);
-            dictionary.setIsEditable(1);
+            dictionary.setIsUse(true);
             dictionary.setItemName("itemName");
-            dictionary.setTenantId(1L);
-            dictionary.setType("ddd");
+            dictionary.setType(DictionaryTypeEnum.CLASS_A);
             dictionary.setItemValue("itemValue"+i);
             dictionary.setSortId(1);
-            dictionaryService.Save(dictionary);
+            dictionaryService.save(dictionary);
         }
     }
 

@@ -1,8 +1,11 @@
 package com.hejz.dtu.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.validation.constraints.NotEmpty;
 
 /**
@@ -10,27 +13,20 @@ import javax.validation.constraints.NotEmpty;
  */
 @Data
 public class DictionaryUpdateDto {
-    @ApiModelProperty(value = "ID",required = true)
+    @ApiModelProperty(value = "数据字典ID",required = true)
     @NotEmpty
     private Long id;
     @ApiModelProperty(value = "应用模块")
     private String appModule;
     @ApiModelProperty(value = "创建时间",required = true)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @NotEmpty
     private java.util.Date createTime;
     @ApiModelProperty(value = "描述说明")
     private String description;
-    @ApiModelProperty(value = "扩展JSON")
-    private String extdata;
-    @ApiModelProperty(value = "是否可删",required = true,example = "1")
+    @ApiModelProperty(value = "是否已用",required = true)
     @NotEmpty
-    private Integer isDeletable;
-    @ApiModelProperty(value = "删除标记",required = true,example = "1")
-    @NotEmpty
-    private Integer isDeleted;
-    @ApiModelProperty(value = "是否可改",required = true,example = "1")
-    @NotEmpty
-    private Integer isEditable;
+    private Boolean isUse;
     @ApiModelProperty(value = "显示名",required = true)
     @NotEmpty
     private String itemName;
@@ -39,12 +35,9 @@ public class DictionaryUpdateDto {
     @ApiModelProperty(value = "排序号",required = true,example = "1")
     @NotEmpty
     private Integer sortId;
-    @ApiModelProperty(value = "租户ID",required = true)
-    @NotEmpty
-    private Long tenantId;
-    @ApiModelProperty(value = "字典类型",required = true)
+    @ApiModelProperty(value = "字典类型",required = true,example = "1")
     @NotEmpty
     private String type;
-    @ApiModelProperty(value = "ID")
+    @ApiModelProperty(value = "上一级ID")
     private Long parentId;
 }
