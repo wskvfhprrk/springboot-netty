@@ -1,8 +1,11 @@
 package com.hejz.dtu.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.io.Serializable;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * 传感器实体类
@@ -11,6 +14,8 @@ import javax.persistence.*;
  */
 @Data
 @Entity(name = "sensor")
+@NoArgsConstructor
+@AllArgsConstructor
 @org.hibernate.annotations.Table(appliesTo = "sensor", comment = "传感器")
 public class Sensor implements Serializable{
 
@@ -27,14 +32,20 @@ public class Sensor implements Serializable{
     @Column(
             name = "id",
             nullable = false,
-            columnDefinition="bigint"+" COMMENT 'ID'"
+            columnDefinition = "bigint" + " COMMENT '传感器ID'"
     )
     private Long id;
 
     @Column(
+            name = "name",
+            nullable = true,
+            columnDefinition = "varchar(15)" + " COMMENT '名称'"
+    )
+    private String name;
+    @Column(
             name = "max",
             nullable = true,
-            columnDefinition="int"+" COMMENT '获取值参考最大值'"
+            columnDefinition = "int" + " COMMENT '获取值参考最大值'"
     )
     private Integer max;
 
@@ -44,20 +55,6 @@ public class Sensor implements Serializable{
             columnDefinition="int"+" COMMENT '获取值参考最小值'"
     )
     private Integer min;
-
-    @Column(
-            name = "name",
-            nullable = true,
-            columnDefinition="varchar(15)"+" COMMENT '名称'"
-    )
-    private String name;
-
-    @Column(
-            name = "dtu_id",
-            nullable = false,
-            columnDefinition="bigint"+" COMMENT 'ID'"
-    )
-    private Long dtuId;
 
     /**
      * 外键表——instruction_definition中的字段id
@@ -69,12 +66,21 @@ public class Sensor implements Serializable{
      * 外键表——instruction_definition中的字段id
      */
     @ManyToOne
-    @JoinColumn(name = "min_instruction_definition_id",insertable = false,updatable = false)
+    @JoinColumn(name = "min_instruction_definition_id", insertable = false, updatable = false)
     private InstructionDefinition minInstructionDefinitionId;
     /**
      * 外键表——tb_dtu_info中的字段id
      */
     @ManyToOne
-    @JoinColumn(name = "dtu_id",insertable = false,updatable = false)
-    private DtuInfo DtuInfo;
+    @JoinColumn(name = "dtu_id", insertable = false, updatable = false)
+    private DtuInfo dtuInfo;
+
+    public Sensor(DtuInfo dtuInfo, String name, Integer max, Integer min, InstructionDefinition maxInstructionDefinitionId, InstructionDefinition minInstructionDefinitionId) {
+        this.name = name;
+        this.max = max;
+        this.min = min;
+        this.maxInstructionDefinitionId = maxInstructionDefinitionId;
+        this.minInstructionDefinitionId = minInstructionDefinitionId;
+        this.dtuInfo = dtuInfo;
+    }
 }

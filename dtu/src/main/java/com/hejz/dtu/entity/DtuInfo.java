@@ -1,8 +1,11 @@
 package com.hejz.dtu.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.io.Serializable;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * dtu信息实体类
@@ -11,6 +14,7 @@ import javax.persistence.*;
  */
 @Data
 @Entity(name = "tb_dtu_info")
+@NoArgsConstructor@AllArgsConstructor
 @org.hibernate.annotations.Table(appliesTo = "tb_dtu_info", comment = "dtu信息")
 public class DtuInfo implements Serializable{
 
@@ -27,14 +31,14 @@ public class DtuInfo implements Serializable{
     @Column(
             name = "id",
             nullable = false,
-            columnDefinition="bigint"+" COMMENT 'ID'"
+            columnDefinition="bigint"+" COMMENT 'dtuID'"
     )
     private Long id;
 
     @Column(
             name = "automatic_adjustment",
             nullable = true,
-            columnDefinition="date"+" COMMENT '是否自动控制——true是自动false是手动控制'"
+            columnDefinition="bit"+" COMMENT '是否自动控制——true是自动false是手动控制'"
     )
     private Boolean automaticAdjustment;
 
@@ -66,16 +70,18 @@ public class DtuInfo implements Serializable{
     )
     private String sensorAddressOrder;
 
-    @Column(
-            name = "user_id",
-            nullable = true,
-            columnDefinition="int"+" COMMENT ''"
-    )
-    private Integer userId;
     /**
      * 外键表——tb_user中的字段id
      */
     @ManyToOne
-    @JoinColumn(name = "user_id",insertable = false,updatable = false)
-    private User User;
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public DtuInfo(String imei, Integer registrationLength, Integer intervalTime, Boolean automaticAdjustment, String sensorAddressOrder) {
+        this.automaticAdjustment = automaticAdjustment;
+        this.imei = imei;
+        this.intervalTime = intervalTime;
+        this.registrationLength = registrationLength;
+        this.sensorAddressOrder = sensorAddressOrder;
+    }
 }

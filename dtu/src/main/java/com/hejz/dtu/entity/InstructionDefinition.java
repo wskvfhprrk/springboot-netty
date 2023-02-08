@@ -1,8 +1,13 @@
 package com.hejz.dtu.entity;
 
+import com.hejz.dtu.enm.InstructionTypeEnum;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.io.Serializable;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Set;
 
 /**
  * 继电器定义指令实体类
@@ -12,6 +17,8 @@ import javax.persistence.*;
 @Data
 @Entity(name = "instruction_definition")
 @org.hibernate.annotations.Table(appliesTo = "instruction_definition", comment = "继电器定义指令")
+@NoArgsConstructor
+@AllArgsConstructor
 public class InstructionDefinition implements Serializable{
 
     @Id
@@ -27,16 +34,16 @@ public class InstructionDefinition implements Serializable{
     @Column(
             name = "id",
             nullable = false,
-            columnDefinition="bigint"+" COMMENT 'ID'"
+            columnDefinition="bigint"+" COMMENT '继电器定义指令ID'"
     )
     private Long id;
 
     @Column(
             name = "instruction_type",
             nullable = true,
-            columnDefinition="int"+" COMMENT '指令类型'"
+            columnDefinition = "int(2)" + " COMMENT '指令类型'"
     )
-    private Integer instructionType;
+    private InstructionTypeEnum instructionType;
 
     @Column(
             name = "name",
@@ -48,20 +55,25 @@ public class InstructionDefinition implements Serializable{
     @Column(
             name = "remarks",
             nullable = true,
-            columnDefinition="varchar(255)"+" COMMENT '备注'"
+            columnDefinition = "varchar(255)" + " COMMENT '备注'"
     )
     private String remarks;
 
-    @Column(
-            name = "dtu_id",
-            nullable = false,
-            columnDefinition="bigint"+" COMMENT 'ID'"
-    )
-    private Long dtuId;
     /**
      * 外键表——tb_dtu_info中的字段id
      */
     @ManyToOne
-    @JoinColumn(name = "dtu_id",insertable = false,updatable = false)
-    private DtuInfo DtuInfo;
+    @JoinColumn(name = "dtu_id", insertable = false, updatable = false)
+    private DtuInfo dtuInfo;
+
+    @ManyToMany(mappedBy = "instructionDefinitions")
+    private Set<Command> commands;
+
+    public InstructionDefinition(DtuInfo dtuInfo, String name, String remarks, InstructionTypeEnum instructionType,Set<Command> commands) {
+        this.instructionType = instructionType;
+        this.name = name;
+        this.remarks = remarks;
+        this.dtuInfo = dtuInfo;
+        this.commands = commands;
+    }
 }

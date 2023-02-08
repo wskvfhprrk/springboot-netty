@@ -35,7 +35,7 @@ public class CommandController {
     public Result createCommand(@Valid @RequestBody CommandCreateDto dto){
         Command command=new Command();
         BeanUtils.copyProperties(dto,command);
-        command = commandService.Save(command);
+        command = commandService.save(command);
         return Result.ok(command);
 
     }
@@ -44,7 +44,7 @@ public class CommandController {
     public Result updateCommand(@Valid @RequestBody CommandUpdateDto dto){
         Command command=new Command();
         BeanUtils.copyProperties(dto,command);
-        command = commandService.Save(command);
+        command = commandService.update(command);
         return Result.ok(command);
     }
     @DeleteMapping

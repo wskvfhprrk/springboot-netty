@@ -27,7 +27,7 @@ public class CommandStatus implements Serializable{
     @Column(
             name = "id",
             nullable = false,
-            columnDefinition="bigint"+" COMMENT 'ID'"
+            columnDefinition="bigint"+" COMMENT '继电器命令状态ID'"
     )
     private Long id;
 
@@ -70,11 +70,11 @@ public class CommandStatus implements Serializable{
      */
     @ManyToOne
     @JoinColumn(name = "instruction_definition_id",insertable = false,updatable = false)
-    private InstructionDefinition InstructionDefinition;
+    private InstructionDefinition instructionDefinition;
     /**
      * 外键表——tb_dtu_info中的字段id
      */
     @ManyToOne
     @JoinColumn(name = "dtu_id",insertable = false,updatable = false)
-    private DtuInfo DtuInfo;
+    private DtuInfo dtuInfo;
 }

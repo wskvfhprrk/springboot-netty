@@ -1,8 +1,13 @@
 package com.hejz.dtu.entity;
 
+import com.hejz.dtu.enm.CommandTypeEnum;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.io.Serializable;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Set;
 
 /**
  * 指令实体类
@@ -12,6 +17,8 @@ import javax.persistence.*;
 @Data
 @Entity(name = "tb_command")
 @org.hibernate.annotations.Table(appliesTo = "tb_command", comment = "指令")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Command implements Serializable{
 
     @Id
@@ -27,7 +34,7 @@ public class Command implements Serializable{
     @Column(
             name = "id",
             nullable = false,
-            columnDefinition="bigint"+" COMMENT 'ID'"
+            columnDefinition = "bigint" + " COMMENT '指令ID'"
     )
     private Long id;
 
@@ -41,9 +48,9 @@ public class Command implements Serializable{
     @Column(
             name = "command_type",
             nullable = true,
-            columnDefinition="int"+" COMMENT '指令类型'"
+            columnDefinition = "int" + " COMMENT '指令类型'"
     )
-    private Integer commandType;
+    private CommandTypeEnum commandType;
 
     @Column(
             name = "instructions",
@@ -55,7 +62,7 @@ public class Command implements Serializable{
     @Column(
             name = "is_use",
             nullable = false,
-            columnDefinition="date"+" COMMENT '是否正在使用——true正在使用，flase没有使用'"
+            columnDefinition = "bit" + " COMMENT '是否正在使用——true正在使用，flase没有使用'"
     )
     private Boolean isUse;
 
@@ -90,33 +97,40 @@ public class Command implements Serializable{
     @Column(
             name = "wait_time_next_command",
             nullable = true,
-            columnDefinition="varchar(30)"+" COMMENT '等待时间下一指令（单位：秒）'"
+            columnDefinition = "int(5)" + " COMMENT '等待时间下一指令（单位：秒）'"
     )
-    private String waitTimeNextCommand;
+    private Integer waitTimeNextCommand;
 
-    @Column(
-            name = "checking_rules_id",
-            nullable = true,
-            columnDefinition="int"+" COMMENT 'ID'"
-    )
-    private Integer checkingRulesId;
-
-    @Column(
-            name = "next_level_instruction",
-            nullable = true,
-            columnDefinition="bigint"+" COMMENT 'ID'"
-    )
-    private Long nextLevelInstruction;
     /**
      * 外键表——checking_rules中的字段id
      */
     @ManyToOne
-    @JoinColumn(name = "checking_rules_id",insertable = false,updatable = false)
-    private CheckingRules CheckingRules;
+    @JoinColumn(name = "checking_rules_id", insertable = false, updatable = false)
+    private CheckingRules checkingRules;
     /**
      * 外键表——tb_command中的字段id
      */
     @ManyToOne
-    @JoinColumn(name = "next_level_instruction",insertable = false,updatable = false)
-    private Command Command;
+    @JoinColumn(name = "next_level_instruction", insertable = false, updatable = false)
+    private Command command;
+
+    @ManyToMany
+    @JoinTable(name = "instruction_definition_command",
+            joinColumns = @JoinColumn(name = "instruction_definition_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "command_id", referencedColumnName = "id"))
+    private Set<InstructionDefinition> instructionDefinitions;
+
+    public Command(String manufacturer, String name, String remarks, String instructions, CheckingRules checkingRules, CommandTypeEnum commandType, String calculationFormula, String unit, Integer waitTimeNextCommand, Command command, Boolean isUse) {
+        this.calculationFormula = calculationFormula;
+        this.commandType = commandType;
+        this.instructions = instructions;
+        this.isUse = isUse;
+        this.manufacturer = manufacturer;
+        this.name = name;
+        this.remarks = remarks;
+        this.unit = unit;
+        this.waitTimeNextCommand = waitTimeNextCommand;
+        this.checkingRules = checkingRules;
+        this.command = command;
+    }
 }

@@ -1,8 +1,11 @@
 package com.hejz.dtu.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.io.Serializable;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * 数据校检规则实体类
@@ -11,6 +14,8 @@ import javax.persistence.*;
  */
 @Data
 @Entity(name = "checking_rules")
+@NoArgsConstructor
+@AllArgsConstructor
 @org.hibernate.annotations.Table(appliesTo = "checking_rules", comment = "数据校检规则")
 public class CheckingRules implements Serializable{
 
@@ -27,7 +32,7 @@ public class CheckingRules implements Serializable{
     @Column(
             name = "id",
             nullable = false,
-            columnDefinition="int"+" COMMENT 'ID'"
+            columnDefinition="int"+" COMMENT '数据校检规则ID'"
     )
     private Integer id;
 
@@ -76,14 +81,25 @@ public class CheckingRules implements Serializable{
     @Column(
             name = "is_use",
             nullable = false,
-            columnDefinition="date"+" COMMENT '是否正在使用——true正在使用，flase没有使用'"
+            columnDefinition = "bit" + " COMMENT '是否正在使用——true正在使用，flase没有使用'"
     )
     private Boolean isUse;
 
     @Column(
             name = "name",
             nullable = false,
-            columnDefinition="varchar(255)"+" COMMENT 'name'"
+            columnDefinition = "varchar(255)" + " COMMENT 'name'"
     )
     private String name;
+
+    public CheckingRules(String name, Integer commonLength, Integer functionCodeLength, Integer addressBitLength, Integer dataBitsLength, Integer dataValueLength, Integer crc16CheckDigitLength, Boolean isUse) {
+        this.addressBitLength = addressBitLength;
+        this.dataBitsLength = dataBitsLength;
+        this.dataValueLength = dataValueLength;
+        this.commonLength = commonLength;
+        this.crc16CheckDigitLength = crc16CheckDigitLength;
+        this.functionCodeLength = functionCodeLength;
+        this.isUse = isUse;
+        this.name = name;
+    }
 }

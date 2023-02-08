@@ -10,7 +10,8 @@ import java.util.List;
  *
  */
 public interface CommandService {
-    Command Save(Command command);
+    Command save(Command command);
+    Command update(Command command);
     void delete(Long id);
     Command findById(Long id);
     Page<Command> findPage(CommandFindByPageDto dto);

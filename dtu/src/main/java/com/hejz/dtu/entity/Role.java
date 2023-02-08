@@ -2,6 +2,7 @@ package com.hejz.dtu.entity;
 
 import lombok.Data;
 import java.io.Serializable;
+import java.util.Set;
 import javax.persistence.*;
 
 /**
@@ -27,7 +28,7 @@ public class Role implements Serializable{
     @Column(
             name = "id",
             nullable = false,
-            columnDefinition="int"+" COMMENT 'ID'"
+            columnDefinition="int"+" COMMENT '角色ID'"
     )
     private Integer id;
 
@@ -37,4 +38,11 @@ public class Role implements Serializable{
             columnDefinition="varchar(255)"+" COMMENT '名称'"
     )
     private String name;
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users;
+    @ManyToMany
+    @JoinTable(name = "role_menu",
+    joinColumns = @JoinColumn(name = "menu_id",referencedColumnName = "id"),
+    inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName = "id"))
+    private Set<Menu> menus;
 }

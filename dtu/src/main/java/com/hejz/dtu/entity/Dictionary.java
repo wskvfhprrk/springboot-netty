@@ -27,7 +27,7 @@ public class Dictionary implements Serializable{
     @Column(
             name = "id",
             nullable = false,
-            columnDefinition="bigint"+" COMMENT 'ID'"
+            columnDefinition="bigint"+" COMMENT '数据字典ID'"
     )
     private Long id;
 
@@ -126,5 +126,5 @@ public class Dictionary implements Serializable{
      */
     @ManyToOne
     @JoinColumn(name = "parent_id",insertable = false,updatable = false)
-    private Dictionary Dictionary;
+    private Dictionary dictionary;
 }

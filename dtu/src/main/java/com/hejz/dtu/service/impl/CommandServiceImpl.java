@@ -21,7 +21,11 @@ public class CommandServiceImpl implements CommandService {
     private CommandRepository commandRepository;
 
     @Override
-    public Command Save(Command command) {
+    public Command save(Command command) {
+        return commandRepository.save(command);
+    }
+    @Override
+    public Command update(Command command) {
         return commandRepository.save(command);
     }
 

@@ -1,12 +1,14 @@
 package com.hejz.dtu.entity;
 
 import lombok.Data;
-import java.io.Serializable;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Set;
 
 /**
- * 菜单实体类
- * author: hejz
+ * 实体类
+ * author: hejz菜单
  * data: 2023-2-7
  */
 @Data
@@ -83,14 +85,17 @@ public class Menu implements Serializable{
     @Column(
             name = "type",
             nullable = false,
-            columnDefinition="int"+" COMMENT '类型——1父级菜单、2子菜单、3按纽'"
+            columnDefinition = "int" + " COMMENT '类型——1父级菜单、2子菜单、3按纽'"
     )
     private Integer type;
 
     @Column(
             name = "url",
             nullable = false,
-            columnDefinition="varchar(100)"+" COMMENT '连接'"
+            columnDefinition = "varchar(100)" + " COMMENT '连接'"
     )
     private String url;
+
+    @ManyToMany(mappedBy = "menus")
+    private Set<Role> roles;
 }

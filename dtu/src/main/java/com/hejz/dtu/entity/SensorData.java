@@ -27,7 +27,7 @@ public class SensorData implements Serializable{
     @Column(
             name = "id",
             nullable = false,
-            columnDefinition="bigint"+" COMMENT 'ID'"
+            columnDefinition="bigint"+" COMMENT '传感器数据ID'"
     )
     private Long id;
 
