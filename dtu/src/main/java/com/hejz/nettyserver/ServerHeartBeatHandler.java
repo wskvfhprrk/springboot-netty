@@ -24,7 +24,7 @@ public class ServerHeartBeatHandler extends ChannelInboundHandlerAdapter {
             IdleState state = ((IdleStateEvent) evt).state();
             switch (state) {
                 case READER_IDLE:
-                    log.info("channel:{},空闲3分钟无上报数据自动关闭通道！",ctx.channel().id().toString());
+                    log.info("channel:{},空闲6分钟无上报数据自动关闭通道！",ctx.channel().id().toString());
                     NettyServiceCommon.deleteKey(ctx.channel());
                     ctx.channel().close();
                     break;

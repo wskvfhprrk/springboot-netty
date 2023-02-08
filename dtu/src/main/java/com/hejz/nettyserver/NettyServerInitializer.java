@@ -32,7 +32,7 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         log.info("==================netty报告完毕==================");
         ChannelPipeline pipeline = ch.pipeline();
         //定义读写空闲时间——（单位秒）
-        pipeline.addLast(new IdleStateHandler(180, 60,180));
+        pipeline.addLast(new IdleStateHandler(360, 60,360));
         //空闲拦截器
         pipeline.addLast(serverHeartBeatHandler);
         //注册拦截器
