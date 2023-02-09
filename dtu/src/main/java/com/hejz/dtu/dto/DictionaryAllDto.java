@@ -1,11 +1,8 @@
 package com.hejz.dtu.dto;
 
-import com.hejz.dtu.enm.DictionaryTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 
 /**
  * @author:hejz 75412985@qq.com

@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,12 +34,18 @@ public class DictionaryController {
 
     @PostMapping()
     @ApiOperation("添加数据字典")
+    @Transactional
     public Result createDictionary(@Valid @RequestBody DictionaryCreateDto dto){
         Dictionary dictionary=new Dictionary();
         BeanUtils.copyProperties(dto,dictionary);
         dictionary.setCreateTime(new Date());
-        dictionary.setDictionary(dictionaryService.findById(dto.getParentId()));
+        Dictionary parent = dictionaryService.findById(dto.getParentId());
+        dictionary.setDictionary(parent);
+        dictionary.setIsUse(false);
         dictionaryService.save(dictionary);
+        //修改父级为已经使用状态
+        parent.setIsUse(true);
+        dictionaryService.update(parent);
         return Result.ok();
 
     }
@@ -51,9 +58,13 @@ public class DictionaryController {
         dictionaryService.update(dictionary);
         return Result.ok();
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ApiOperation("删除数据字典")
-    public Result DeleteDictionary(Long id){
+    public Result DeleteDictionary(@PathVariable Long id){
+        if(id==1L)return Result.error(500, "顶级目录不能删除！");
+        Dictionary dto=new Dictionary(id);
+        List<Dictionary> all = dictionaryService.findAllByDictionary(dto);
+        if(!all.isEmpty()) Result.error(500,"已经有下级不能删除！");
         dictionaryService.delete(id);
         return Result.ok();
     }
@@ -90,5 +101,9 @@ public class DictionaryController {
         }).collect(Collectors.toList());
         return Result.ok(list);
     }
-
+    @GetMapping("getParent")
+    @ApiOperation("查询父级内容")
+    public Result getParent(){
+        return dictionaryService.getParent();
+    }
 }

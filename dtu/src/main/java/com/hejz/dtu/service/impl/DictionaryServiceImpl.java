@@ -1,19 +1,27 @@
 package com.hejz.dtu.service.impl;
 
+import com.hejz.dtu.common.Result;
 import com.hejz.dtu.dto.*;
 import com.hejz.dtu.enm.DictionaryTypeEnum;
 import com.hejz.dtu.entity.Dictionary;
 import com.hejz.dtu.repository.DictionaryRepository;
 import com.hejz.dtu.service.DictionaryService;
+import com.hejz.dtu.vo.DictionaryVo;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class DictionaryServiceImpl implements DictionaryService {
@@ -33,7 +41,17 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public void delete(Long id) {
-        dictionaryRepository.deleteById( id);
+        //判断如果低级没有的话直接改状态为未使用，可以删除
+        Dictionary dictionary = dictionaryRepository.findById(id).orElse(null);
+        dictionaryRepository.deleteById(id);
+        List<Dictionary> all = dictionaryRepository.findAllByDictionary(new Dictionary(dictionary.getDictionary().getId()));
+        all.remove(dictionary);
+        if(all.isEmpty()){
+            dictionary=dictionaryRepository.findById(dictionary.getDictionary().getId()).orElse(null);
+            dictionary.setIsUse(false);
+            dictionaryRepository.save(dictionary);
+        }
+
     }
 
     @Override
@@ -90,7 +108,7 @@ public class DictionaryServiceImpl implements DictionaryService {
                 predicates.add(cb.equal(root.get("Id"), dto.getId()));
             }
             if(StringUtils.isNotBlank(dto.getAppModule())) {
-                predicates.add(cb.like(root.get("AppModule"), "%"+dto.getAppModule()+"%"));
+                predicates.add(cb.like(root.get("appModule"), "%"+dto.getAppModule()+"%"));
             }
             if(dto.getCreateTime()!= null ) {
                 predicates.add(cb.equal(root.get("CreateTime"), dto.getCreateTime()));
@@ -123,4 +141,26 @@ public class DictionaryServiceImpl implements DictionaryService {
         return all;
     }
 
+    @Override
+    public Result getParent() {
+        Specification<Dictionary> ex= (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.or(cb.equal(root.get("type"), DictionaryTypeEnum.TOP_LEVEL),cb.equal(root.get("type"),DictionaryTypeEnum.CLASS_A)));
+            Predicate[] andPredicate = new Predicate[predicates.size()];
+            return cb.and(predicates.toArray(andPredicate));
+        };
+        List<Dictionary> all = dictionaryRepository.findAll(ex);
+        Stream<DictionaryVo> vos = all.stream().map(dictionary -> {
+            DictionaryVo vo = new DictionaryVo();
+            BeanUtils.copyProperties(dictionary, vo);
+            vo.setParentId(dictionary.getDictionary().getId());
+            return vo;
+        });
+        return Result.ok(vos);
+    }
+
+    @Override
+    public List<Dictionary> findAllByDictionary(Dictionary dto) {
+        return dictionaryRepository.findAllByDictionary(dto);
+    }
 }

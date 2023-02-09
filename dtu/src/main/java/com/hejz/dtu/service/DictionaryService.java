@@ -1,5 +1,6 @@
 package com.hejz.dtu.service;
 
+import com.hejz.dtu.common.Result;
 import com.hejz.dtu.dto.*;
 import com.hejz.dtu.entity.Dictionary;
 import org.springframework.data.domain.Page;
@@ -23,4 +24,7 @@ public interface DictionaryService {
 
     List<Dictionary> findAll(DictionaryAllDto dto);
 
+    Result getParent();
+
+    List<Dictionary> findAllByDictionary(Dictionary dto);
 }

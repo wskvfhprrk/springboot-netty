@@ -65,9 +65,10 @@ public class InitController {
 
     private void start() {
         //字典添加内容
-        Dictionary dictionary = dictionaryService.save(new Dictionary("字典", new Date(), "字典类型", true,  "字典类型", "0", 1, DictionaryTypeEnum.TOP_LEVEL, new Dictionary(1L)));
-        dictionaryService.save(new Dictionary("字典",new Date(),"字典类型",true,"一级","0",2, DictionaryTypeEnum.SECOND_LEVEL,dictionary));
-        dictionaryService.save(new Dictionary("字典",new Date(),"字典类型",true,"二级","0",2, DictionaryTypeEnum.SECOND_LEVEL,dictionary));
+        Dictionary dictionary = dictionaryService.save(new Dictionary("顶级", new Date(), "顶级", true,  "项级", "TOP_LEVEL", 1, DictionaryTypeEnum.TOP_LEVEL, new Dictionary(1L)));
+        Dictionary dictionary1 = dictionaryService.save(new Dictionary("字典", new Date(), "字典类型", true, "一级", "TOP_LEVEL", 1, DictionaryTypeEnum.CLASS_A, dictionary));
+        dictionaryService.save(new Dictionary("字典",new Date(),"字典类型",true,"一级","CLASS_A",1, DictionaryTypeEnum.SECOND_LEVEL,dictionary1));
+        dictionaryService.save(new Dictionary("字典",new Date(),"字典类型",true,"二级","SECOND_LEVEL",2, DictionaryTypeEnum.SECOND_LEVEL,dictionary1));
 
         CheckingRules checkingRules = checkingRulesRepository.save(new CheckingRules("7位MODBUS协议111122", 7, 1, 1, 1, 2, 2,true));
         CheckingRules checkingRules1 = checkingRulesRepository.save(new CheckingRules("8位MODBUS协议1111222", 8, 1, 1, 2, 2, 2,true));
