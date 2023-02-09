@@ -62,7 +62,7 @@ public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
                 log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), bytes.length, HexConvert.BinaryToHexString(bytes));
             }
         }catch (Exception e){
-            log.error(e.getLocalizedMessage());
+            log.error(e.toString());
         }
     }
 }
