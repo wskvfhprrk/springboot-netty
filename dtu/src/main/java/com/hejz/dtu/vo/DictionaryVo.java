@@ -1,15 +1,16 @@
-package com.hejz.dtu.dto;
+package com.hejz.dtu.vo;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import javax.validation.constraints.NotEmpty;
 
 @Data
-public class DictionaryFindAllDto {
+public class DictionaryVo {
+    @ApiModelProperty(value = "数据字典ID")
+    private Long id;
     @ApiModelProperty(value = "应用模块")
     private String appModule;
     @ApiModelProperty(value = "创建时间")
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern ="yyyy-MM-dd HH:mm:ss",timezone ="GMT+8")
     private java.util.Date createTime;
     @ApiModelProperty(value = "描述说明")
     private String description;

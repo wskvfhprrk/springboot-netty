@@ -1,9 +1,12 @@
 package com.hejz.dtu.dto;
 
+import com.hejz.dtu.enm.DictionaryTypeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotEmpty;
 
 
@@ -27,7 +30,8 @@ public class DictionaryCreateDto {
     private Integer sortId;
     @ApiModelProperty(value = "字典类型",required = true,example = "22")
     @NotEmpty
-    private Integer type;
+    @Enumerated(EnumType.STRING)
+    private DictionaryTypeEnum type;
     @ApiModelProperty(value = "上一级ID")
     private Long parentId;
 }

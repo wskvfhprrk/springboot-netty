@@ -91,8 +91,9 @@ public class Dictionary implements Serializable{
     @Column(
             name = "type",
             nullable = false,
-            columnDefinition="int(1)"+" COMMENT '字典类型'"
+            columnDefinition="varchar(20)"+" COMMENT '字典类型'"
     )
+    @Enumerated(EnumType.STRING)
     private DictionaryTypeEnum type;
 
     /**

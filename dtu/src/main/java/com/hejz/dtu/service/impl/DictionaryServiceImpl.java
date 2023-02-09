@@ -1,6 +1,7 @@
 package com.hejz.dtu.service.impl;
 
-import com.hejz.dtu.dto.DictionaryFindByPageDto;
+import com.hejz.dtu.dto.*;
+import com.hejz.dtu.enm.DictionaryTypeEnum;
 import com.hejz.dtu.entity.Dictionary;
 import com.hejz.dtu.repository.DictionaryRepository;
 import com.hejz.dtu.service.DictionaryService;
@@ -37,7 +38,7 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public Dictionary findById(Long id) {
-       return dictionaryRepository.findById( id).orElse(null);
+        return dictionaryRepository.findById( id).orElse(null);
     }
 
     @Override
@@ -48,13 +49,13 @@ public class DictionaryServiceImpl implements DictionaryService {
                 predicates.add(cb.like(root.get("appModule"), "%"+dto.getAppModule()+"%"));
             }
             if(dto.getCreateTime()!=null) {
-            predicates.add(cb.equal(root.get("createTime"), dto.getCreateTime()));
+                predicates.add(cb.equal(root.get("createTime"), dto.getCreateTime()));
             }
             if(StringUtils.isNotBlank(dto.getDescription())) {
                 predicates.add(cb.like(root.get("description"), "%"+dto.getDescription()+"%"));
             }
             if(dto.getIsUse()!=null) {
-            predicates.add(cb.equal(root.get("isUse"), dto.getIsUse()));
+                predicates.add(cb.equal(root.get("isUse"), dto.getIsUse()));
             }
             if(StringUtils.isNotBlank(dto.getItemName())) {
                 predicates.add(cb.like(root.get("itemName"), "%"+dto.getItemName()+"%"));
@@ -63,13 +64,13 @@ public class DictionaryServiceImpl implements DictionaryService {
                 predicates.add(cb.like(root.get("itemValue"), "%"+dto.getItemValue()+"%"));
             }
             if(dto.getSortId()!=null && dto.getSortId()!=0) {
-            predicates.add(cb.equal(root.get("sortId"), dto.getSortId()));
+                predicates.add(cb.equal(root.get("sortId"), dto.getSortId()));
             }
-            if(dto.getType()!=null && dto.getType()!=0) {
-            predicates.add(cb.equal(root.get("type"), dto.getType()));
+            if(StringUtils.isNotBlank(dto.getType())) {
+                predicates.add(cb.equal(root.get("type"), DictionaryTypeEnum.valueOf(dto.getType())));
             }
             if(dto.getParentId()!=null && dto.getParentId()!=0) {
-            predicates.add(cb.equal(root.get("parentId"), dto.getParentId()));
+                predicates.add(cb.equal(root.get("parentId"), dto.getParentId()));
             }
             Predicate[] andPredicate = new Predicate[predicates.size()];
             return cb.and(predicates.toArray(andPredicate));
@@ -78,7 +79,47 @@ public class DictionaryServiceImpl implements DictionaryService {
         Sort.Direction direction = dto.getSort().substring(0, 1).equals("+") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, dto.getSort().substring(1));
         Page<Dictionary> all = dictionaryRepository.findAll(sp, PageRequest.of(dto.getPage(), dto.getLimit(), sort));
-        System.out.println(all);
+        return all;
+    }
+
+    @Override
+    public List<Dictionary> findAll(DictionaryAllDto dto) {
+        Specification<Dictionary> spec= (root, query, cb)-> {
+            List<Predicate> predicates = new ArrayList<>();
+            if(dto.getId()!=null && dto.getId()!=0) {
+                predicates.add(cb.equal(root.get("Id"), dto.getId()));
+            }
+            if(StringUtils.isNotBlank(dto.getAppModule())) {
+                predicates.add(cb.like(root.get("AppModule"), "%"+dto.getAppModule()+"%"));
+            }
+            if(dto.getCreateTime()!= null ) {
+                predicates.add(cb.equal(root.get("CreateTime"), dto.getCreateTime()));
+            }
+            if(StringUtils.isNotBlank(dto.getDescription())) {
+                predicates.add(cb.like(root.get("Description"), "%"+dto.getDescription()+"%"));
+            }
+            if(dto.getIsUse()!= null ) {
+                predicates.add(cb.equal(root.get("IsUse"), dto.getIsUse()));
+            }
+            if(StringUtils.isNotBlank(dto.getItemName())) {
+                predicates.add(cb.like(root.get("ItemName"), "%"+dto.getItemName()+"%"));
+            }
+            if(StringUtils.isNotBlank(dto.getItemValue())) {
+                predicates.add(cb.like(root.get("ItemValue"), "%"+dto.getItemValue()+"%"));
+            }
+            if(dto.getSortId()!=null && dto.getSortId()!=0) {
+                predicates.add(cb.equal(root.get("SortId"), dto.getSortId()));
+            }
+            if(StringUtils.isNotBlank(dto.getType())) {
+                predicates.add(cb.equal(root.get("type"), DictionaryTypeEnum.valueOf(dto.getType())));
+            }
+            if(dto.getParentId()!=null && dto.getParentId()!=0) {
+                predicates.add(cb.equal(root.get("ParentId"), dto.getParentId()));
+            }
+            Predicate[] andPredicate = new Predicate[predicates.size()];
+            return cb.and(predicates.toArray(andPredicate));
+        };
+        List<Dictionary> all = dictionaryRepository.findAll(spec);
         return all;
     }
 

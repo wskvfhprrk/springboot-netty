@@ -19,53 +19,55 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 数据字典实体类控制器
+ * 数据字典控制器
  * author: hejz
- * data: 2023-2-8
+ * data: 2023-2-9
  */
 @RestController
 @RequestMapping("dictionary")
-@Api(tags="数据字典实体类")
+@Api(tags="数据字典")
 public class DictionaryController {
 
     @Autowired
     private DictionaryService dictionaryService;
 
     @PostMapping()
-    @ApiOperation("添加数据字典实体类")
+    @ApiOperation("添加数据字典")
     public Result createDictionary(@Valid @RequestBody DictionaryCreateDto dto){
         Dictionary dictionary=new Dictionary();
         BeanUtils.copyProperties(dto,dictionary);
         dictionary.setCreateTime(new Date());
-        dictionary = dictionaryService.save(dictionary);
-        return Result.ok(dictionary);
+        dictionary.setDictionary(dictionaryService.findById(dto.getParentId()));
+        dictionaryService.save(dictionary);
+        return Result.ok();
 
     }
     @PutMapping
-    @ApiOperation("修改数据字典实体类")
+    @ApiOperation("修改数据字典")
     public Result updateDictionary(@Valid @RequestBody DictionaryUpdateDto dto){
         Dictionary dictionary=new Dictionary();
         BeanUtils.copyProperties(dto,dictionary);
-        dictionary = dictionaryService.update(dictionary);
-        return Result.ok(dictionary);
+        dictionary.setDictionary(dictionaryService.findById(dto.getParentId()));
+        dictionaryService.update(dictionary);
+        return Result.ok();
     }
     @DeleteMapping
-    @ApiOperation("删除数据字典实体类")
+    @ApiOperation("删除数据字典")
     public Result DeleteDictionary(Long id){
         dictionaryService.delete(id);
         return Result.ok();
     }
 
     @GetMapping("findPage")
-    @ApiOperation("条件查询数据字典实体类")
+    @ApiOperation("条件查询数据字典")
     public Result<PageResult<DictionaryFindByPageVo>> findBypage( @Valid DictionaryFindByPageDto dto){
         Dictionary dictionary=new Dictionary();
         BeanUtils.copyProperties(dto,dictionary);
         Page<Dictionary> dictionaryPage = dictionaryService.findPage(dto);
         List<DictionaryFindByPageVo> list = dictionaryPage.getContent().stream().map(d -> {
             DictionaryFindByPageVo vo = new DictionaryFindByPageVo();
-            vo.setParentId(d.getDictionary().getId());
             BeanUtils.copyProperties(d,vo);
+            vo.setParentId(d.getDictionary().getId());
             return vo;
         }).collect(Collectors.toList());
         PageResult<DictionaryFindByPageVo> pages=new PageResult<>();
@@ -75,6 +77,18 @@ public class DictionaryController {
         pages.setTotal(dictionaryPage.getTotalElements());
         pages.setItems(list);
         return Result.ok(pages);
+    }
+
+    @GetMapping
+    @ApiOperation("分布条件查询数据字典所有的数据")
+    public Result<List<DictionaryAllVo>> findAll(DictionaryAllDto dto){
+        List<Dictionary> dictionaries = dictionaryService.findAll(dto);
+        List<DictionaryAllVo> list = dictionaries.stream().map(d -> {
+            DictionaryAllVo vo = new DictionaryAllVo();
+            BeanUtils.copyProperties(d,vo);
+            return vo;
+        }).collect(Collectors.toList());
+        return Result.ok(list);
     }
 
 }

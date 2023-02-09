@@ -1,17 +1,21 @@
 package com.hejz.dtu.dto;
 
 import com.hejz.dtu.enm.DictionaryTypeEnum;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import com.hejz.dtu.common.Page;
 import lombok.Data;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.validation.constraints.NotEmpty;
 
+/**
+ * @author:hejz 75412985@qq.com
+ * @create: 2023-02-09 09:13
+ * @Description:
+ */
 @Data
-public class DictionaryFindByPageDto extends Page {
+public class DictionaryAllDto {
+    @ApiModelProperty(value = "数据字典ID")
+    private Long id;
     @ApiModelProperty(value = "应用模块")
     private String appModule;
     @ApiModelProperty(value = "创建时间")

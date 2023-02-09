@@ -1,11 +1,15 @@
 package com.hejz.dtu.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.hejz.dtu.enm.DictionaryTypeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotEmpty;
 
 /**
@@ -37,7 +41,8 @@ public class DictionaryUpdateDto {
     private Integer sortId;
     @ApiModelProperty(value = "字典类型",required = true,example = "1")
     @NotEmpty
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private DictionaryTypeEnum type;
     @ApiModelProperty(value = "上一级ID")
     private Long parentId;
 }
