@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -62,7 +63,11 @@ public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
                 log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), bytes.length, HexConvert.BinaryToHexString(bytes));
             }
         }catch (Exception e){
-            log.error(e.toString());
+            byte[] bytes = new byte[in.readableBytes()];
+            in.readBytes(bytes);
+            log.error("收到错误信息Hex：{}",HexConvert.BinaryToHexString(bytes));
+            log.error("收到错误信息str：{}",new String(bytes, StandardCharsets.UTF_8));
+            log.error(e.getMessage());
         }
     }
 }
