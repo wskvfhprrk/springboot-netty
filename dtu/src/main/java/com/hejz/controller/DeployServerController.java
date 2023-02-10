@@ -51,6 +51,7 @@ public class DeployServerController {
         ResponseEntity<Object> entity = restTemplate.getForEntity(url, null);
         //小米球不通——重启系统
         if(entity.getStatusCodeValue()==502){
+            log.info("检查不到心跳接口，重新启动部署项目");
             String[] cmd = {"/bin/sh","-c","shutdown -r now"};
         }
     }
