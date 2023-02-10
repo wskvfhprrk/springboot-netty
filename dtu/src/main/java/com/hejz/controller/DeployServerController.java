@@ -47,7 +47,7 @@ public class DeployServerController {
         return Result.ok();
     }
     //每分钟执行一次
-    @Scheduled(cron = "0/59 * * * * ? ")
+//    @Scheduled(cron = "0/59 * * * * ? ")
     public void sendheartbeat() throws IOException {
         String url = "http://nqql1sqmuqbt.ngrok.xiaomiqiu123.top/deployServer/heartbeat";
         try {
@@ -59,38 +59,37 @@ public class DeployServerController {
 ////            String[] cmd = {"/bin/sh","-c","nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &"};
 //            String[] cmd = {"/bin/sh", "-c", "shutdown -r now"};
 //            rt.exec(cmd);
-            run();
+//            run();
         }
     }
 
-    public void run(){
-        try {
-            String file = "D:\\pan";
-            String cmd = "start1.sh";
-            Runtime runtime = Runtime.getRuntime();
-            Process exec;
-            if (FileUtil.isWindows()) {
-                exec = runtime.exec("cmd /c cd " + file + " && " + cmd + ".bat");
-            } else {
-                exec = runtime.exec("bash " + cmd + ".sh", null, new File(file));
-            }
-            exec.waitFor();
-            //取得命令结果的输出流
-            InputStream is = exec.getInputStream();
-            //用一个读输出流类去读
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                System.out.println(line);
-            }
-            is.close();
-            isr.close();
-            br.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    public void run(){
+//        try {
+//            String cmd = "start1.sh";
+//            Runtime runtime = Runtime.getRuntime();
+//            Process exec= runtime.exec("/bin/sh","-c","start1.sh);
+//            if (FileUtil.isWindows()) {
+//                exec = runtime.exec("cmd /c cd " + file + " && " + cmd + ".bat");
+//            } else {
+//                exec = runtime.exec("bash " + cmd + ".sh", null, new File(file));
+//            }
+//            exec.waitFor();
+//            //取得命令结果的输出流
+//            InputStream is = exec.getInputStream();
+//            //用一个读输出流类去读
+//            InputStreamReader isr = new InputStreamReader(is);
+//            BufferedReader br = new BufferedReader(isr);
+//
+//            String line;
+//            while ((line = br.readLine()) != null) {
+//                System.out.println(line);
+//            }
+//            is.close();
+//            isr.close();
+//            br.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }
