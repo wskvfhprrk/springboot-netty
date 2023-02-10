@@ -61,34 +61,4 @@ public class DeployServerController {
 //            run();
         }
     }
-
-//    public void run(){
-//        try {
-//            String cmd = "start1.sh";
-//            Runtime runtime = Runtime.getRuntime();
-//            Process exec= runtime.exec("/bin/sh","-c","start1.sh);
-//            if (FileUtil.isWindows()) {
-//                exec = runtime.exec("cmd /c cd " + file + " && " + cmd + ".bat");
-//            } else {
-//                exec = runtime.exec("bash " + cmd + ".sh", null, new File(file));
-//            }
-//            exec.waitFor();
-//            //取得命令结果的输出流
-//            InputStream is = exec.getInputStream();
-//            //用一个读输出流类去读
-//            InputStreamReader isr = new InputStreamReader(is);
-//            BufferedReader br = new BufferedReader(isr);
-//
-//            String line;
-//            while ((line = br.readLine()) != null) {
-//                System.out.println(line);
-//            }
-//            is.close();
-//            isr.close();
-//            br.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
 }
