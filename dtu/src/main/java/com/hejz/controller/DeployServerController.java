@@ -54,7 +54,7 @@ public class DeployServerController {
             ResponseEntity<Object> entity = restTemplate.getForEntity(url, null);
         } catch (Exception e) {
             //404 Not Found: "Tunnel nqql1sqmuqbt.ngrok.xiaomiqiu123.top not found,Please check whether the client is started!<EOL>"
-//            log.error("服务器心跳不见了，重启部署项目！");
+            log.error("服务器心跳不见了，重启部署项目！");
 //            Runtime rt = Runtime.getRuntime();
 ////            String[] cmd = {"/bin/sh","-c","nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &"};
 //            String[] cmd = {"/bin/sh", "-c", "shutdown -r now"};
