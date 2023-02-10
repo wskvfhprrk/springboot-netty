@@ -1,5 +1,6 @@
 package com.hejz.controller;
 
+import cn.hutool.core.io.FileUtil;
 import com.hejz.common.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
+import java.io.*;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -41,6 +42,7 @@ public class DeployServerController {
     }
     //定时远程访问此端口，如果查询不到就重启
     @GetMapping("heartbeat")//心跳
+    @ApiOperation("服务器心跳请求")
     public Result heartbeat(){
         return Result.ok();
     }
@@ -50,13 +52,44 @@ public class DeployServerController {
         String url = "http://nqql1sqmuqbt.ngrok.xiaomiqiu123.top/deployServer/heartbeat";
         try {
             ResponseEntity<Object> entity = restTemplate.getForEntity(url, null);
-        }catch (Exception e){
+        } catch (Exception e) {
             //404 Not Found: "Tunnel nqql1sqmuqbt.ngrok.xiaomiqiu123.top not found,Please check whether the client is started!<EOL>"
-            log.error("服务器心跳不见了，重启部署项目！");
-            Runtime rt = Runtime.getRuntime();
-//            String[] cmd = {"/bin/sh","-c","nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &"};
-            String[] cmd = {"/bin/sh","-c","shutdown -r now"};
-            rt.exec(cmd);
+//            log.error("服务器心跳不见了，重启部署项目！");
+//            Runtime rt = Runtime.getRuntime();
+////            String[] cmd = {"/bin/sh","-c","nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &"};
+//            String[] cmd = {"/bin/sh", "-c", "shutdown -r now"};
+//            rt.exec(cmd);
+            run();
+        }
+    }
+
+    public void run(){
+        try {
+            String file = "D:\\pan";
+            String cmd = "start1.sh";
+            Runtime runtime = Runtime.getRuntime();
+            Process exec;
+            if (FileUtil.isWindows()) {
+                exec = runtime.exec("cmd /c cd " + file + " && " + cmd + ".bat");
+            } else {
+                exec = runtime.exec("bash " + cmd + ".sh", null, new File(file));
+            }
+            exec.waitFor();
+            //取得命令结果的输出流
+            InputStream is = exec.getInputStream();
+            //用一个读输出流类去读
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+            is.close();
+            isr.close();
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
