@@ -51,7 +51,10 @@ public class DeployServerController {
     public void sendheartbeat(){
         String url = "http://nqql1sqmuqbt.ngrok.xiaomiqiu123.top/deployServer/heartbeat";
         ResponseEntity<Object> entity = restTemplate.getForEntity(url, null);
-        System.out.println(entity);
+        //小米球不通——重启系统
+        if(entity.getStatusCodeValue()==502){
+            String[] cmd = {"/bin/sh","-c","shutdown -r now"};
+        }
     }
 
 }
