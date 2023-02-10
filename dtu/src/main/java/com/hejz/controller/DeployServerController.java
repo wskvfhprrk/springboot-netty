@@ -54,8 +54,8 @@ public class DeployServerController {
             //404 Not Found: "Tunnel nqql1sqmuqbt.ngrok.xiaomiqiu123.top not found,Please check whether the client is started!<EOL>"
             log.error("服务器心跳不见了，重启部署项目！");
             Runtime rt = Runtime.getRuntime();
-            String[] cmd = {"/bin/sh","-c","nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &"};
-//            String[] cmd = {"/bin/sh","-c","shutdown -r now"};
+//            String[] cmd = {"/bin/sh","-c","nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &"};
+            String[] cmd = {"/bin/sh","-c","shutdown -r now"};
             rt.exec(cmd);
         }
     }
