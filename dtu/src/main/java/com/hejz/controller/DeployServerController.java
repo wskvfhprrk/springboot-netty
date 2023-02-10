@@ -1,6 +1,5 @@
 package com.hejz.controller;
 
-import cn.hutool.core.io.FileUtil;
 import com.hejz.common.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
