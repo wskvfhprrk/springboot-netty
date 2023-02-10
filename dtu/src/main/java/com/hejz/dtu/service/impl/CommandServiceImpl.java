@@ -88,8 +88,4 @@ public class CommandServiceImpl implements CommandService {
         return all;
     }
 
-    @Override
-    public Command findByDtuInfoAndInstructions(DtuInfo dtuInfo, String binaryToHexString) {
-        return commandRepository.findByDtuInfoAndInstructions(dtuInfo,binaryToHexString);
-    }
 }

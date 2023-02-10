@@ -16,9 +16,6 @@ public interface CommandStatusService {
     void delete(Long id);
     CommandStatus findById(Long id);
     Page<CommandStatus> findPage(CommandStatusFindByPageDto dto);
-
-    List<CommandStatus> findByDtuInfo(DtuInfo dtuInfo);
-
     CommandStatus findByInstructionDefinition(InstructionDefinition instructionDefinition);
 
 }

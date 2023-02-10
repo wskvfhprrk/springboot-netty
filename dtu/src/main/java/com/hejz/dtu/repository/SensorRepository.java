@@ -13,5 +13,5 @@ import java.util.List;
  * data: 2023-2-7
  */
 public interface SensorRepository extends JpaRepository<Sensor,Long>,JpaSpecificationExecutor<Sensor> {
-    List<Sensor> findAllbyDtuInfo(DtuInfo dtu);
+    List<Sensor> findAllByDtuInfo(DtuInfo dtu);
 }

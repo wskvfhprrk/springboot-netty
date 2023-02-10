@@ -15,7 +15,5 @@ import java.util.List;
  */
 public interface CommandStatusRepository extends JpaRepository<CommandStatus,Long>,JpaSpecificationExecutor<CommandStatus> {
 
-    List<CommandStatus> findAllByDtuInfo(DtuInfo dtuInfo);
-
-    CommandStatus findByInstructionDefinitionAndStatus(InstructionDefinition instructionDefinition, boolean status);
+    CommandStatus findByInstructionDefinitionAndStatus(InstructionDefinition instructionDefinition, Boolean status);
 }

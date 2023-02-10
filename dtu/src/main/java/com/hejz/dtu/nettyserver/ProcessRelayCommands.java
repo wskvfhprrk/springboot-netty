@@ -77,16 +77,15 @@ public class ProcessRelayCommands {
         Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(Constant.PROCESSED_THE_CORRESPONDING_ID_LOCK + "::" + ctx.channel().id().toString() + "::" + instructionDefinition.getId(), "1", Duration.ofSeconds(5L));
         if (!aBoolean) return;
         //添加修改命令状态
-        List<CommandStatus> commandStatuses = commandStatusService.findByDtuInfo(dtuInfo);
-        if (commandStatuses != null && !commandStatuses.isEmpty()) {
+        List<InstructionDefinition> list = instructionDefinitionService.findAllByDtuId(dtuId);
+        list.stream().forEach(instructionDefinition1 -> instructionDefinition1.getCommands().stream().forEach(command -> {
             //把其相反的状态置为false——过去时的
             InstructionDefinition oppositeInstructionDefinition = oppositeState(dtuInfo, instructionDefinition);
-
             CommandStatus commandStatus = commandStatusService.findByInstructionDefinition(oppositeInstructionDefinition);
             commandStatus.setStatus(false);
             commandStatus.setUpdateDate(new Date());
             commandStatusService.save(commandStatus);
-        }
+        }));
         //保存当前状态
         commandStatusService.save(new CommandStatus(dtuInfo, instructionDefinition, new Date(), new Date(), true));
         //处理下一级指令

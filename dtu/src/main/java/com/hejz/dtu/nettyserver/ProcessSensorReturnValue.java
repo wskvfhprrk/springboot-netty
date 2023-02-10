@@ -178,7 +178,15 @@ public class ProcessSensorReturnValue {
         double d = Double.parseDouble(String.valueOf(x));
         Sensor sensor = sensorService.findAllByDtuId(dtuInfo.getId()).get(arrayNumber);
         //经过公式计算得到实际结果
-        Command command = commandService.findByDtuInfoAndInstructions(dtuInfo, HexConvert.BinaryToHexString(useBytes));
+        List<InstructionDefinition> instructionDefinitionList = instructionDefinitionService.findAllByDtuInfo(dtuInfo);
+        Command command =new Command();
+        for (InstructionDefinition instructionDefinition : instructionDefinitionList) {
+            for (Command command1 : instructionDefinition.getCommands()) {
+                if(command.getInstructions().equals(HexConvert.BinaryToHexString(useBytes))){
+                    command=command1;
+                }
+            }
+        }
         Double actualResults = calculateActualData(command.getCalculationFormula(), d);
         log.info(" 通道：{} dtuId==>{},{} =====> {}  ====> {}", ctx.channel().id().toString(), dtuInfo.getId(), arrayNumber,  sensor.getName(), actualResults );
         //开新建程——异步处理根据解析到数据大小判断是否产生事件

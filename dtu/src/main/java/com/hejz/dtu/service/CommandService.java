@@ -17,5 +17,5 @@ public interface CommandService {
     Command findById(Long id);
     Page<Command> findPage(CommandFindByPageDto dto);
 
-    Command findByDtuInfoAndInstructions(DtuInfo dtuInfo, String binaryToHexString);
+//    Command findByDtuInfoAndInstructions(DtuInfo dtuInfo, String binaryToHexString);
 }

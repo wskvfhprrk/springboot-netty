@@ -1,6 +1,9 @@
 package com.hejz.dtu.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
@@ -12,6 +15,8 @@ import javax.persistence.*;
  */
 @Data
 @Entity(name = "command_status")
+@NoArgsConstructor
+@AllArgsConstructor
 @org.hibernate.annotations.Table(appliesTo = "command_status", comment = "继电器命令状态")
 public class CommandStatus implements Serializable{
 

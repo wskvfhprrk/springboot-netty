@@ -67,10 +67,6 @@ public class CommandStatusServiceImpl implements CommandStatusService {
         return all;
     }
 
-    @Override
-    public List<CommandStatus> findByDtuInfo(DtuInfo dtuInfo) {
-        return commandStatusRepository.findAllByDtuInfo(dtuInfo);
-    }
 
     @Override
     public CommandStatus findByInstructionDefinition(InstructionDefinition instructionDefinition) {

@@ -21,9 +21,10 @@ public class SensorDataServiceImpl implements SensorDataService {
     private SensorDataRepository sensorDataRepository;
 
     @Override
-    public SensorData Save(SensorData sensorData) {
+    public SensorData save(SensorData sensorData) {
         return sensorDataRepository.save(sensorData);
     }
+
 
     @Override
     public void delete(Long id) {
