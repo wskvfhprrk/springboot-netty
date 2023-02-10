@@ -1,8 +1,6 @@
 package com.hejz.controller;
 
 import com.hejz.common.Result;
-import com.sun.deploy.net.HttpRequest;
-import com.sun.deploy.net.HttpUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
