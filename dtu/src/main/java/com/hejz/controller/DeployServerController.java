@@ -46,14 +46,16 @@ public class DeployServerController {
     }
     //每分钟执行一次
     @Scheduled(cron = "0/59 * * * * ? ")
-    public void sendheartbeat(){
+    public void sendheartbeat() throws IOException {
         String url = "http://nqql1sqmuqbt.ngrok.xiaomiqiu123.top/deployServer/heartbeat";
         try {
             ResponseEntity<Object> entity = restTemplate.getForEntity(url, null);
         }catch (Exception e){
             if(e.getMessage().indexOf("404 Not Found:")!=-1){
                 log.error("服务器心跳不见了，重启部署项目！");
-                String[] cmd = {"/bin/sh", "-c", "shutdown -r now"};
+                Runtime rt = Runtime.getRuntime();
+                String[] cmd = {"/bin/sh","-c","shutdown -r now"};
+                rt.exec(cmd);
             }
         }
         //404 Not Found: "Tunnel nqql1sqmuqbt.ngrok.xiaomiqiu123.top not found,Please check whether the client is started!<EOL>"
