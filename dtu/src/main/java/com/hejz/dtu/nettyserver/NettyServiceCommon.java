@@ -2,10 +2,12 @@ package com.hejz.dtu.nettyserver;
 
 import com.hejz.dtu.common.Constant;
 import com.hejz.dtu.entity.CheckingRules;
+import com.hejz.dtu.entity.Command;
 import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.entity.InstructionDefinition;
 import com.hejz.dtu.service.CheckingRulesService;
 import com.hejz.dtu.service.DtuInfoService;
+import com.hejz.dtu.service.InstructionDefinitionService;
 import com.hejz.dtu.utils.CRC16;
 import com.hejz.dtu.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
@@ -21,8 +23,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -37,8 +41,8 @@ public class NettyServiceCommon {
     private DtuInfoService dtuInfoService1;
     private static DtuInfoService dtuInfoService;
     @Autowired
-    private CheckingRulesService checkingRulesService1;
-    private static CheckingRulesService checkingRulesService;
+    private InstructionDefinitionService instructionDefinitionService1;
+    private static InstructionDefinitionService instructionDefinitionService;
 
     @Resource(name = "redisTemplate")
     private RedisTemplate redisTemplate1;
@@ -64,7 +68,7 @@ public class NettyServiceCommon {
     @PostConstruct
     public void init() {
         this.dtuInfoService = dtuInfoService1;
-        this.checkingRulesService = checkingRulesService1;
+        this.instructionDefinitionService = instructionDefinitionService1;
         this.redisTemplate = redisTemplate1;
 
     }
@@ -97,7 +101,13 @@ public class NettyServiceCommon {
         int bytesLength = bytes.length - Constant.IMEI_LENGTH;
         //查出所有符合此长度的规则
         DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
-        for (CheckingRules dataCheckingRule : dtuInfo.getCheckingRules()) {
+        Set<CheckingRules> set=new HashSet();
+        for (InstructionDefinition instructionDefinition : instructionDefinitionService.findAllByDtuInfo(dtuInfo)) {
+            for (Command command : instructionDefinition.getCommands()) {
+                set.add(command.getCheckingRules());
+            }
+        }
+        for (CheckingRules dataCheckingRule : set) {
             //使用crc16校验——不需要imei值
             boolean b = validCRC16(bytes, dataCheckingRule);
             if (!b) {

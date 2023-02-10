@@ -70,6 +70,6 @@ public class DtuInfoServiceImpl implements DtuInfoService {
 
     @Override
     public DtuInfo findByImei(String imei) {
-        return findByImei(imei);
+        return dtuInfoRepository.findByImei(imei);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -74,13 +75,13 @@ public class InitController {
         CheckingRules checkingRules1 = checkingRulesRepository.save(new CheckingRules("8位MODBUS协议1111222", 8, 1, 1, 2, 2, 2,true));
         //指令
         Command command1 = commandService.save(new Command("普通生产厂商", "继电器开关1关闭", "继电器开关1关闭", "03 05 00 00 00 00 CC 28", checkingRules1, CommandTypeEnum.RELAY_OPEN_CIRCUIT, "", null, 80, null, true));
-        Command command2 = commandService.save(new Command("普通生产厂商", "继电器开关1打开", "继电器开关1打开", "03 05 00 00 FF 00 8D D8", checkingRules1, CommandTypeEnum.RELAY_CLOSE_CIRCUIT, "", null, null, command1, true));
+        Command command2 = commandService.save(new Command("普通生产厂商", "继电器开关1打开", "继电器开关1打开", "03 05 00 00 FF 00 8D D8", checkingRules1, CommandTypeEnum.RELAY_CLOSE_CIRCUIT, "", null, null, command1.getId(), true));
         Command command3 = commandService.save(new Command("普通生产厂商", "继电器开关2关闭", "继电器开关2关闭", "03 05 00 00 00 00 CC 28", checkingRules1, CommandTypeEnum.RELAY_OPEN_CIRCUIT, "", null, 80, null, true));
-        Command command4 = commandService.save(new Command("普通生产厂商", "继电器开关2打开", "继电器开关2打开", "03 05 00 00 FF 00 8D D8", checkingRules1, CommandTypeEnum.RELAY_OPEN_CIRCUIT, "", null, null, command3, true));
+        Command command4 = commandService.save(new Command("普通生产厂商", "继电器开关2打开", "继电器开关2打开", "03 05 00 00 FF 00 8D D8", checkingRules1, CommandTypeEnum.RELAY_OPEN_CIRCUIT, "", null, null, command3.getId(), true));
         Command command5 = commandService.save(new Command("普通生产厂商", "继电器开关3关闭", "继电器开关3关闭", "03 05 00 00 00 00 CC 28", checkingRules1, CommandTypeEnum.RELAY_OPEN_CIRCUIT, "", null, null, null, true));
         Command command6 = commandService.save(new Command("普通生产厂商", "继电器开关3打开", "继电器开关3打开", "03 05 00 00 FF 00 8D D8", checkingRules1, CommandTypeEnum.RELAY_CLOSE_CIRCUIT, "", null, null, null, true));
         Command command7 = commandService.save(new Command("普通生产厂商", "继电器开关4关闭", "继电器开关4关闭", "03 05 00 00 00 00 CC 28", checkingRules1, CommandTypeEnum.RELAY_OPEN_CIRCUIT, "", null, 80, null, true));
-        Command command8 = commandService.save(new Command("普通生产厂商", "继电器开关4打开", "继电器开关4打开", "03 05 00 00 FF 00 8D D8", checkingRules1, CommandTypeEnum.RELAY_CLOSE_CIRCUIT, "", null, null, command6, true));
+        Command command8 = commandService.save(new Command("普通生产厂商", "继电器开关4打开", "继电器开关4打开", "03 05 00 00 FF 00 8D D8", checkingRules1, CommandTypeEnum.RELAY_CLOSE_CIRCUIT, "", null, null, command6.getId(), true));
         Command command9 = commandService.save(new Command("普通生产厂商", "空气温度 ", "空气温度 ", "01 03 03 00 00 01 84 4E", checkingRules, CommandTypeEnum.SENSOR_SENDS_COMMAND, "D/10", "ºC", null, null, true));
         Command command10 = commandService.save(new Command("普通生产厂商", "空气湿度 ", "空气湿度 ", "01 03 03 01 00 01 D5 8E", checkingRules, CommandTypeEnum.SENSOR_SENDS_COMMAND, "D/10", "%", null, null, true));
         Command command11 = commandService.save(new Command("普通生产厂商", "土壤PH  ", "土壤PH  ", "02 03 02 03 00 01 75 81", checkingRules, CommandTypeEnum.SENSOR_SENDS_COMMAND, "D/10", "", null, null, true));

@@ -213,8 +213,11 @@ public class ProcessSensorReturnValue {
      */
     private Integer calculateReturnValue(DtuInfo dtuInfo, byte[] bytes) throws Exception {
         //todo 根据设备找到校验规则与指令匹配——感应器返回值检测规则,多个以逗号隔开，首个为地址位，末位为规则id
-        List<CheckingRules> checkingRules = dtuInfo.getCheckingRules();
-        List<Integer> list = checkingRules.stream().map(checkingRule -> {
+        Set<CheckingRules> checkingRulesSet=new HashSet<>();
+        instructionDefinitionService.findAllByDtuInfo(dtuInfo).forEach(instructionDefinition -> instructionDefinition.getCommands().forEach(command -> {
+            checkingRulesSet.add(command.getCheckingRules());
+        }));
+        List<Integer> list = checkingRulesSet.stream().map(checkingRule -> {
             int dataBegin = checkingRule.getAddressBitLength() + checkingRule.getFunctionCodeLength() + checkingRule.getDataBitsLength();
             byte[] dataLength = new byte[checkingRule.getDataValueLength()];
             System.arraycopy(bytes, dataBegin, dataLength, 0, checkingRule.getDataValueLength());
@@ -228,7 +231,7 @@ public class ProcessSensorReturnValue {
         }).collect(Collectors.toList());
         //todo 此处有多个相同值时会问题
         if (list.size() > 1) {
-            log.error("有多个相同的规则——总长度为：{}，此处还要开发！", checkingRules.get(0).getCommonLength());
+//            log.error("有多个相同的规则——总长度为：{}，此处还要开发！", checkingRules.get(0).getCommonLength());
         }
         return list.get(0);
     }

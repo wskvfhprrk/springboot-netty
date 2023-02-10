@@ -60,13 +60,13 @@ public class CommandStatus implements Serializable{
     /**
      * 外键表——instruction_definition中的字段id
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instruction_definition_id",insertable = false,updatable = false)
     private InstructionDefinition instructionDefinition;
     /**
      * 外键表——tb_dtu_info中的字段id
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dtu_id",insertable = false,updatable = false)
     private DtuInfo dtuInfo;
 

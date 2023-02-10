@@ -14,8 +14,10 @@ import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -75,7 +77,8 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
      * @param dtuInfo
      * @param bytes
      */
-    private void splitInstruction(List out, DtuInfo dtuInfo, byte[] bytes) {
+    @Transactional
+    public void splitInstruction(List out, DtuInfo dtuInfo, byte[] bytes) {
         //计算出实际地址
         Integer address = NettyServiceCommon.addressValueOfInstruction(dtuInfo, bytes);
         //根据地址位得出应该截取的长度
@@ -116,7 +119,8 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
         if (address == 0) return 2;
         List<InstructionDefinition> list = instructionDefinitionService.findAllByDtuInfo(dtuInfo);
         for (InstructionDefinition instructionDefinition : list) {
-            for (Command command : instructionDefinition.getCommands()) {
+            Set<Command> commands = instructionDefinition.getCommands();
+            for (Command command : commands) {
                 Integer addr = NettyServiceCommon.addressValueOfInstruction(dtuInfo, HexConvert.hexStringToBytes(command.getInstructions().replaceAll(" ", "")));
                 if (addr == address) {
                     return command.getCheckingRules().getCommonLength();

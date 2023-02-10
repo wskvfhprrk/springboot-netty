@@ -10,4 +10,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * data: 2023-2-7
  */
 public interface DtuInfoRepository extends JpaRepository<DtuInfo,Long>,JpaSpecificationExecutor<DtuInfo> {
+    DtuInfo findByImei(String imei);
 }

@@ -82,14 +82,12 @@ public class Command implements Serializable{
 
     @Column(
             name = "remarks",
-            nullable = true,
             columnDefinition="varchar(255)"+" COMMENT '备注'"
     )
     private String remarks;
 
     @Column(
             name = "unit",
-            nullable = true,
             columnDefinition="varchar(15)"+" COMMENT '接收到数据的单位'"
     )
     private String unit;
@@ -104,23 +102,25 @@ public class Command implements Serializable{
     /**
      * 外键表——checking_rules中的字段id
      */
-    @ManyToOne
-    @JoinColumn(name = "checking_rules_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "checking_rules_id")
     private CheckingRules checkingRules;
     /**
      * 外键表——tb_command中的字段id
      */
-    @ManyToOne
-    @JoinColumn(name = "next_level_instruction", insertable = false, updatable = false)
-    private Command command;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "next_level_instruction", insertable = false, updatable = false)
+//    private Command command;
+    @Column(
+            name = "next_level_instruction_id",
+            columnDefinition = "bigint" + " COMMENT '下一个指令ID'"
+    )
+    private Long nextLevelInstructionId;
 
-    @ManyToMany
-    @JoinTable(name = "instruction_definition_command",
-            joinColumns = @JoinColumn(name = "instruction_definition_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "command_id", referencedColumnName = "id"))
+    @ManyToMany( mappedBy = "commands", fetch = FetchType.LAZY)
     private Set<InstructionDefinition> instructionDefinitions;
 
-    public Command(String manufacturer, String name, String remarks, String instructions, CheckingRules checkingRules, CommandTypeEnum commandType, String calculationFormula, String unit, Integer waitTimeNextCommand, Command command, Boolean isUse) {
+    public Command(String manufacturer, String name, String remarks, String instructions, CheckingRules checkingRules, CommandTypeEnum commandType, String calculationFormula, String unit, Integer waitTimeNextCommand, Long nextLevelInstructionId, Boolean isUse) {
         this.calculationFormula = calculationFormula;
         this.commandType = commandType;
         this.instructions = instructions;
@@ -131,6 +131,25 @@ public class Command implements Serializable{
         this.unit = unit;
         this.waitTimeNextCommand = waitTimeNextCommand;
         this.checkingRules = checkingRules;
-        this.command = command;
+        this.nextLevelInstructionId = nextLevelInstructionId;
+    }
+
+    @Override
+    public String toString() {
+        return "Command{" +
+                "id=" + id +
+                ", calculationFormula='" + calculationFormula + '\'' +
+                ", commandType=" + commandType +
+                ", instructions='" + instructions + '\'' +
+                ", isUse=" + isUse +
+                ", manufacturer='" + manufacturer + '\'' +
+                ", name='" + name + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", unit='" + unit + '\'' +
+                ", waitTimeNextCommand=" + waitTimeNextCommand +
+                ", checkingRules=" + checkingRules +
+                ", nextLevelInstructionId=" + nextLevelInstructionId +
+                ", instructionDefinitions=" + instructionDefinitions +
+                '}';
     }
 }

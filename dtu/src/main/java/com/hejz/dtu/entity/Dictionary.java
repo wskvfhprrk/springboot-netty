@@ -99,7 +99,7 @@ public class Dictionary implements Serializable{
     /**
      * 外键表——dictionary中的字段id
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id",columnDefinition = "bigint"+" COMMENT '上一级ID'")
     private Dictionary dictionary;
 

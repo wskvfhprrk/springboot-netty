@@ -72,24 +72,24 @@ public class Sensor implements Serializable{
     /**
      * 外键表——instruction_definition中的字段id
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "max_instruction_definition_id",insertable = false,updatable = false)
     private InstructionDefinition maxInstructionDefinitionId;
     /**
      * 外键表——instruction_definition中的字段id
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "min_instruction_definition_id", insertable = false, updatable = false)
     private InstructionDefinition minInstructionDefinitionId;
 
-    @ManyToOne
-    @JoinColumn(name = "command_id")
-    private Command command;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "command_id")
+//    private Command command;
 
     /**
      * 外键表——tb_dtu_info中的字段id
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dtu_id", insertable = false, updatable = false)
     private DtuInfo dtuInfo;
 

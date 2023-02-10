@@ -63,11 +63,14 @@ public class InstructionDefinition implements Serializable{
     /**
      * 外键表——tb_dtu_info中的字段id
      */
-    @ManyToOne
-    @JoinColumn(name = "dtu_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dtu_id")
     private DtuInfo dtuInfo;
 
-    @ManyToMany(mappedBy = "instructionDefinitions")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "instruction_definition_command",
+            inverseJoinColumns = @JoinColumn(name = "command_id", referencedColumnName = "id"),
+            joinColumns = @JoinColumn(name = "instruction_definition_id", referencedColumnName = "id"))
     private Set<Command> commands;
 
     public InstructionDefinition(DtuInfo dtuInfo, String name, String remarks, InstructionTypeEnum instructionType,Set<Command> commands) {
@@ -84,4 +87,16 @@ public class InstructionDefinition implements Serializable{
     @Transient
     private LocalDateTime sendCommandTime;
 
+    @Override
+    public String toString() {
+        return "InstructionDefinition{" +
+                "id=" + id +
+                ", instructionType=" + instructionType +
+                ", name='" + name + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", dtuInfo=" + dtuInfo +
+                ", commands=" + commands +
+                ", sendCommandTime=" + sendCommandTime +
+                '}';
+    }
 }

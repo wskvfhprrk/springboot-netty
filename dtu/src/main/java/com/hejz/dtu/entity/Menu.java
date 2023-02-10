@@ -96,6 +96,6 @@ public class Menu implements Serializable{
     )
     private String url;
 
-    @ManyToMany(mappedBy = "menus")
+    @ManyToMany(mappedBy = "menus",fetch = FetchType.LAZY)
     private Set<Role> roles;
 }

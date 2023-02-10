@@ -40,7 +40,7 @@
 //            columnDefinition="datetime"+" COMMENT '接收时间'"
 //    )
 //    private Date createDate;
-//    @ManyToOne
+//    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "dtu_id",nullable = false)
 //    private DtuInfo dtuInfo;
 //    @Column(

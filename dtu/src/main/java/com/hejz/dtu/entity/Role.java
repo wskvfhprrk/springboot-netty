@@ -38,9 +38,9 @@ public class Role implements Serializable{
             columnDefinition="varchar(255)"+" COMMENT '名称'"
     )
     private String name;
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles",fetch = FetchType.LAZY)
     private Set<User> users;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "role_menu",
     joinColumns = @JoinColumn(name = "menu_id",referencedColumnName = "id"),
     inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName = "id"))

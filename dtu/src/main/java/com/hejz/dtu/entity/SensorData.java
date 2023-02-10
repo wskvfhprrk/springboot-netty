@@ -67,7 +67,7 @@ public class SensorData implements Serializable{
     /**
      * 外键表——tb_dtu_info中的字段id
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dtu_id",insertable = false,updatable = false)
     private DtuInfo dtuInfo;
 

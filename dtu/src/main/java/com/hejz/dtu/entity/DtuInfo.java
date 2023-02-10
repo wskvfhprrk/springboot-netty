@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * dtu信息实体类
@@ -71,14 +72,14 @@ public class DtuInfo implements Serializable{
     )
     private String sensorAddressOrder;
     //检验规则
-    @ManyToMany
-    @JoinTable(name = "dtuInfo_checking_rules")
-    private List<CheckingRules> checkingRules;
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(name = "dtuInfo_checking_rules")
+//    private Set<CheckingRules> checkingRules;
 
     /**
      * 外键表——tb_user中的字段id
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
