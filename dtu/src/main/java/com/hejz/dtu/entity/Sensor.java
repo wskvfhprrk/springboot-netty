@@ -56,6 +56,19 @@ public class Sensor implements Serializable{
     )
     private Integer min;
 
+    @Column(
+            name = "unit",
+            nullable = true,
+            columnDefinition="varchar(10)"+" COMMENT '接收传感器数据单位'"
+    )
+    private String unit;
+    @Column(
+            name = "command_sort",
+            nullable = true,
+            columnDefinition="varchar(10)"+" COMMENT '接收命令排序'"
+    )
+    private String commandSort;
+
     /**
      * 外键表——instruction_definition中的字段id
      */
@@ -68,6 +81,11 @@ public class Sensor implements Serializable{
     @ManyToOne
     @JoinColumn(name = "min_instruction_definition_id", insertable = false, updatable = false)
     private InstructionDefinition minInstructionDefinitionId;
+
+    @ManyToOne
+    @JoinColumn(name = "command_id")
+    private Command command;
+
     /**
      * 外键表——tb_dtu_info中的字段id
      */

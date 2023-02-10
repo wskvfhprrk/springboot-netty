@@ -3,23 +3,21 @@ package com.hejz.dtu.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.*;
 
 /**
- * 传感器数据实体类
- * author: hejz
- * data: 2023-2-7
+ * @author:hejz 75412985@qq.com
+ * @create: 2023-01-09 10:00
+ * @Description: 传感器数据
  */
 @Data
 @Entity(name = "sensor_data")
 @org.hibernate.annotations.Table(appliesTo = "sensor_data", comment = "传感器数据")
 @NoArgsConstructor
 @AllArgsConstructor
-public class SensorData implements Serializable{
-
+public class SensorDataDb implements Serializable {
     @Id
     @SequenceGenerator(
             name = "sensor_data_sequence",
@@ -33,54 +31,42 @@ public class SensorData implements Serializable{
     @Column(
             name = "id",
             nullable = false,
-            columnDefinition="bigint"+" COMMENT '传感器数据ID'"
+            columnDefinition="bigint"+" COMMENT 'ID'"
     )
     private Long id;
-
     @Column(
             name = "create_date",
             nullable = false,
-            columnDefinition="date"+" COMMENT '接收时间'"
+            columnDefinition="datetime"+" COMMENT '接收时间'"
     )
-    private java.util.Date createDate;
-
-    @Column(
-            name = "data",
-            nullable = false,
-            columnDefinition="varchar(255)"+" COMMENT '接收到数据'"
-    )
-    private String data;
-
+    private Date createDate;
+    @ManyToOne
+    @JoinColumn(name = "dtu_id",nullable = false)
+    private DtuInfo dtuInfo;
     @Column(
             name = "names",
             nullable = false,
             columnDefinition="varchar(255)"+" COMMENT '接收到数据的names'"
     )
     private String names;
-
+    @Column(
+            name = "data",
+            nullable = false,
+            columnDefinition="varchar(255)"+" COMMENT '接收到数据'"
+    )
+    private String data;
     @Column(
             name = "units",
             nullable = false,
             columnDefinition="varchar(255)"+" COMMENT '接收到数据的单位'"
     )
     private String units;
-    /**
-     * 外键表——tb_dtu_info中的字段id
-     */
-    @ManyToOne
-    @JoinColumn(name = "dtu_id",insertable = false,updatable = false)
-    private DtuInfo dtuInfo;
 
-    @Transient
-    private String address;
-
-    public SensorData(Date createDate, DtuInfo dtuInfo, String names, String data, String units) {
+    public SensorDataDb(Date createDate, DtuInfo dtuInfo, String names, String data, String units) {
         this.createDate=createDate;
         this.dtuInfo=dtuInfo;
         this.names=names;
         this.data=data;
         this.units=units;
     }
-
-
 }

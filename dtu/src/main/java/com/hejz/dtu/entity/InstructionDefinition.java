@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
@@ -76,4 +77,11 @@ public class InstructionDefinition implements Serializable{
         this.dtuInfo = dtuInfo;
         this.commands = commands;
     }
+
+    /**
+     * 发送指令时间，不需要向数据库中写入
+     */
+    @Transient
+    private LocalDateTime sendCommandTime;
+
 }

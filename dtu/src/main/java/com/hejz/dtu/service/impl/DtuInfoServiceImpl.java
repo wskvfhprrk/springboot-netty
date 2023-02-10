@@ -68,4 +68,8 @@ public class DtuInfoServiceImpl implements DtuInfoService {
         return all;
     }
 
+    @Override
+    public DtuInfo findByImei(String imei) {
+        return findByImei(imei);
+    }
 }

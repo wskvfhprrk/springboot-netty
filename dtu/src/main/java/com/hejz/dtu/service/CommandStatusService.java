@@ -2,6 +2,8 @@ package com.hejz.dtu.service;
 
 import com.hejz.dtu.dto.CommandStatusFindByPageDto;
 import com.hejz.dtu.entity.CommandStatus;
+import com.hejz.dtu.entity.DtuInfo;
+import com.hejz.dtu.entity.InstructionDefinition;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -10,8 +12,13 @@ import java.util.List;
  *
  */
 public interface CommandStatusService {
-    CommandStatus Save(CommandStatus commandStatus);
+    CommandStatus save(CommandStatus commandStatus);
     void delete(Long id);
     CommandStatus findById(Long id);
     Page<CommandStatus> findPage(CommandStatusFindByPageDto dto);
+
+    List<CommandStatus> findByDtuInfo(DtuInfo dtuInfo);
+
+    CommandStatus findByInstructionDefinition(InstructionDefinition instructionDefinition);
+
 }

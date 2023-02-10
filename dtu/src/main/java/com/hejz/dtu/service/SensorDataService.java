@@ -10,8 +10,9 @@ import java.util.List;
  *
  */
 public interface SensorDataService {
-    SensorData Save(SensorData sensorData);
+    SensorData save(SensorData sensorData);
     void delete(Long id);
     SensorData findById(Long id);
     Page<SensorData> findPage(SensorDataFindByPageDto dto);
+
 }

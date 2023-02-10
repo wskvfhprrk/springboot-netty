@@ -1,8 +1,10 @@
 package com.hejz.dtu.service.impl;
 
 import com.hejz.dtu.dto.SensorFindByPageDto;
+import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.entity.Sensor;
 import com.hejz.dtu.repository.SensorRepository;
+import com.hejz.dtu.service.DtuInfoService;
 import com.hejz.dtu.service.SensorService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +14,17 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SensorServiceImpl implements SensorService {
 
     @Autowired
     private SensorRepository sensorRepository;
+    @Autowired
+    private DtuInfoService dtuInfoService;
 
     @Override
     public Sensor Save(Sensor sensor) {
@@ -68,4 +74,9 @@ public class SensorServiceImpl implements SensorService {
         return all;
     }
 
+    @Override
+    public List<Sensor> findAllByDtuId(Long id) {
+        DtuInfo dtu=dtuInfoService.findById(id);
+        return sensorRepository.findAllbyDtuInfo(dtu).stream().sorted(Comparator.comparing(Sensor::getCommandSort)).collect(Collectors.toList());
+    }
 }

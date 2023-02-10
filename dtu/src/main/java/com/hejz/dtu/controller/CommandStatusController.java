@@ -35,7 +35,7 @@ public class CommandStatusController {
     public Result createCommandStatus(@Valid @RequestBody CommandStatusCreateDto dto){
         CommandStatus commandStatus=new CommandStatus();
         BeanUtils.copyProperties(dto,commandStatus);
-        commandStatus = commandStatusService.Save(commandStatus);
+        commandStatus = commandStatusService.save(commandStatus);
         return Result.ok(commandStatus);
 
     }
@@ -44,7 +44,7 @@ public class CommandStatusController {
     public Result updateCommandStatus(@Valid @RequestBody CommandStatusUpdateDto dto){
         CommandStatus commandStatus=new CommandStatus();
         BeanUtils.copyProperties(dto,commandStatus);
-        commandStatus = commandStatusService.Save(commandStatus);
+        commandStatus = commandStatusService.save(commandStatus);
         return Result.ok(commandStatus);
     }
     @DeleteMapping

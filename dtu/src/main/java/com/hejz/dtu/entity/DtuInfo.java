@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * dtu信息实体类
@@ -59,16 +60,20 @@ public class DtuInfo implements Serializable{
     @Column(
             name = "registration_length",
             nullable = true,
-            columnDefinition="int"+" COMMENT 'dtu注册信息的长度'"
+            columnDefinition = "int" + " COMMENT 'dtu注册信息的长度'"
     )
     private Integer registrationLength;
 
     @Column(
             name = "sensor_address_order",
             nullable = false,
-            columnDefinition="varchar(60)"+" COMMENT '感应器地址顺序'"
+            columnDefinition = "varchar(60)" + " COMMENT '感应器地址顺序,以逗号隔开'"
     )
     private String sensorAddressOrder;
+    //检验规则
+    @ManyToMany
+    @JoinTable(name = "dtuInfo_checking_rules")
+    private List<CheckingRules> checkingRules;
 
     /**
      * 外键表——tb_user中的字段id

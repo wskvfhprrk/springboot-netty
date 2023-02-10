@@ -2,6 +2,7 @@ package com.hejz.dtu.service.impl;
 
 import com.hejz.dtu.dto.CommandFindByPageDto;
 import com.hejz.dtu.entity.Command;
+import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.repository.CommandRepository;
 import com.hejz.dtu.service.CommandService;
 import org.apache.commons.lang3.StringUtils;
@@ -87,4 +88,8 @@ public class CommandServiceImpl implements CommandService {
         return all;
     }
 
+    @Override
+    public Command findByDtuInfoAndInstructions(DtuInfo dtuInfo, String binaryToHexString) {
+        return commandRepository.findByDtuInfoAndInstructions(dtuInfo,binaryToHexString);
+    }
 }

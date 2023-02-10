@@ -2,6 +2,7 @@ package com.hejz.dtu.entity;
 
 import lombok.Data;
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.*;
 
 /**
@@ -51,20 +52,6 @@ public class CommandStatus implements Serializable{
             columnDefinition="date"+" COMMENT '修改时间'"
     )
     private java.util.Date updateDate;
-
-    @Column(
-            name = "dtu_id",
-            nullable = false,
-            columnDefinition="bigint"+" COMMENT 'ID'"
-    )
-    private Long dtuId;
-
-    @Column(
-            name = "instruction_definition_id",
-            nullable = false,
-            columnDefinition="bigint"+" COMMENT 'ID'"
-    )
-    private Long instructionDefinitionId;
     /**
      * 外键表——instruction_definition中的字段id
      */
@@ -77,4 +64,13 @@ public class CommandStatus implements Serializable{
     @ManyToOne
     @JoinColumn(name = "dtu_id",insertable = false,updatable = false)
     private DtuInfo dtuInfo;
+
+    public CommandStatus(DtuInfo dtuInfo, InstructionDefinition instructionDefinition, Date createDate, Date updateDate, boolean status) {
+        this.dtuInfo=dtuInfo;
+        this.instructionDefinition=instructionDefinition;
+        this.createDate=createDate;
+        this.updateDate=updateDate;
+        this.status=status;
+
+    }
 }

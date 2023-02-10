@@ -1,10 +1,14 @@
 package com.hejz.dtu.service.impl;
 
 import com.hejz.dtu.dto.InstructionDefinitionFindByPageDto;
+import com.hejz.dtu.enm.InstructionTypeEnum;
+import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.entity.InstructionDefinition;
 import com.hejz.dtu.repository.InstructionDefinitionRepository;
+import com.hejz.dtu.service.DtuInfoService;
 import com.hejz.dtu.service.InstructionDefinitionService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,6 +23,8 @@ public class InstructionDefinitionServiceImpl implements InstructionDefinitionSe
 
     @Autowired
     private InstructionDefinitionRepository instructionDefinitionRepository;
+    @Autowired
+    private DtuInfoService dtuInfoService;
 
     @Override
     public InstructionDefinition Save(InstructionDefinition instructionDefinition) {
@@ -62,4 +68,19 @@ public class InstructionDefinitionServiceImpl implements InstructionDefinitionSe
         return all;
     }
 
+    @Override
+    public InstructionDefinition findByDtuInfoAndInstructionType(DtuInfo dtuInfo, InstructionTypeEnum typeEnum) {
+        return instructionDefinitionRepository.findByDtuInfoAndInstructionType(dtuInfo,typeEnum);
+    }
+
+    @Override
+    public List<InstructionDefinition> findAllByDtuId(Long id) {
+        DtuInfo dtuInfo = dtuInfoService.findById(id);
+        return instructionDefinitionRepository.findAllByDtuInfo(dtuInfo);
+    }
+
+    @Override
+    public List<InstructionDefinition> findAllByDtuInfo(DtuInfo dtuInfo) {
+        return instructionDefinitionRepository.findAllByDtuInfo(dtuInfo);
+    }
 }

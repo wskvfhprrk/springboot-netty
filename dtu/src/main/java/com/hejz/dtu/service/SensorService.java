@@ -14,4 +14,6 @@ public interface SensorService {
     void delete(Long id);
     Sensor findById(Long id);
     Page<Sensor> findPage(SensorFindByPageDto dto);
+
+    List<Sensor> findAllByDtuId(Long id);
 }

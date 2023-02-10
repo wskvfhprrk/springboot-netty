@@ -1,7 +1,7 @@
 package com.hejz.dtu.enm;
 
 /**
- * 指令类型
+ * 指令类型——要求排序奇偶是相反指令
  */
 public enum InstructionTypeEnum {
     //打开通风

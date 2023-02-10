@@ -14,4 +14,6 @@ public interface DtuInfoService {
     void delete(Long id);
     DtuInfo findById(Long id);
     Page<DtuInfo> findPage(DtuInfoFindByPageDto dto);
+
+    DtuInfo findByImei(String imei);
 }

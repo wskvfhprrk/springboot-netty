@@ -2,6 +2,8 @@ package com.hejz.dtu.service.impl;
 
 import com.hejz.dtu.dto.CommandStatusFindByPageDto;
 import com.hejz.dtu.entity.CommandStatus;
+import com.hejz.dtu.entity.DtuInfo;
+import com.hejz.dtu.entity.InstructionDefinition;
 import com.hejz.dtu.repository.CommandStatusRepository;
 import com.hejz.dtu.service.CommandStatusService;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +23,7 @@ public class CommandStatusServiceImpl implements CommandStatusService {
     private CommandStatusRepository commandStatusRepository;
 
     @Override
-    public CommandStatus Save(CommandStatus commandStatus) {
+    public CommandStatus save(CommandStatus commandStatus) {
         return commandStatusRepository.save(commandStatus);
     }
 
@@ -63,6 +65,16 @@ public class CommandStatusServiceImpl implements CommandStatusService {
         Page<CommandStatus> all = commandStatusRepository.findAll(sp, PageRequest.of(dto.getPage(), dto.getLimit(), sort));
         System.out.println(all);
         return all;
+    }
+
+    @Override
+    public List<CommandStatus> findByDtuInfo(DtuInfo dtuInfo) {
+        return commandStatusRepository.findAllByDtuInfo(dtuInfo);
+    }
+
+    @Override
+    public CommandStatus findByInstructionDefinition(InstructionDefinition instructionDefinition) {
+        return commandStatusRepository.findByInstructionDefinitionAndStatus(instructionDefinition,true);
     }
 
 }
