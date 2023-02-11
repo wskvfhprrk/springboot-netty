@@ -1,5 +1,6 @@
 package com.hejz.dtu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hejz.dtu.enm.CommandTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -117,6 +118,8 @@ public class Command implements Serializable{
     )
     private Long nextLevelInstructionId;
 
+
+    @JsonIgnoreProperties(value = {"commands"})
     @ManyToMany( mappedBy = "commands", fetch = FetchType.LAZY)
     private Set<InstructionDefinition> instructionDefinitions;
 

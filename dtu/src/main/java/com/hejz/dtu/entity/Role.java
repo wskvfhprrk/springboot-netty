@@ -1,9 +1,11 @@
 package com.hejz.dtu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.*;
 
 /**
  * 角色实体类实体类
@@ -35,14 +37,18 @@ public class Role implements Serializable{
     @Column(
             name = "name",
             nullable = true,
-            columnDefinition="varchar(255)"+" COMMENT '名称'"
+            columnDefinition = "varchar(255)" + " COMMENT '名称'"
     )
     private String name;
-    @ManyToMany(mappedBy = "roles",fetch = FetchType.LAZY)
+
+    @JsonIgnoreProperties(value = {"roles"})
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private Set<User> users;
+
+    @JsonIgnoreProperties(value = {"roles"})
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "role_menu",
-    joinColumns = @JoinColumn(name = "menu_id",referencedColumnName = "id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName = "id"))
+            joinColumns = @JoinColumn(name = "menu_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Menu> menus;
 }

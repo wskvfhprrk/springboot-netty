@@ -56,12 +56,12 @@ public class Sensor implements Serializable{
     )
     private Integer min;
 
-    @Column(
-            name = "unit",
-            nullable = true,
-            columnDefinition="varchar(10)"+" COMMENT '接收传感器数据单位'"
-    )
-    private String unit;
+//    @Column(
+//            name = "unit",
+//            nullable = true,
+//            columnDefinition="varchar(10)"+" COMMENT '接收传感器数据单位'"
+//    )
+//    private String unit;
     @Column(
             name = "command_sort",
             nullable = true,
@@ -73,13 +73,13 @@ public class Sensor implements Serializable{
      * 外键表——instruction_definition中的字段id
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "max_instruction_definition_id",insertable = false,updatable = false)
+    @JoinColumn(name = "max_instruction_definition_id")
     private InstructionDefinition maxInstructionDefinitionId;
     /**
      * 外键表——instruction_definition中的字段id
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "min_instruction_definition_id", insertable = false, updatable = false)
+    @JoinColumn(name = "min_instruction_definition_id")
     private InstructionDefinition minInstructionDefinitionId;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
@@ -90,15 +90,17 @@ public class Sensor implements Serializable{
      * 外键表——tb_dtu_info中的字段id
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dtu_id", insertable = false, updatable = false)
+    @JoinColumn(name = "dtu_id")
     private DtuInfo dtuInfo;
 
-    public Sensor(DtuInfo dtuInfo, String name, Integer max, Integer min, InstructionDefinition maxInstructionDefinitionId, InstructionDefinition minInstructionDefinitionId) {
+
+    public Sensor(DtuInfo dtuInfo, String name, Integer max, Integer min, InstructionDefinition maxInstructionDefinitionId, InstructionDefinition minInstructionDefinitionId,String commandSort) {
         this.name = name;
         this.max = max;
         this.min = min;
         this.maxInstructionDefinitionId = maxInstructionDefinitionId;
         this.minInstructionDefinitionId = minInstructionDefinitionId;
         this.dtuInfo = dtuInfo;
+        this.commandSort = commandSort;
     }
 }

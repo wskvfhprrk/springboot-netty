@@ -1,5 +1,6 @@
 package com.hejz.dtu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hejz.dtu.enm.InstructionTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -67,6 +68,7 @@ public class InstructionDefinition implements Serializable{
     @JoinColumn(name = "dtu_id")
     private DtuInfo dtuInfo;
 
+    @JsonIgnoreProperties(value = {"commands"})
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "instruction_definition_command",
             inverseJoinColumns = @JoinColumn(name = "command_id", referencedColumnName = "id"),

@@ -117,15 +117,15 @@ public class InitController {
             set.add(command5);
             InstructionDefinition instructionDefinition3 = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "关闭浇水阀", "关闭浇水阀", InstructionTypeEnum.TURN_OFF_WATERING, set));
 //        //感应器信息
-            sensorRepository.save(new Sensor(dtuInfo,"空气温度",25,15,instructionDefinition,instructionDefinition1));
-            sensorRepository.save(new Sensor(dtuInfo,"空气湿度",25,15,null,null));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤PH",25,15,null,null));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤温度",25,15,null,null));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤湿度",25,15,instructionDefinition2,instructionDefinition3));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤氮",25,15,null,null));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤磷",25,15,null,null));           
-            sensorRepository.save(new Sensor(dtuInfo,"土壤钾",25,15,null,null));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤电导率",25,15,null,null));
+            sensorRepository.save(new Sensor(dtuInfo,"空气温度",25,15,instructionDefinition,instructionDefinition1,"112222222"));
+            sensorRepository.save(new Sensor(dtuInfo,"空气湿度",25,15,null,null,"112222222"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤PH",25,15,null,null,"112222222"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤温度",25,15,null,null,"112222222"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤湿度",25,15,instructionDefinition2,instructionDefinition3,"112222222"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤氮",25,15,null,null,"112222222"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤磷",25,15,null,null,"112222222" ));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤钾",25,15,null,null,"112222222"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤电导率",25,15,null,null,"112222222"));
 
 //        List<InstructionDefinition> relayDefinitionCommands = relayDefinitionCommandRepository.findByDtuInfo((long) (i + 1));
 //        Optional<InstructionDefinition> open = relayDefinitionCommands.stream().filter(r -> r.getName().equals("打开通风指令")).findFirst();

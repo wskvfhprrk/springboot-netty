@@ -1,5 +1,7 @@
 package com.hejz.dtu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -96,6 +98,7 @@ public class Menu implements Serializable{
     )
     private String url;
 
+    @JsonIgnoreProperties(value = {"menus"})
     @ManyToMany(mappedBy = "menus",fetch = FetchType.LAZY)
     private Set<Role> roles;
 }

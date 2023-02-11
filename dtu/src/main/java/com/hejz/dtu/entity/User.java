@@ -1,5 +1,6 @@
 package com.hejz.dtu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -46,6 +47,8 @@ public class User implements Serializable{
             columnDefinition = "varchar(255)" + " COMMENT '用户名'"
     )
     private String username;
+
+    @JsonIgnoreProperties(value = {"users"})
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
