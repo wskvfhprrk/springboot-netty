@@ -73,6 +73,12 @@ public class RelayController {
         return Result.ok(pages);
     }
 
+    @GetMapping("manualCommand")
+    @ApiOperation("手动命令")
+    public Result manualCommand(ManualCommandDto dto){
+        return relayService.manualCommand(dto);
+    }
+
 //    @GetMapping
 //    @ApiOperation("分布条件查询继电器所有的数据")
 //    public Result<List<RelayAllVo>> findAll(@Valid RelayFindAllDto dto){

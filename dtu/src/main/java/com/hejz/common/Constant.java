@@ -56,4 +56,9 @@ public class Constant {
     //所有活动的客户端
     public static ChannelGroup CHANNELGROUP = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
+
+    public static final int READ_IDEL_TIME_OUT = 60; // 读超时
+    public static final int WRITE_IDEL_TIME_OUT = 60; // 写超时
+    public static final int ALL_IDEL_TIME_OUT = 60; // 所有超时
+
 }

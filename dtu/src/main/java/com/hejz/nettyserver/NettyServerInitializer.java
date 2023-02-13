@@ -1,5 +1,6 @@
 package com.hejz.nettyserver;
 
+import com.hejz.common.Constant;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -18,8 +19,8 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
     private NettyDecoder nettyDecoder;
     @Autowired
     private RegisterHandler registerHandler;
-    @Autowired
-    private ServerHeartBeatHandler serverHeartBeatHandler;
+//    @Autowired
+//    private ServerHeartBeatHandler serverHeartBeatHandler;
 
     //连接注册，创建成功，会被调用
     @Override
@@ -32,9 +33,9 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         log.info("==================netty报告完毕==================");
         ChannelPipeline pipeline = ch.pipeline();
         //定义读写空闲时间——（单位秒）
-        pipeline.addLast(new IdleStateHandler(360, 60,360));
+        pipeline.addLast(new IdleStateHandler(Constant.READ_IDEL_TIME_OUT, Constant.WRITE_IDEL_TIME_OUT,Constant.ALL_IDEL_TIME_OUT));
         //空闲拦截器
-        pipeline.addLast(serverHeartBeatHandler);
+//        pipeline.addLast(serverHeartBeatHandler);
         //注册拦截器
         pipeline.addLast(registerHandler);
         //解决拆包粘包问题

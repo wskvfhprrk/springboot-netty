@@ -176,7 +176,7 @@ public class NettyServiceCommon {
     public static void sendRelayCommandAccordingToLayIds(RelayDefinitionCommand
                                                                  relayDefinitionCommand) {
         //如果过期不再发送了——超过一个小时间
-        LocalDateTime beginTime = relayDefinitionCommand.getSendCommandTime();
+        LocalDateTime beginTime = relayDefinitionCommand.getSendCommandTime()==null?LocalDateTime.now():relayDefinitionCommand.getSendCommandTime();
         Duration duration = Duration.between(beginTime, LocalDateTime.now());
         //指令过期时间
         if (duration.toHours() > Constant.INSTRUCTION_EXPIRATION_TIME) {
