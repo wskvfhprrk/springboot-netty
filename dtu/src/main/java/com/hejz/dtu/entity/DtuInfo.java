@@ -1,20 +1,18 @@
 package com.hejz.dtu.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
 
 /**
  * dtu信息实体类
  * author: hejz
  * data: 2023-2-7
  */
-@Data
+@Getter
+@Setter
 @Entity(name = "tb_dtu_info")
 @NoArgsConstructor@AllArgsConstructor
 @org.hibernate.annotations.Table(appliesTo = "tb_dtu_info", comment = "dtu信息")
@@ -65,6 +63,7 @@ public class DtuInfo implements Serializable{
     )
     private Integer registrationLength;
 
+
     @Column(
             name = "sensor_address_order",
             nullable = false,
@@ -81,7 +80,10 @@ public class DtuInfo implements Serializable{
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties(value = {"dtuInfos"})
     private User user;
+
+
 
     public DtuInfo(String imei, Integer registrationLength, Integer intervalTime, Boolean automaticAdjustment, String sensorAddressOrder) {
         this.automaticAdjustment = automaticAdjustment;

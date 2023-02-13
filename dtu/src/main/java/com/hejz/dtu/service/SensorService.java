@@ -1,6 +1,7 @@
 package com.hejz.dtu.service;
 
 import com.hejz.dtu.dto.SensorFindByPageDto;
+import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.entity.Sensor;
 import org.springframework.data.domain.Page;
 
@@ -15,5 +16,6 @@ public interface SensorService {
     Sensor findById(Long id);
     Page<Sensor> findPage(SensorFindByPageDto dto);
 
+    List<Sensor> findAllByDtuInfo(DtuInfo dtuInfo);
     List<Sensor> findAllByDtuId(Long id);
 }

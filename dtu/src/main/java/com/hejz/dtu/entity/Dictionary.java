@@ -1,9 +1,8 @@
 package com.hejz.dtu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hejz.dtu.enm.DictionaryTypeEnum;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,7 +13,8 @@ import javax.persistence.*;
  * author: hejz
  * data: 2023-2-7
  */
-@Data
+@Getter
+@Setter
 @Entity(name = "dictionary")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -100,6 +100,7 @@ public class Dictionary implements Serializable{
      * 外键表——dictionary中的字段id
      */
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = {"dictionarys"})
     @JoinColumn(name = "parent_id",columnDefinition = "bigint"+" COMMENT '上一级ID'")
     private Dictionary dictionary;
 

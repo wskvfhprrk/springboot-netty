@@ -117,8 +117,8 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
         Integer commonLength = 0;
         //if(地址位==0)then(是的)应截取长度=2;
         if (address == 0) return 2;
-        List<InstructionDefinition> list = instructionDefinitionService.findAllByDtuInfo(dtuInfo);
-        for (InstructionDefinition instructionDefinition : list) {
+        List<InstructionDefinition> instructionDefinitions = instructionDefinitionService.findAllByDtuInfo(dtuInfo);
+        for (InstructionDefinition instructionDefinition : instructionDefinitions) {
             Set<Command> commands = instructionDefinition.getCommands();
             for (Command command : commands) {
                 Integer addr = NettyServiceCommon.addressValueOfInstruction(dtuInfo, HexConvert.hexStringToBytes(command.getInstructions().replaceAll(" ", "")));

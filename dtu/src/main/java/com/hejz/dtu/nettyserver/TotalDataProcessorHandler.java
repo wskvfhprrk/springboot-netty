@@ -46,7 +46,6 @@ public class TotalDataProcessorHandler extends SimpleChannelInboundHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void start(ChannelHandlerContext ctx, byte[] bytes) {
@@ -67,7 +66,7 @@ public class TotalDataProcessorHandler extends SimpleChannelInboundHandler {
                 String sensorAddressOrder = dtuInfo.getSensorAddressOrder();
                 //如果接收到数据地址在感应器指令中说明是感应器的数据
                 List<String> list = Arrays.asList(sensorAddressOrder.split(","));
-                if(list.contains(address)){
+                if(list.contains(address.toString())){
                     processSensorReturnValue.start(ctx, bytes);
                 }else {
                     processRelayCommands.start(ctx, bytes);

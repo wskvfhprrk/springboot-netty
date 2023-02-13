@@ -1,8 +1,7 @@
 package com.hejz.dtu.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,7 +12,8 @@ import javax.persistence.*;
  * author: hejz
  * data: 2023-2-7
  */
-@Data
+@Getter
+@Setter
 @Entity(name = "sensor_data")
 @org.hibernate.annotations.Table(appliesTo = "sensor_data", comment = "传感器数据")
 @NoArgsConstructor
@@ -69,6 +69,7 @@ public class SensorData implements Serializable{
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dtu_id",insertable = false,updatable = false)
+    @JsonIgnoreProperties(value = {"sensorDatas"})
     private DtuInfo dtuInfo;
 
     @Transient

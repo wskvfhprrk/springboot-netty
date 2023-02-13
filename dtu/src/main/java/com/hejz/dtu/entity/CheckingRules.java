@@ -1,18 +1,18 @@
 package com.hejz.dtu.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 数据校检规则实体类
  * author: hejz
  * data: 2023-2-7
  */
-@Data
+@Getter
+@Setter
 @Entity(name = "checking_rules")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -92,6 +92,7 @@ public class CheckingRules implements Serializable{
     )
     private String name;
 
+
     public CheckingRules(String name, Integer commonLength, Integer functionCodeLength, Integer addressBitLength, Integer dataBitsLength, Integer dataValueLength, Integer crc16CheckDigitLength, Boolean isUse) {
         this.addressBitLength = addressBitLength;
         this.dataBitsLength = dataBitsLength;
@@ -101,5 +102,18 @@ public class CheckingRules implements Serializable{
         this.functionCodeLength = functionCodeLength;
         this.isUse = isUse;
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CheckingRules that = (CheckingRules) o;
+        return Objects.equals(id, that.id) && Objects.equals(addressBitLength, that.addressBitLength) && Objects.equals(dataBitsLength, that.dataBitsLength) && Objects.equals(dataValueLength, that.dataValueLength) && Objects.equals(commonLength, that.commonLength) && Objects.equals(crc16CheckDigitLength, that.crc16CheckDigitLength) && Objects.equals(functionCodeLength, that.functionCodeLength) && Objects.equals(isUse, that.isUse) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, addressBitLength, dataBitsLength, dataValueLength, commonLength, crc16CheckDigitLength, functionCodeLength, isUse, name);
     }
 }

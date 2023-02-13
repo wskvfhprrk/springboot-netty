@@ -2,9 +2,7 @@ package com.hejz.dtu.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hejz.dtu.enm.InstructionTypeEnum;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,7 +14,8 @@ import java.util.Set;
  * author: hejz
  * data: 2023-2-7
  */
-@Data
+@Getter
+@Setter
 @Entity(name = "instruction_definition")
 @org.hibernate.annotations.Table(appliesTo = "instruction_definition", comment = "继电器定义指令")
 @NoArgsConstructor
@@ -66,9 +65,10 @@ public class InstructionDefinition implements Serializable{
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dtu_id")
+    @JsonIgnoreProperties(value = {"instructionDefinitions"})
     private DtuInfo dtuInfo;
 
-    @JsonIgnoreProperties(value = {"commands"})
+    @JsonIgnoreProperties(value = {"instructionDefinitions"})
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "instruction_definition_command",
             inverseJoinColumns = @JoinColumn(name = "command_id", referencedColumnName = "id"),
@@ -89,16 +89,4 @@ public class InstructionDefinition implements Serializable{
     @Transient
     private LocalDateTime sendCommandTime;
 
-    @Override
-    public String toString() {
-        return "InstructionDefinition{" +
-                "id=" + id +
-                ", instructionType=" + instructionType +
-                ", name='" + name + '\'' +
-                ", remarks='" + remarks + '\'' +
-                ", dtuInfo=" + dtuInfo +
-                ", commands=" + commands +
-                ", sendCommandTime=" + sendCommandTime +
-                '}';
-    }
 }

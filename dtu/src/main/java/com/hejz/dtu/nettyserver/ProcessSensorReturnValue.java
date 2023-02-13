@@ -96,7 +96,7 @@ public class ProcessSensorReturnValue {
                 }
                 // TODO: 2023/2/5 在添加到数据库前可以根据数据做自动判断处理指令
                 //如果没有按顺序排列，不要此组数据
-                if(!dtuInfo.getSensorAddressOrder().equals(sb.toString())){
+                if(!dtuInfo.getSensorAddressOrder().replaceAll(",","").equals(sb.toString())){
                     log.error("此组数据没有按顺序上报作废！");
                     return;
                 }
@@ -138,6 +138,7 @@ public class ProcessSensorReturnValue {
             map.put("name",sensor.getName());
             map.put("address",address);
             map.put("data",address);
+            map.put("unit",sensor.getUnit());
             dataList.add(map);
         }
         return dataList;
@@ -163,7 +164,7 @@ public class ProcessSensorReturnValue {
     }
 
     /**
-     * 传感器接收数据解析——温湿度和土壤一样规则
+     * 传感器接收数据解析
      *
      * @param useBytes    收到byte[]信息——7长度
      * @param arrayNumber 数组编号
@@ -172,26 +173,27 @@ public class ProcessSensorReturnValue {
      */
     private Double parseSensorOneData(byte[] useBytes, int arrayNumber, ChannelHandlerContext ctx, DtuInfo dtuInfo) throws Exception {
         //计算返10进制的返回值
-        Integer x = calculateReturnValue(dtuInfo,useBytes);
+        Integer x = calculateReturnValue(dtuInfo, useBytes);
         //获取数据值
         double d = Double.parseDouble(String.valueOf(x));
-        Sensor sensor = sensorService.findAllByDtuId(dtuInfo.getId()).get(arrayNumber);
         //经过公式计算得到实际结果
-        List<InstructionDefinition> instructionDefinitionList = instructionDefinitionService.findAllByDtuInfo(dtuInfo);
-        Command command =new Command();
-        for (InstructionDefinition instructionDefinition : instructionDefinitionList) {
-            for (Command command1 : instructionDefinition.getCommands()) {
-                if(command.getInstructions().equals(HexConvert.BinaryToHexString(useBytes))){
-                    command=command1;
-                }
+        List<Sensor> sensors = sensorService.findAllByDtuInfo(dtuInfo);
+        Sensor sensor=new Sensor();
+        for (Sensor sensor1 : sensors) {
+            if(sensor1.getSensorSort()-1==arrayNumber){
+                sensor=sensor1;
             }
         }
-        Double actualResults = calculateActualData(command.getCalculationFormula(), d);
-        log.info(" 通道：{} dtuId==>{},{} =====> {}  ====> {}", ctx.channel().id().toString(), dtuInfo.getId(), arrayNumber,  sensor.getName(), actualResults );
+        if(sensor==null){
+            log.error("找不到感应器：{}",arrayNumber+1);
+            return null;
+        }
+        Double actualResults = calculateActualData(sensor.getCommand().getCalculationFormula(), d);
+        log.info(" 通道：{} dtuId==>{},{} =====> {}  ====> {}", ctx.channel().id().toString(), dtuInfo.getId(), arrayNumber, sensor.getName(), actualResults);
         //开新建程——异步处理根据解析到数据大小判断是否产生事件
         if (arrayNumber == 0) {
             if (actualResults - 50 >= 0 || actualResults + 50 <= 0) {
-                log.error("当前一组温度数据:{}不合理温度没有大于50或小于-50的温度，数据记录错位，不作为参考！", actualResults);
+                log.error("当前一组数据:{}不合理温度没有大于50或小于-50的温度，数据记录错位，不作为参考！", actualResults);
                 return null;
             }
         }

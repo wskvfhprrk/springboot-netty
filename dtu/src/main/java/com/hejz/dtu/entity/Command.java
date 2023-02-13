@@ -2,9 +2,7 @@ package com.hejz.dtu.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hejz.dtu.enm.CommandTypeEnum;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,7 +13,8 @@ import java.util.Set;
  * author: hejz
  * data: 2023-2-7
  */
-@Data
+@Getter
+@Setter
 @Entity(name = "tb_command")
 @org.hibernate.annotations.Table(appliesTo = "tb_command", comment = "指令")
 @NoArgsConstructor
@@ -87,11 +86,7 @@ public class Command implements Serializable{
     )
     private String remarks;
 
-    @Column(
-            name = "unit",
-            columnDefinition="varchar(15)"+" COMMENT '接收到数据的单位'"
-    )
-    private String unit;
+
 
     @Column(
             name = "wait_time_next_command",
@@ -103,7 +98,7 @@ public class Command implements Serializable{
     /**
      * 外键表——checking_rules中的字段id
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "checking_rules_id")
     private CheckingRules checkingRules;
     /**
@@ -123,7 +118,7 @@ public class Command implements Serializable{
     @ManyToMany( mappedBy = "commands", fetch = FetchType.LAZY)
     private Set<InstructionDefinition> instructionDefinitions;
 
-    public Command(String manufacturer, String name, String remarks, String instructions, CheckingRules checkingRules, CommandTypeEnum commandType, String calculationFormula, String unit, Integer waitTimeNextCommand, Long nextLevelInstructionId, Boolean isUse) {
+    public Command(String manufacturer, String name, String remarks, String instructions, CheckingRules checkingRules, CommandTypeEnum commandType, String calculationFormula,  Integer waitTimeNextCommand, Long nextLevelInstructionId, Boolean isUse) {
         this.calculationFormula = calculationFormula;
         this.commandType = commandType;
         this.instructions = instructions;
@@ -131,28 +126,9 @@ public class Command implements Serializable{
         this.manufacturer = manufacturer;
         this.name = name;
         this.remarks = remarks;
-        this.unit = unit;
         this.waitTimeNextCommand = waitTimeNextCommand;
         this.checkingRules = checkingRules;
         this.nextLevelInstructionId = nextLevelInstructionId;
     }
 
-    @Override
-    public String toString() {
-        return "Command{" +
-                "id=" + id +
-                ", calculationFormula='" + calculationFormula + '\'' +
-                ", commandType=" + commandType +
-                ", instructions='" + instructions + '\'' +
-                ", isUse=" + isUse +
-                ", manufacturer='" + manufacturer + '\'' +
-                ", name='" + name + '\'' +
-                ", remarks='" + remarks + '\'' +
-                ", unit='" + unit + '\'' +
-                ", waitTimeNextCommand=" + waitTimeNextCommand +
-                ", checkingRules=" + checkingRules +
-                ", nextLevelInstructionId=" + nextLevelInstructionId +
-                ", instructionDefinitions=" + instructionDefinitions +
-                '}';
-    }
 }

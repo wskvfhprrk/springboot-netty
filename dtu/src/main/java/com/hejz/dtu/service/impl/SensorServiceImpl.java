@@ -77,6 +77,11 @@ public class SensorServiceImpl implements SensorService {
     @Override
     public List<Sensor> findAllByDtuId(Long id) {
         DtuInfo dtu=dtuInfoService.findById(id);
-        return sensorRepository.findAllByDtuInfo(dtu).stream().sorted(Comparator.comparing(Sensor::getCommandSort)).collect(Collectors.toList());
+        return sensorRepository.findAllByDtuInfo(dtu);
+    }
+
+    @Override
+    public List<Sensor> findAllByDtuInfo(DtuInfo dtuInfo) {
+        return sensorRepository.findAllByDtuInfo(dtuInfo);
     }
 }

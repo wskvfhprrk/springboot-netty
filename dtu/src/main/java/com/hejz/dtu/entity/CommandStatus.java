@@ -1,8 +1,7 @@
 package com.hejz.dtu.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,7 +12,8 @@ import javax.persistence.*;
  * author: hejz
  * data: 2023-2-7
  */
-@Data
+@Getter
+@Setter
 @Entity(name = "command_status")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -62,11 +62,13 @@ public class CommandStatus implements Serializable{
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instruction_definition_id",insertable = false,updatable = false)
+    @JsonIgnoreProperties(value = {"commandStatus"})
     private InstructionDefinition instructionDefinition;
     /**
      * 外键表——tb_dtu_info中的字段id
      */
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = {"commandStatus"})
     @JoinColumn(name = "dtu_id",insertable = false,updatable = false)
     private DtuInfo dtuInfo;
 

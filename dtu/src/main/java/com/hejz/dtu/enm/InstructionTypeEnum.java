@@ -21,5 +21,5 @@ public enum InstructionTypeEnum {
     //关闭其它
     CLOSE_OTHERS,
     //重置指令
-    RESET_COMMAND;
+    SENSOR_COMMAND;
 }

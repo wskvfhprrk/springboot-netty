@@ -5,7 +5,6 @@ import com.hejz.dtu.entity.CheckingRules;
 import com.hejz.dtu.entity.Command;
 import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.entity.InstructionDefinition;
-import com.hejz.dtu.service.CheckingRulesService;
 import com.hejz.dtu.service.DtuInfoService;
 import com.hejz.dtu.service.InstructionDefinitionService;
 import com.hejz.dtu.utils.CRC16;
@@ -23,8 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -98,24 +96,23 @@ public class NettyServiceCommon {
         AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
         Long dtuId = channel.attr(key).get();
         //数据校检规则校验
-        int bytesLength = bytes.length - Constant.IMEI_LENGTH;
         //查出所有符合此长度的规则
         DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
-        Set<CheckingRules> set=new HashSet();
+        Set<CheckingRules> checkingRules = new HashSet<>();
         for (InstructionDefinition instructionDefinition : instructionDefinitionService.findAllByDtuInfo(dtuInfo)) {
             for (Command command : instructionDefinition.getCommands()) {
-                set.add(command.getCheckingRules());
+                checkingRules.add(command.getCheckingRules());
             }
         }
-        for (CheckingRules dataCheckingRule : set) {
+        for (CheckingRules dataCheckingRule : checkingRules) {
             //使用crc16校验——不需要imei值
             boolean b = validCRC16(bytes, dataCheckingRule);
-            if (!b) {
-                log.error("bytes：{}校验通不过——crc16校验不过：{}", HexConvert.BinaryToHexString(bytes));
-                return false;
+            if (b) {
+                return true;
             }
         }
-        return true;
+        log.error("bytes：{}校验通不过——crc16校验不过：{}", HexConvert.BinaryToHexString(bytes));
+        return false;
     }
 
 
@@ -215,16 +212,4 @@ public class NettyServiceCommon {
         }
     }
 
-//    /**
-//     * 缓存需要继续处理的指令，如果不再处理不缓存——为程序收到继电器信号（继电器发送什么信号接收到什么信号）能联系在一起
-//     *
-//     * @param channel
-//     * @param sendHex
-//     * @param instructionDefinition
-//     */
-//    private static void cacheInstructionsThatNeedToContinueProcessing(Channel channel, String
-//            sendHex, InstructionDefinition instructionDefinition) {
-//        //设置10分钟
-//        redisTemplate.opsForValue().set(Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY + "::" + channel.id() + "::" + sendHex, instructionDefinition, Duration.ofMillis(Constant.EXPIRATION_TIME_OF_CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEYS));
-//    }
 }
