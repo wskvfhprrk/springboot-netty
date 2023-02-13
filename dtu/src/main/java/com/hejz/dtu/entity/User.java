@@ -50,7 +50,7 @@ public class User implements Serializable{
 
     @JsonIgnoreProperties(value = {"users"})
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_role",
+    @JoinTable(name = "mid_user_role",
             joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
     private Set<Role> roles;

@@ -70,7 +70,7 @@ public class InstructionDefinition implements Serializable{
 
     @JsonIgnoreProperties(value = {"instructionDefinitions"})
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "instruction_definition_command",
+    @JoinTable(name = "mid_instruction_definition_command",
             inverseJoinColumns = @JoinColumn(name = "command_id", referencedColumnName = "id"),
             joinColumns = @JoinColumn(name = "instruction_definition_id", referencedColumnName = "id"))
     private Set<Command> commands;
