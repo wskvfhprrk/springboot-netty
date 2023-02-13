@@ -40,7 +40,7 @@ public class DictionaryController {
         BeanUtils.copyProperties(dto,dictionary);
         dictionary.setCreateTime(new Date());
         Dictionary parent = dictionaryService.findById(dto.getParentId());
-        dictionary.setDictionary(parent);
+        dictionary.setParentId(parent.getId());
         dictionary.setIsUse(false);
         dictionaryService.save(dictionary);
         //修改父级为已经使用状态
@@ -54,7 +54,7 @@ public class DictionaryController {
     public Result updateDictionary(@Valid @RequestBody DictionaryUpdateDto dto){
         Dictionary dictionary=new Dictionary();
         BeanUtils.copyProperties(dto,dictionary);
-        dictionary.setDictionary(dictionaryService.findById(dto.getParentId()));
+        dictionary.setParentId(dictionaryService.findById(dto.getParentId()).getId());
         dictionaryService.update(dictionary);
         return Result.ok();
     }
@@ -78,7 +78,7 @@ public class DictionaryController {
         List<DictionaryFindByPageVo> list = dictionaryPage.getContent().stream().map(d -> {
             DictionaryFindByPageVo vo = new DictionaryFindByPageVo();
             BeanUtils.copyProperties(d,vo);
-            vo.setParentId(d.getDictionary().getId());
+            vo.setParentId(d.getParentId());
             return vo;
         }).collect(Collectors.toList());
         PageResult<DictionaryFindByPageVo> pages=new PageResult<>();

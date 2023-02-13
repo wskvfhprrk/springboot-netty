@@ -96,15 +96,14 @@ public class Dictionary implements Serializable{
     @Enumerated(EnumType.STRING)
     private DictionaryTypeEnum type;
 
-    /**
-     * 外键表——dictionary中的字段id
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = {"dictionarys"})
-    @JoinColumn(name = "parent_id",columnDefinition = "bigint"+" COMMENT '上一级ID'")
-    private Dictionary dictionary;
+    @Column(
+            name = "parent_id",
+            nullable = false,
+            columnDefinition="bigint"+" COMMENT '上一级ID'"
+    )
+    private Long parentId;
 
-    public Dictionary(String appModule, Date createTime, String description, Boolean isUse, String itemName, String itemValue, Integer sortId, DictionaryTypeEnum type, Dictionary dictionary) {
+    public Dictionary(String appModule, Date createTime, String description, Boolean isUse, String itemName, String itemValue, Integer sortId, DictionaryTypeEnum type, Long parentId) {
         this.appModule = appModule;
         this.createTime = createTime;
         this.description = description;
@@ -113,7 +112,7 @@ public class Dictionary implements Serializable{
         this.itemValue = itemValue;
         this.sortId = sortId;
         this.type = type;
-        this.dictionary = dictionary;
+        this.parentId = parentId;
     }
 
     public Dictionary(Long id) {

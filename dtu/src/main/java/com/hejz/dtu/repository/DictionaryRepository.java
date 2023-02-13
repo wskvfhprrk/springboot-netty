@@ -12,5 +12,5 @@ import java.util.List;
  * data: 2023-2-7
  */
 public interface DictionaryRepository extends JpaRepository<Dictionary,Long>,JpaSpecificationExecutor<Dictionary> {
-    List<Dictionary> findAllByDictionary(Dictionary dictionary);
+    List<Dictionary> findAllByParentId(Long parentId);
 }

@@ -99,17 +99,18 @@ public class Command implements Serializable{
     /**
      * 外键表——checking_rules中的字段id
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = {"command"})
     @JoinColumn(name = "checking_rules_id")
     private CheckingRules checkingRules;
     /**
      * 外键表——equ_command中的字段id
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = {"command"})
-    @JoinColumn(name = "next_level_instruction", insertable = false, updatable = false)
-    private Command nextLevelInstructionId;
+    @Column(
+            name = "next_level_instruction_id",
+            columnDefinition = "int(5)" + " COMMENT '下一条指令'"
+    )
+    private Long nextLevelInstructionId;
 
     @Override
     public boolean equals(Object o) {
@@ -128,7 +129,7 @@ public class Command implements Serializable{
     @ManyToMany( mappedBy = "commands", fetch = FetchType.LAZY)
     private Set<InstructionDefinition> instructionDefinitions;
 
-    public Command(String manufacturer, String name, String remarks, String instructions, CheckingRules checkingRules, CommandTypeEnum commandType, String calculationFormula,  Integer waitTimeNextCommand, Command nextLevelInstructionId, Boolean isUse) {
+    public Command(String manufacturer, String name, String remarks, String instructions, CheckingRules checkingRules, CommandTypeEnum commandType, String calculationFormula,  Integer waitTimeNextCommand, Long nextLevelInstructionId, Boolean isUse) {
         this.calculationFormula = calculationFormula;
         this.commandType = commandType;
         this.instructions = instructions;

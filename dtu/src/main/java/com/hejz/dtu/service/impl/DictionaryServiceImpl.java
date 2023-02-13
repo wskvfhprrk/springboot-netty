@@ -44,10 +44,10 @@ public class DictionaryServiceImpl implements DictionaryService {
         //判断如果低级没有的话直接改状态为未使用，可以删除
         Dictionary dictionary = dictionaryRepository.findById(id).orElse(null);
         dictionaryRepository.deleteById(id);
-        List<Dictionary> all = dictionaryRepository.findAllByDictionary(new Dictionary(dictionary.getDictionary().getId()));
+        List<Dictionary> all = dictionaryRepository.findAllByParentId(dictionary.getParentId());
         all.remove(dictionary);
         if(all.isEmpty()){
-            dictionary=dictionaryRepository.findById(dictionary.getDictionary().getId()).orElse(null);
+            dictionary=dictionaryRepository.findById(dictionary.getParentId()).orElse(null);
             dictionary.setIsUse(false);
             dictionaryRepository.save(dictionary);
         }
@@ -153,7 +153,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         Stream<DictionaryVo> vos = all.stream().map(dictionary -> {
             DictionaryVo vo = new DictionaryVo();
             BeanUtils.copyProperties(dictionary, vo);
-            vo.setParentId(dictionary.getDictionary().getId());
+            vo.setParentId(dictionary.getParentId());
             return vo;
         });
         return Result.ok(vos);
@@ -161,6 +161,6 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public List<Dictionary> findAllByDictionary(Dictionary dto) {
-        return dictionaryRepository.findAllByDictionary(dto);
+        return dictionaryRepository.findAllByParentId(dto.getParentId());
     }
 }
