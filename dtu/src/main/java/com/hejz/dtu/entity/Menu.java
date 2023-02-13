@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -101,4 +102,17 @@ public class Menu implements Serializable{
     @JsonIgnoreProperties(value = {"menus"})
     @ManyToMany(mappedBy = "menus",fetch = FetchType.LAZY)
     private Set<Role> roles;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Menu)) return false;
+        Menu menu = (Menu) o;
+        return Objects.equals(getId(), menu.getId()) && Objects.equals(getHidden(), menu.getHidden()) && Objects.equals(getIcon(), menu.getIcon()) && Objects.equals(getName(), menu.getName()) && Objects.equals(getOrderByNo(), menu.getOrderByNo()) && Objects.equals(getParentId(), menu.getParentId()) && Objects.equals(getPath(), menu.getPath()) && Objects.equals(getTitle(), menu.getTitle()) && Objects.equals(getType(), menu.getType()) && Objects.equals(getUrl(), menu.getUrl()) && Objects.equals(getRoles(), menu.getRoles());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getHidden(), getIcon(), getName(), getOrderByNo(), getParentId(), getPath(), getTitle(), getType(), getUrl(), getRoles());
+    }
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -51,4 +52,17 @@ public class Role implements Serializable{
             joinColumns = @JoinColumn(name = "menu_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Menu> menus;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Role)) return false;
+        Role role = (Role) o;
+        return Objects.equals(getId(), role.getId()) && Objects.equals(getName(), role.getName()) && Objects.equals(getUsers(), role.getUsers()) && Objects.equals(getMenus(), role.getMenus());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getUsers(), getMenus());
+    }
 }
