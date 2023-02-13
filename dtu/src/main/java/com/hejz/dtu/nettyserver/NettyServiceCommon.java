@@ -1,10 +1,8 @@
 package com.hejz.dtu.nettyserver;
 
 import com.hejz.dtu.common.Constant;
-import com.hejz.dtu.entity.CheckingRules;
-import com.hejz.dtu.entity.Command;
-import com.hejz.dtu.entity.DtuInfo;
-import com.hejz.dtu.entity.InstructionDefinition;
+import com.hejz.dtu.entity.*;
+import com.hejz.dtu.service.CommandStatusService;
 import com.hejz.dtu.service.DtuInfoService;
 import com.hejz.dtu.service.InstructionDefinitionService;
 import com.hejz.dtu.utils.CRC16;
@@ -41,7 +39,9 @@ public class NettyServiceCommon {
     @Autowired
     private InstructionDefinitionService instructionDefinitionService1;
     private static InstructionDefinitionService instructionDefinitionService;
-
+    @Autowired
+    private CommandStatusService commandStatusService1;
+    private static CommandStatusService commandStatusService;
     @Resource(name = "redisTemplate")
     private RedisTemplate redisTemplate1;
     private static RedisTemplate redisTemplate;
@@ -68,7 +68,7 @@ public class NettyServiceCommon {
         this.dtuInfoService = dtuInfoService1;
         this.instructionDefinitionService = instructionDefinitionService1;
         this.redisTemplate = redisTemplate1;
-
+        this.commandStatusService = commandStatusService1;
     }
 
 
@@ -175,7 +175,7 @@ public class NettyServiceCommon {
     public static void sendRelayCommandAccordingToLayIds(InstructionDefinition
                                                                  instructionDefinition) {
         //如果三次，就是三倍时间
-        LocalDateTime beginTime = instructionDefinition.getSendCommandTime();
+        LocalDateTime beginTime = instructionDefinition.getSendCommandTime()==null?LocalDateTime.now():instructionDefinition.getSendCommandTime();
         Duration duration = Duration.between(beginTime, LocalDateTime.now());
         //指令过期时间
         if (duration.toHours() > Constant.INSTRUCTION_NUM) {
@@ -190,6 +190,13 @@ public class NettyServiceCommon {
             instructionDefinition.getCommands().forEach(command -> {
                 //缓存需要继续处理的指令，如果不再处理不缓存——为程序收到继电器信号（继电器发送什么信号接收到什么信号）能联系在一起
                 NettyServiceCommon.write(command.getInstructions(), finalChannel1);
+                CommandStatus commandStatus=new CommandStatus();
+                commandStatus.setStatus(true);
+                commandStatus.setUpdateDate(new Date());
+                commandStatus.setCreateDate(new Date());
+                commandStatus.setDtuInfo(instructionDefinition.getDtuInfo());
+                commandStatus.setInstructionDefinition(instructionDefinition);
+                commandStatusService.save(commandStatus);
             });
         } else {
             //不存在的话就找到任何一个活动的channel重新发一次

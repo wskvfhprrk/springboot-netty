@@ -13,19 +13,19 @@ import java.util.Set;
  * data: 2023-2-7
  */
 @Data
-@Entity(name = "tb_user")
-@org.hibernate.annotations.Table(appliesTo = "tb_user", comment = "用户信息")
+@Entity(name = "sys_user")
+@org.hibernate.annotations.Table(appliesTo = "sys_user", comment = "用户信息")
 public class User implements Serializable{
 
     @Id
     @SequenceGenerator(
-            name = "tb_user_sequence",
-            sequenceName = "tb_user_sequence",
+            name = "sys_user_sequence",
+            sequenceName = "sys_user_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "tb_user_sequence"
+            generator = "sys_user_sequence"
     )
     @Column(
             name = "id",

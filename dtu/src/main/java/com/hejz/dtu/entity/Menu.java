@@ -14,19 +14,19 @@ import java.util.Set;
  * data: 2023-2-7
  */
 @Data
-@Entity(name = "tb_menu")
-@org.hibernate.annotations.Table(appliesTo = "tb_menu", comment = "菜单")
+@Entity(name = "sys_menu")
+@org.hibernate.annotations.Table(appliesTo = "sys_menu", comment = "菜单")
 public class Menu implements Serializable{
 
     @Id
     @SequenceGenerator(
-            name = "tb_menu_sequence",
-            sequenceName = "tb_menu_sequence",
+            name = "sys_menu_sequence",
+            sequenceName = "sys_menu_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "tb_menu_sequence"
+            generator = "sys_menu_sequence"
     )
     @Column(
             name = "id",

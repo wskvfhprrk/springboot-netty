@@ -14,21 +14,21 @@ import javax.persistence.*;
  */
 @Getter
 @Setter
-@Entity(name = "command_status")
+@Entity(name = "equ_command_status")
 @NoArgsConstructor
 @AllArgsConstructor
-@org.hibernate.annotations.Table(appliesTo = "command_status", comment = "继电器命令状态")
+@org.hibernate.annotations.Table(appliesTo = "equ_command_status", comment = "继电器命令状态")
 public class CommandStatus implements Serializable{
 
     @Id
     @SequenceGenerator(
-            name = "command_status_sequence",
-            sequenceName = "command_status_sequence",
+            name = "equ_command_status_sequence",
+            sequenceName = "equ_command_status_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "command_status_sequence"
+            generator = "equ_command_status_sequence"
     )
     @Column(
             name = "id",
@@ -47,7 +47,7 @@ public class CommandStatus implements Serializable{
     @Column(
             name = "status",
             nullable = false,
-            columnDefinition="date"+" COMMENT '当前状态——true是新的状态，false是过期的状态'"
+            columnDefinition="bit"+" COMMENT '当前状态——true是新的状态，false是过期的状态'"
     )
     private Boolean status;
 

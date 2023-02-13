@@ -16,21 +16,21 @@ import java.util.Set;
  */
 @Getter
 @Setter
-@Entity(name = "instruction_definition")
-@org.hibernate.annotations.Table(appliesTo = "instruction_definition", comment = "继电器定义指令")
+@Entity(name = "equ_instruction_definition")
+@org.hibernate.annotations.Table(appliesTo = "equ_instruction_definition", comment = "继电器定义指令")
 @NoArgsConstructor
 @AllArgsConstructor
 public class InstructionDefinition implements Serializable{
 
     @Id
     @SequenceGenerator(
-            name = "instruction_definition_sequence",
-            sequenceName = "instruction_definition_sequence",
+            name = "equ_instruction_definition_sequence",
+            sequenceName = "equ_instruction_definition_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "instruction_definition_sequence"
+            generator = "equ_instruction_definition_sequence"
     )
     @Column(
             name = "id",

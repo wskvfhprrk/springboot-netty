@@ -13,20 +13,20 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-@Entity(name = "tb_dtu_info")
+@Entity(name = "equ_dtu_info")
 @NoArgsConstructor@AllArgsConstructor
-@org.hibernate.annotations.Table(appliesTo = "tb_dtu_info", comment = "dtu信息")
+@org.hibernate.annotations.Table(appliesTo = "equ_dtu_info", comment = "dtu信息")
 public class DtuInfo implements Serializable{
 
     @Id
     @SequenceGenerator(
-            name = "tb_dtu_info_sequence",
-            sequenceName = "tb_dtu_info_sequence",
+            name = "equ_dtu_info_sequence",
+            sequenceName = "equ_dtu_info_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "tb_dtu_info_sequence"
+            generator = "equ_dtu_info_sequence"
     )
     @Column(
             name = "id",

@@ -15,21 +15,21 @@ import javax.persistence.*;
  */
 @Getter
 @Setter
-@Entity(name = "dictionary")
+@Entity(name = "sys_dictionary")
 @NoArgsConstructor
 @AllArgsConstructor
-@org.hibernate.annotations.Table(appliesTo = "dictionary", comment = "数据字典")
+@org.hibernate.annotations.Table(appliesTo = "sys_dictionary", comment = "数据字典")
 public class Dictionary implements Serializable{
 
     @Id
     @SequenceGenerator(
-            name = "dictionary_sequence",
-            sequenceName = "dictionary_sequence",
+            name = "sys_dictionary_sequence",
+            sequenceName = "sys_dictionary_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "dictionary_sequence"
+            generator = "sys_dictionary_sequence"
     )
     @Column(
             name = "id",

@@ -15,21 +15,21 @@ import java.util.Set;
  */
 @Getter
 @Setter
-@Entity(name = "tb_command")
-@org.hibernate.annotations.Table(appliesTo = "tb_command", comment = "指令")
+@Entity(name = "equ_command")
+@org.hibernate.annotations.Table(appliesTo = "equ_command", comment = "指令")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Command implements Serializable{
 
     @Id
     @SequenceGenerator(
-            name = "tb_command_sequence",
-            sequenceName = "tb_command_sequence",
+            name = "equ_command_sequence",
+            sequenceName = "equ_command_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "tb_command_sequence"
+            generator = "equ_command_sequence"
     )
     @Column(
             name = "id",
@@ -99,26 +99,29 @@ public class Command implements Serializable{
      * 外键表——checking_rules中的字段id
      */
     @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties(value = {"command"})
     @JoinColumn(name = "checking_rules_id")
     private CheckingRules checkingRules;
     /**
-     * 外键表——tb_command中的字段id
+     * 外键表——equ_command中的字段id
      */
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "next_level_instruction", insertable = false, updatable = false)
-//    private Command command;
-    @Column(
-            name = "next_level_instruction_id",
-            columnDefinition = "bigint" + " COMMENT '下一个指令ID'"
-    )
-    private Long nextLevelInstructionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = {"command"})
+    @JoinColumn(name = "next_level_instruction", insertable = false, updatable = false)
+    private Command nextLevelInstructionId;
+
+//    @Column(
+//            name = "next_level_instruction_id",
+//            columnDefinition = "bigint" + " COMMENT '下一个指令ID'"
+//    )
+//    private Long nextLevelInstructionId;
 
 
     @JsonIgnoreProperties(value = {"commands"})
     @ManyToMany( mappedBy = "commands", fetch = FetchType.LAZY)
     private Set<InstructionDefinition> instructionDefinitions;
 
-    public Command(String manufacturer, String name, String remarks, String instructions, CheckingRules checkingRules, CommandTypeEnum commandType, String calculationFormula,  Integer waitTimeNextCommand, Long nextLevelInstructionId, Boolean isUse) {
+    public Command(String manufacturer, String name, String remarks, String instructions, CheckingRules checkingRules, CommandTypeEnum commandType, String calculationFormula,  Integer waitTimeNextCommand, Command nextLevelInstructionId, Boolean isUse) {
         this.calculationFormula = calculationFormula;
         this.commandType = commandType;
         this.instructions = instructions;

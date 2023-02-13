@@ -13,21 +13,21 @@ import java.util.Objects;
  */
 @Getter
 @Setter
-@Entity(name = "checking_rules")
+@Entity(name = "equ_checking_rules")
 @NoArgsConstructor
 @AllArgsConstructor
-@org.hibernate.annotations.Table(appliesTo = "checking_rules", comment = "数据校检规则")
+@org.hibernate.annotations.Table(appliesTo = "equ_checking_rules", comment = "数据校检规则")
 public class CheckingRules implements Serializable{
 
     @Id
     @SequenceGenerator(
-            name = "checking_rules_sequence",
-            sequenceName = "checking_rules_sequence",
+            name = "equ_checking_rules_sequence",
+            sequenceName = "equ_checking_rules_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "checking_rules_sequence"
+            generator = "equ_checking_rules_sequence"
     )
     @Column(
             name = "id",

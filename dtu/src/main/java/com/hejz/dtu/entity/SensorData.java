@@ -14,21 +14,21 @@ import javax.persistence.*;
  */
 @Getter
 @Setter
-@Entity(name = "sensor_data")
-@org.hibernate.annotations.Table(appliesTo = "sensor_data", comment = "传感器数据")
+@Entity(name = "equ_sensor_data")
+@org.hibernate.annotations.Table(appliesTo = "equ_sensor_data", comment = "传感器数据")
 @NoArgsConstructor
 @AllArgsConstructor
 public class SensorData implements Serializable{
 
     @Id
     @SequenceGenerator(
-            name = "sensor_data_sequence",
-            sequenceName = "sensor_data_sequence",
+            name = "equ_sensor_data_sequence",
+            sequenceName = "equ_sensor_data_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "sensor_data_sequence"
+            generator = "equ_sensor_data_sequence"
     )
     @Column(
             name = "id",

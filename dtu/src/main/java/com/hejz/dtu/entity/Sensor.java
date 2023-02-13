@@ -13,21 +13,21 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-@Entity(name = "sensor")
+@Entity(name = "equ_sensor")
 @NoArgsConstructor
 @AllArgsConstructor
-@org.hibernate.annotations.Table(appliesTo = "sensor", comment = "传感器")
+@org.hibernate.annotations.Table(appliesTo = "equ_sensor", comment = "传感器")
 public class Sensor implements Serializable{
 
     @Id
     @SequenceGenerator(
-            name = "sensor_sequence",
+            name = "equ_sensor_sequence",
             sequenceName = "sensor_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "sensor_sequence"
+            generator = "equ_sensor_sequence"
     )
     @Column(
             name = "id",
@@ -60,23 +60,23 @@ public class Sensor implements Serializable{
     /**
      * 外键表——instruction_definition中的字段id
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "max_instruction_definition_id")
     @JsonIgnoreProperties(value = {"sensors"})
     private InstructionDefinition maxInstructionDefinitionId;
     /**
      * 外键表——instruction_definition中的字段id
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "min_instruction_definition_id")
-    @JsonIgnoreProperties(value = {"sensors"})
+        @JsonIgnoreProperties(value = {"sensors"})
     private InstructionDefinition minInstructionDefinitionId;
 
     /**
      * 外键表——tb_dtu_info中的字段id
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dtu_id")
+    @JoinColumn(name = "equ_dtu_id")
     @JsonIgnoreProperties(value = {"sensors"})
     private DtuInfo dtuInfo;
 

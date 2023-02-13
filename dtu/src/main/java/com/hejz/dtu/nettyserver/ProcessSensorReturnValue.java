@@ -102,6 +102,18 @@ public class ProcessSensorReturnValue {
                 }
                 //插入数据库
                 insertDatabase(dtuInfo.getId(), sensorDataList);
+                //处理数据
+                if (dtuInfo.getAutomaticAdjustment()) {
+                    //根据继电器指令处理
+                    List<Sensor> sensors = sensorService.findAllByDtuInfo(dtuInfo);
+                    for (int i = 0; i < sensorDataByteList.size(); i++) {
+                        for (Sensor sensor : sensors) {
+                            if(sensor.getSensorSort()==i){
+                                processRelayCommands.handleAccordingToRelayCommand(sensor, Double.valueOf(sensorDataList.get(i).get("data").toString()), ctx);
+                            }
+                        }
+                    }
+                }
             } catch (Exception e) {
                 log.info(e.toString());
             }
@@ -197,10 +209,6 @@ public class ProcessSensorReturnValue {
                 return null;
             }
         }
-        if (dtuInfo.getAutomaticAdjustment()) {
-            //根据继电器指令处理
-            processRelayCommands.handleAccordingToRelayCommand(sensor, actualResults, ctx);
-        }
         return actualResults;
     }
 
@@ -269,6 +277,4 @@ public class ProcessSensorReturnValue {
         Integer x = Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
         return x;
     }
-
-
 }

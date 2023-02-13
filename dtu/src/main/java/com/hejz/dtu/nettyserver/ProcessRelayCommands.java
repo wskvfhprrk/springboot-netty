@@ -136,9 +136,9 @@ public class ProcessRelayCommands {
      * @param ctx    通道上下文
      */
     public void handleAccordingToRelayCommand(Sensor sensor, double data, ChannelHandlerContext ctx) {
-        Long id = null;
-        //根据结果值判断是否处理
+
         if (data - Double.parseDouble(sensor.getMax().toString()) > 0) {
+            if(sensor.getMaxInstructionDefinitionId()==null)return;
             log.info("{} 结果值 {} 大于最大值 {}", sensor.getName(), data, sensor.getMax());
             String key = ctx.channel().id().toString() + "max" + sensor.getId();
             if (Constant.THREE_RECORDS_MAP.get(key) == null) {
@@ -160,6 +160,7 @@ public class ProcessRelayCommands {
                 }
             }
         } else if (data - Double.parseDouble(sensor.getMin().toString()) < 0) {
+            if(sensor.getMinInstructionDefinitionId()==null)return;
             log.info("{} 结果值 {} 小于最小值{}", sensor.getName(), data, sensor.getMin());
             String key = ctx.channel().id().toString() + "min" + sensor.getId();
             if (Constant.THREE_RECORDS_MAP.get(key) == null) {
