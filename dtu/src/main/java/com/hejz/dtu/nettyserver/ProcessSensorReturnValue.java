@@ -59,7 +59,7 @@ public class ProcessSensorReturnValue {
         //同步每次轮询间隔时间
         //把间隔时间设置为每个所在dtu间隔发送时间
         Constant.INTERVAL_TIME_MAP.put(ctx.channel().id().toString(), dtuInfo.getIntervalTime());
-        int sensorsLength = sensorService.findAllByDtuId(dtuInfo.getId()).size();
+        int sensorsLength = sensorService.findAllByDtuInfo(dtuInfo).size();
         /**
          * 每组数据以上报时间差值最大的为一组的第一个数据为标准——发送数据时间间隔大于等于周周期时间的视为第一个数据
          */
@@ -143,7 +143,7 @@ public class ProcessSensorReturnValue {
             if (aDouble == null) {
                 return null;
             }
-            List<Sensor> sensors = sensorService.findAllByDtuId(dtuInfo.getId());
+            List<Sensor> sensors = sensorService.findAllByDtuInfo(dtuInfo);
             Sensor sensor = sensors.get(i);
             Map<String,Object> map=new HashMap<>();
             map.put("order",i);

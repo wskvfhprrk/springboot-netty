@@ -18,7 +18,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @org.hibernate.annotations.Table(appliesTo = "equ_command_status", comment = "继电器命令状态")
-public class CommandStatus implements Serializable{
+public class InstructionDefinitionStatus implements Serializable{
 
     @Id
     @SequenceGenerator(
@@ -61,18 +61,18 @@ public class CommandStatus implements Serializable{
      * 外键表——instruction_definition中的字段id
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "instruction_definition_id",insertable = false,updatable = false)
+    @JoinColumn(name = "instruction_definition_id")
     @JsonIgnoreProperties(value = {"commandStatus"})
     private InstructionDefinition instructionDefinition;
     /**
-     * 外键表——tb_dtu_info中的字段id
+     * 外键表——tb_dtu_info中的字段id，此字段是为了查询方便，保存时InstructionDefinition已经含有了dtuId
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = {"commandStatus"})
-    @JoinColumn(name = "dtu_id",insertable = false,updatable = false)
+    @JoinColumn(name = "dtu_id")
     private DtuInfo dtuInfo;
 
-    public CommandStatus(DtuInfo dtuInfo, InstructionDefinition instructionDefinition, Date createDate, Date updateDate, boolean status) {
+    public InstructionDefinitionStatus(DtuInfo dtuInfo, InstructionDefinition instructionDefinition, Date createDate, Date updateDate, boolean status) {
         this.dtuInfo=dtuInfo;
         this.instructionDefinition=instructionDefinition;
         this.createDate=createDate;

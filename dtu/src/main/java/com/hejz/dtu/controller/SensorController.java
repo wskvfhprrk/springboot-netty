@@ -35,7 +35,7 @@ public class SensorController {
     public Result createSensor(@Valid @RequestBody SensorCreateDto dto){
         Sensor sensor=new Sensor();
         BeanUtils.copyProperties(dto,sensor);
-        sensor = sensorService.Save(sensor);
+        sensor = sensorService.save(sensor);
         return Result.ok(sensor);
 
     }
@@ -44,7 +44,7 @@ public class SensorController {
     public Result updateSensor(@Valid @RequestBody SensorUpdateDto dto){
         Sensor sensor=new Sensor();
         BeanUtils.copyProperties(dto,sensor);
-        sensor = sensorService.Save(sensor);
+        sensor = sensorService.update(sensor);
         return Result.ok(sensor);
     }
     @DeleteMapping

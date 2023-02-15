@@ -2,8 +2,8 @@ package com.hejz.dtu.controller;
 
 import com.hejz.dtu.common.PageResult;
 import com.hejz.dtu.dto.*;
-import com.hejz.dtu.entity.CommandStatus;
-import com.hejz.dtu.service.CommandStatusService;
+import com.hejz.dtu.entity.InstructionDefinitionStatus;
+import com.hejz.dtu.service.InstructionDefinitionStatusService;
 import com.hejz.dtu.common.Result;
 import com.hejz.dtu.vo.*;
 import io.swagger.annotations.Api;
@@ -25,41 +25,41 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("commandStatus")
 @Api(tags="继电器命令状态")
-public class CommandStatusController {
+public class InstructionDefinitionStatusController {
 
     @Autowired
-    private CommandStatusService commandStatusService;
+    private InstructionDefinitionStatusService instructionDefinitionStatusService;
 
     @PostMapping()
     @ApiOperation("添加继电器命令状态")
     public Result createCommandStatus(@Valid @RequestBody CommandStatusCreateDto dto){
-        CommandStatus commandStatus=new CommandStatus();
-        BeanUtils.copyProperties(dto,commandStatus);
-        commandStatus = commandStatusService.save(commandStatus);
-        return Result.ok(commandStatus);
+        InstructionDefinitionStatus instructionDefinitionStatus =new InstructionDefinitionStatus();
+        BeanUtils.copyProperties(dto, instructionDefinitionStatus);
+        instructionDefinitionStatus = instructionDefinitionStatusService.save(instructionDefinitionStatus);
+        return Result.ok(instructionDefinitionStatus);
 
     }
     @PutMapping
     @ApiOperation("修改继电器命令状态")
     public Result updateCommandStatus(@Valid @RequestBody CommandStatusUpdateDto dto){
-        CommandStatus commandStatus=new CommandStatus();
-        BeanUtils.copyProperties(dto,commandStatus);
-        commandStatus = commandStatusService.save(commandStatus);
-        return Result.ok(commandStatus);
+        InstructionDefinitionStatus instructionDefinitionStatus =new InstructionDefinitionStatus();
+        BeanUtils.copyProperties(dto, instructionDefinitionStatus);
+        instructionDefinitionStatus = instructionDefinitionStatusService.save(instructionDefinitionStatus);
+        return Result.ok(instructionDefinitionStatus);
     }
     @DeleteMapping
     @ApiOperation("删除继电器命令状态")
     public Result DeleteCommandStatus(Long id){
-        commandStatusService.delete(id);
+        instructionDefinitionStatusService.delete(id);
         return Result.ok();
     }
 
     @GetMapping("findPage")
     @ApiOperation("条件查询继电器命令状态")
     public Result<PageResult<CommandStatusFindByPageVo>> findBypage( @Valid CommandStatusFindByPageDto dto){
-        CommandStatus commandStatus=new CommandStatus();
-        BeanUtils.copyProperties(dto,commandStatus);
-        Page<CommandStatus> commandStatusPage = commandStatusService.findPage(dto);
+        InstructionDefinitionStatus instructionDefinitionStatus =new InstructionDefinitionStatus();
+        BeanUtils.copyProperties(dto, instructionDefinitionStatus);
+        Page<InstructionDefinitionStatus> commandStatusPage = instructionDefinitionStatusService.findPage(dto);
         List<CommandStatusFindByPageVo> list = commandStatusPage.getContent().stream().map(d -> {
             CommandStatusFindByPageVo vo = new CommandStatusFindByPageVo();
             BeanUtils.copyProperties(d,vo);

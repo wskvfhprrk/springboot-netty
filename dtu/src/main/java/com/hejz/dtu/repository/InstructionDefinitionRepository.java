@@ -6,6 +6,7 @@ import com.hejz.dtu.entity.InstructionDefinition;
 import org.springframework.beans.PropertyValues;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -17,5 +18,7 @@ import java.util.List;
 public interface InstructionDefinitionRepository extends JpaRepository<InstructionDefinition,Long>,JpaSpecificationExecutor<InstructionDefinition> {
     InstructionDefinition findByDtuInfoAndInstructionType(DtuInfo dtuInfo, InstructionTypeEnum instructionTypeEnum);
 
-     List<InstructionDefinition> findAllByDtuInfo(DtuInfo dtuInfo);
+    List<InstructionDefinition> findAllByDtuInfo(DtuInfo dtuInfo);
+
+    InstructionDefinition findAllByDtuInfoAndInstructionType(DtuInfo dtuInfo, InstructionTypeEnum value);
 }

@@ -11,11 +11,10 @@ import java.util.List;
  *
  */
 public interface SensorService {
-    Sensor Save(Sensor sensor);
+    Sensor save(Sensor sensor);
+    Sensor update(Sensor sensor);
     void delete(Long id);
     Sensor findById(Long id);
     Page<Sensor> findPage(SensorFindByPageDto dto);
-
     List<Sensor> findAllByDtuInfo(DtuInfo dtuInfo);
-    List<Sensor> findAllByDtuId(Long id);
 }

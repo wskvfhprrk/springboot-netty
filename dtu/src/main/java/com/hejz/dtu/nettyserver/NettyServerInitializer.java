@@ -13,13 +13,7 @@ import org.springframework.stereotype.Component;
 public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
     Logger log = LogManager.getLogger(NettyServerInitializer.class);
     @Autowired
-    private TotalDataProcessorHandler totalDataProcessorHandler;
-    @Autowired
-    private NettyDecoder nettyDecoder;
-    @Autowired
-    private RegisterHandler registerHandler;
-    @Autowired
-    private ServerHeartBeatHandler serverHeartBeatHandler;
+    private NettyHandler nettyHandler;
 
     //连接注册，创建成功，会被调用
     @Override
@@ -33,14 +27,8 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         ChannelPipeline pipeline = ch.pipeline();
         //定义读写空闲时间——（单位秒）
         pipeline.addLast(new IdleStateHandler(180, 60,180));
-        //空闲拦截器
-        pipeline.addLast(serverHeartBeatHandler);
         //注册拦截器
-        pipeline.addLast(registerHandler);
-        //解决拆包粘包问题
-        pipeline.addLast(nettyDecoder);
-        //总数据处理器
-        pipeline.addLast(totalDataProcessorHandler);
+        pipeline.addLast(nettyHandler);
     }
 
 }

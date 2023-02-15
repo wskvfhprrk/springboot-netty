@@ -6,7 +6,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -102,5 +101,4 @@ public class Menu implements Serializable{
     @JsonIgnoreProperties(value = {"menus"})
     @ManyToMany(mappedBy = "menus",fetch = FetchType.LAZY)
     private Set<Role> roles;
-
 }

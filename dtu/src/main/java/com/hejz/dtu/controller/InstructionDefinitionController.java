@@ -74,4 +74,10 @@ public class InstructionDefinitionController {
         return Result.ok(pages);
     }
 
+    @PostMapping ("sendManually")
+    @ApiOperation("手动发送指令")
+    public Result sendManually(DendManuallyDto dto){
+        return instructionDefinitionService.sendManually(dto);
+    }
+
 }

@@ -2,11 +2,11 @@ package com.hejz.dtu.nettyserver;
 
 import com.hejz.dtu.common.Constant;
 import com.hejz.dtu.enm.InstructionTypeEnum;
-import com.hejz.dtu.entity.CommandStatus;
+import com.hejz.dtu.entity.InstructionDefinitionStatus;
 import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.entity.InstructionDefinition;
 import com.hejz.dtu.entity.Sensor;
-import com.hejz.dtu.service.CommandStatusService;
+import com.hejz.dtu.service.InstructionDefinitionStatusService;
 import com.hejz.dtu.service.DtuInfoService;
 import com.hejz.dtu.service.InstructionDefinitionService;
 import com.hejz.dtu.utils.HexConvert;
@@ -36,7 +36,7 @@ public class ProcessRelayCommands {
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
-    private CommandStatusService commandStatusService;
+    private InstructionDefinitionStatusService instructionDefinitionStatusService;
     @Autowired
     private DtuInfoService dtuInfoService;
 
@@ -68,65 +68,8 @@ public class ProcessRelayCommands {
             log.error("继电器返回值：{}校验不通过！", HexConvert.BinaryToHexString(bytes));
             return;
         }
-        //从缓存中取指令
-        String key = Constant.CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY + "::" + ctx.channel().id().toString() + "::" + useData;
-        Object o = redisTemplate.opsForValue().get(key);
-        if (o == null) return;
-        InstructionDefinition instructionDefinition = (InstructionDefinition) o;
-        //处理过对应id锁:的不需要再次处理--有可能出现重复情况
-        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(Constant.PROCESSED_THE_CORRESPONDING_ID_LOCK + "::" + ctx.channel().id().toString() + "::" + instructionDefinition.getId(), "1", Duration.ofSeconds(5L));
-        if (!aBoolean) return;
-        //添加修改命令状态
-        List<InstructionDefinition> list = instructionDefinitionService.findAllByDtuId(dtuId);
-        list.stream().forEach(instructionDefinition1 -> instructionDefinition1.getCommands().stream().forEach(command -> {
-            //把其相反的状态置为false——过去时的
-            InstructionDefinition oppositeInstructionDefinition = oppositeState(dtuInfo, instructionDefinition);
-            CommandStatus commandStatus = commandStatusService.findByInstructionDefinition(oppositeInstructionDefinition);
-            commandStatus.setStatus(false);
-            commandStatus.setUpdateDate(new Date());
-            commandStatusService.save(commandStatus);
-        }));
-        //保存当前状态
-        commandStatusService.save(new CommandStatus(dtuInfo, instructionDefinition, new Date(), new Date(), true));
-        //处理下一级指令
-        NettyServiceCommon.sendRelayCommandAccordingToLayIds(instructionDefinition);
+        // TODO: 2023/2/15 这个逻辑要重构——收到继电器返回信号就可以了，说明其执行了此功能，然后再改变状态，它的延时发送功能已经交于指令自己发送，不在此方法中处理
     }
-
-    /**
-     * 计算出相反的指令
-     *
-     * @param dtuInfo
-     * @param instructionDefinition
-     * @return
-     */
-    private InstructionDefinition oppositeState(DtuInfo dtuInfo, InstructionDefinition instructionDefinition) {
-        InstructionTypeEnum typeEnum;
-        int ordinal = instructionDefinition.getInstructionType().ordinal();
-        if (ordinal % 2 == 0) {
-            typeEnum = InstructionTypeEnum.values()[ordinal + 1];
-        } else {
-            typeEnum = InstructionTypeEnum.values()[ordinal - 1];
-        }
-        return instructionDefinitionService.findByDtuInfoAndInstructionType(dtuInfo, typeEnum);
-    }
-
-    /**
-     * 根据数据处理继电器指令处理
-     *
-     * @param instructionDefinition     继电器指令——奇数表示对应的继电器命令的id
-     */
-    void relayCommandData(InstructionDefinition instructionDefinition) {
-        //编辑继电器指令
-        CommandStatus commandStatuses = commandStatusService.findByInstructionDefinition(instructionDefinition);
-        //判断当前状态是否一致，如果一致则不往继电器发送状态了；
-        if (commandStatuses != null) {
-            //如果状态存在，就不发送命令了
-            log.info("dtuId:{} 当前状态已经存在，不需要重复发送指令：{}", instructionDefinition.getDtuInfo().getId(), instructionDefinition);
-            return;
-        }
-        NettyServiceCommon.sendRelayCommandAccordingToLayIds(instructionDefinition);
-    }
-
 
     /**
      * 根据继电器指令处理
@@ -155,7 +98,7 @@ public class ProcessRelayCommands {
                 List<Double> collect = Constant.THREE_RECORDS_MAP.get(key).stream().sorted().collect(Collectors.toList());
                 if (collect.get(2) - Double.parseDouble(sensor.getMax().toString()) > 0) {
                     InstructionDefinition maxInstructionDefinitionId = sensor.getMaxInstructionDefinitionId();
-                    relayCommandData( maxInstructionDefinitionId);
+                    NettyServiceCommon.sendRelayCommandAccordingToLayIds( maxInstructionDefinitionId);
                     Constant.THREE_RECORDS_MAP.remove(key);
                 }
             }
@@ -176,7 +119,7 @@ public class ProcessRelayCommands {
                 List<Double> collect = Constant.THREE_RECORDS_MAP.get(key).stream().sorted().collect(Collectors.toList());
                 if (collect.get(2) - Double.parseDouble(sensor.getMin().toString()) < 0) {
                     InstructionDefinition minInstructionDefinitionId = sensor.getMinInstructionDefinitionId();
-                    relayCommandData(minInstructionDefinitionId);
+                    NettyServiceCommon.sendRelayCommandAccordingToLayIds(minInstructionDefinitionId);
                     Constant.THREE_RECORDS_MAP.remove(key);
                 }
             }

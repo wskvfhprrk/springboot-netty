@@ -17,7 +17,7 @@ import java.io.Serializable;
 @NoArgsConstructor@AllArgsConstructor
 @org.hibernate.annotations.Table(appliesTo = "equ_dtu_info", comment = "dtu信息")
 public class DtuInfo implements Serializable{
-
+    private static final long serialVersionUID= 448978979879L;
     @Id
     @SequenceGenerator(
             name = "equ_dtu_info_sequence",

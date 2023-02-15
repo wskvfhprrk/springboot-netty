@@ -1,7 +1,10 @@
 package com.hejz.dtu.service;
 
+import com.hejz.dtu.common.Result;
+import com.hejz.dtu.dto.DendManuallyDto;
 import com.hejz.dtu.dto.InstructionDefinitionFindByPageDto;
 import com.hejz.dtu.enm.InstructionTypeEnum;
+import com.hejz.dtu.entity.Command;
 import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.entity.InstructionDefinition;
 import org.springframework.beans.PropertyValues;
@@ -23,4 +26,8 @@ public interface InstructionDefinitionService {
     List<InstructionDefinition> findAllByDtuId(Long id);
 
     List<InstructionDefinition> findAllByDtuInfo(DtuInfo dtuInfo);
+
+    Result sendManually(DendManuallyDto dto);
+
+    InstructionDefinition findContrary(InstructionDefinition instructionDefinition);
 }

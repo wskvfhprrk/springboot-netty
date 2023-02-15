@@ -1,6 +1,6 @@
 package com.hejz.dtu.repository;
 
-import com.hejz.dtu.entity.CommandStatus;
+import com.hejz.dtu.entity.InstructionDefinitionStatus;
 import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.entity.InstructionDefinition;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +13,9 @@ import java.util.List;
  * author: hejz
  * data: 2023-2-7
  */
-public interface CommandStatusRepository extends JpaRepository<CommandStatus,Long>,JpaSpecificationExecutor<CommandStatus> {
+public interface CommandStatusRepository extends JpaRepository<InstructionDefinitionStatus,Long>,JpaSpecificationExecutor<InstructionDefinitionStatus> {
 
-    CommandStatus findByInstructionDefinitionAndStatus(InstructionDefinition instructionDefinition, Boolean status);
+    List<InstructionDefinitionStatus> findByInstructionDefinitionAndStatus(InstructionDefinition instructionDefinition, Boolean status);
+
+    InstructionDefinitionStatus findByDtuInfoAndStatus(DtuInfo dtuInfo, Boolean status);
 }

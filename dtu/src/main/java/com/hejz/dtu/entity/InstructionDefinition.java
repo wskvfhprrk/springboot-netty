@@ -2,12 +2,14 @@ package com.hejz.dtu.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hejz.dtu.enm.InstructionTypeEnum;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -21,6 +23,7 @@ import java.util.Set;
 @org.hibernate.annotations.Table(appliesTo = "equ_instruction_definition", comment = "继电器定义指令")
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler"})
 public class InstructionDefinition implements Serializable{
 
     @Id
@@ -64,19 +67,19 @@ public class InstructionDefinition implements Serializable{
     /**
      * 外键表——tb_dtu_info中的字段id
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "dtu_id")
-    @JsonIgnoreProperties(value = {"instructionDefinitions"})
+    @JsonIgnoreProperties(value = {"instructionDefinition"})
     private DtuInfo dtuInfo;
 
     @JsonIgnoreProperties(value = {"instructionDefinitions"})
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "mid_instruction_definition_command",
             inverseJoinColumns = @JoinColumn(name = "command_id", referencedColumnName = "id"),
             joinColumns = @JoinColumn(name = "instruction_definition_id", referencedColumnName = "id"))
     private Set<Command> commands;
 
-    public InstructionDefinition(DtuInfo dtuInfo, String name, String remarks, InstructionTypeEnum instructionType, Set<Command> commands) {
+    public InstructionDefinition(DtuInfo dtuInfo, String name, String remarks, InstructionTypeEnum instructionType,Set<Command> commands) {
         this.instructionType = instructionType;
         this.name = name;
         this.remarks = remarks;

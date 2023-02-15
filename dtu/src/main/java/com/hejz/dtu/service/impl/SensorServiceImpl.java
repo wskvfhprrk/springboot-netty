@@ -1,22 +1,28 @@
 package com.hejz.dtu.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hejz.dtu.common.Constant;
 import com.hejz.dtu.dto.SensorFindByPageDto;
 import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.entity.Sensor;
 import com.hejz.dtu.repository.SensorRepository;
-import com.hejz.dtu.service.DtuInfoService;
 import com.hejz.dtu.service.SensorService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SensorServiceImpl implements SensorService {
@@ -24,16 +30,25 @@ public class SensorServiceImpl implements SensorService {
     @Autowired
     private SensorRepository sensorRepository;
     @Autowired
-    private DtuInfoService dtuInfoService;
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
-    public Sensor Save(Sensor sensor) {
+    public Sensor save(Sensor sensor) {
         return sensorRepository.save(sensor);
     }
 
+    @CacheEvict(value = Constant.SENSOR_CACHE_KEY, key = "#p0")
+    @Override
+    public Sensor update(Sensor sensor) {
+        return sensorRepository.save(sensor);
+    }
+
+    @CacheEvict(value = Constant.SENSOR_CACHE_KEY, key = "#p0")
     @Override
     public void delete(Long id) {
-        sensorRepository.deleteById( id);
+        sensorRepository.deleteById(id);
     }
 
     @Override
@@ -74,14 +89,25 @@ public class SensorServiceImpl implements SensorService {
         return all;
     }
 
-    @Override
-    public List<Sensor> findAllByDtuId(Long id) {
-        DtuInfo dtu=dtuInfoService.findById(id);
-        return sensorRepository.findAllByDtuInfo(dtu);
-    }
 
     @Override
     public List<Sensor> findAllByDtuInfo(DtuInfo dtuInfo) {
-        return sensorRepository.findAllByDtuInfo(dtuInfo);
+        Object o = redisTemplate.opsForValue().get(Constant.SENSOR_CACHE_KEY + "::" + dtuInfo.getId());
+        List<Sensor> sensors=new ArrayList<>();
+        try {
+            if(o!=null){
+                sensors = objectMapper.readValue(o.toString(), new TypeReference<List<Sensor>>() {
+                });
+            }else {
+                sensors = sensorRepository.findAllByDtuInfo(dtuInfo);
+                String value = objectMapper.writeValueAsString(sensors);
+                redisTemplate.opsForValue().set(Constant.SENSOR_CACHE_KEY + "::" + dtuInfo.getId(),value);
+            }
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return sensors;
     }
 }

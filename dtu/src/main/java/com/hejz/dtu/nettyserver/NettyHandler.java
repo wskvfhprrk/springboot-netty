@@ -7,13 +7,13 @@ import com.hejz.dtu.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -23,14 +23,17 @@ import java.util.List;
 @Component
 @ChannelHandler.Sharable
 @Slf4j
-public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
+public class NettyHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Autowired
     private DtuRegister dtuRegister;
     @Autowired
     private DtuInfoService dtuInfoService;
+    @Autowired
+    private NettyDecoder nettyDecoder;
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
+        ByteBuf in = msg;
         try {
             AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
             Long dtuId = ctx.channel().attr(key).get();
@@ -38,7 +41,7 @@ public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
                 //注册后把bytes全部向后传
                 byte[] bytes = new byte[in.readableBytes()];
                 in.readBytes(bytes);
-                out.add(bytes);
+                nettyDecoder.start(ctx,bytes);
             } else if (in.readableBytes() == Constant.DUT_REGISTERED_BYTES_LENGTH) {
                 //去注册
                 byte[] bytes = new byte[Constant.DUT_REGISTERED_BYTES_LENGTH];
@@ -60,7 +63,7 @@ public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
                 }
                 dtuRegister.register(ctx, dtuInfo);
                 //把所有数据后传，交给编码处理
-                out.add(bytes);
+                nettyDecoder.start(ctx,bytes);
             } else {
                 byte[] bytes = new byte[in.readableBytes()];
                 in.readBytes(bytes);
@@ -69,5 +72,38 @@ public class RegisterHandler extends MessageToMessageDecoder<ByteBuf> {
         }catch (Exception e){
             log.error(e.toString());
         }
+    }
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        //判断是否是空闲状态事件
+        if (evt instanceof IdleStateEvent) {
+            IdleState state = ((IdleStateEvent) evt).state();
+            switch (state) {
+                case READER_IDLE:
+                    log.info("channel:{},空闲3分钟无上报数据自动关闭通道！",ctx.channel().id().toString());
+                    NettyServiceCommon.deleteKey(ctx.channel());
+                    ctx.channel().close();
+                    break;
+                case WRITER_IDLE:
+                    log.info("发送心跳包给客户端：00 00");
+                    //根据检查频率和实际情况写空闲时发送心跳包给客户端——60秒,如果不存活的通道就不发送了
+                    if (ctx.channel().isActive()) {
+                        NettyServiceCommon.write("0000", ctx.channel());
+                    }
+                    break;
+                case ALL_IDLE:
+//                    log.info("读写都空闲");
+                    break;
+            }
+        } else { //如果不是空闲状态，向后再传播
+            ctx.fireUserEventTriggered(evt);
+        }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        cause.getCause();
+        NettyServiceCommon.deleteKey(ctx.channel());
+        ctx.channel().close();
     }
 }

@@ -7,9 +7,7 @@ import com.hejz.dtu.entity.InstructionDefinition;
 import com.hejz.dtu.service.DtuInfoService;
 import com.hejz.dtu.service.InstructionDefinitionService;
 import com.hejz.dtu.utils.HexConvert;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,17 +39,18 @@ import java.util.Set;
  * endif
  */
 @Component
-@ChannelHandler.Sharable
 @Slf4j
-public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
+public class NettyDecoder {
 
     @Autowired
     private DtuInfoService dtuInfoService;
     @Autowired
     private InstructionDefinitionService instructionDefinitionService;
+    @Autowired
+    private TotalDataProcessorHandler totalDataProcessorHandler;
 
-    @Override
-    protected void decode(ChannelHandlerContext ctx, byte[] bytes, List list) {
+
+    public void start(ChannelHandlerContext ctx, byte[] bytes) throws Exception {
         try {
             //根据channel取出dtuId，查到dtuInfo信息，拿到imei值
             AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
@@ -62,7 +61,7 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
             for (String hexStr : hexArr) {
                 if (hexStr.length() != 0) {
                     //拆分指令——根据指令地址找到批令长度，截取相应长度的bytes
-                    splitInstruction(list, dtuInfo, HexConvert.hexStringToBytes(hexStr));
+                    splitInstruction(ctx, dtuInfo, HexConvert.hexStringToBytes(hexStr));
                 }
             }
         } catch (Exception e) {
@@ -72,13 +71,12 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
 
     /**
      * 此时的指令已经没有imei值了，可能原本指令没有imei值，会出现多条指令粘包现象
-     *
-     * @param out
+     *  @param ctx
      * @param dtuInfo
      * @param bytes
      */
     @Transactional
-    public void splitInstruction(List out, DtuInfo dtuInfo, byte[] bytes) {
+    public void splitInstruction(ChannelHandlerContext ctx, DtuInfo dtuInfo, byte[] bytes) {
         //计算出实际地址
         Integer address = NettyServiceCommon.addressValueOfInstruction(dtuInfo, bytes);
         //根据地址位得出应该截取的长度
@@ -92,12 +90,12 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
             //截取够自己的长度往后扔，把剩余的长度再递归取值
             byte[] useBytes = new byte[commonLength];
             System.arraycopy(bytes, 0, useBytes, 0, commonLength);
-            out.add(useBytes);
+            totalDataProcessorHandler.start(ctx,bytes);
             //剩余的bytes再扔进方法进行递归操作
             byte[] remainingBytes = new byte[remainingLength];
             if (remainingBytes.length > 0) {
                 System.arraycopy(bytes, commonLength, remainingBytes, 0, remainingLength);
-                splitInstruction(out, dtuInfo, remainingBytes);
+                splitInstruction(ctx, dtuInfo, remainingBytes);
             }
         } else {
             //todo 不够再粘包了——以后再开发此指令
@@ -117,10 +115,10 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
         Integer commonLength = 0;
         //if(地址位==0)then(是的)应截取长度=2;
         if (address == 0) return 2;
+        //根据dtu得到所有指令
         List<InstructionDefinition> instructionDefinitions = instructionDefinitionService.findAllByDtuInfo(dtuInfo);
         for (InstructionDefinition instructionDefinition : instructionDefinitions) {
-            Set<Command> commands = instructionDefinition.getCommands();
-            for (Command command : commands) {
+            for (Command command : instructionDefinition.getCommands()) {
                 Integer addr = NettyServiceCommon.addressValueOfInstruction(dtuInfo, HexConvert.hexStringToBytes(command.getInstructions().replaceAll(" ", "")));
                 if (addr == address) {
                     return command.getCheckingRules().getCommonLength();
@@ -129,5 +127,4 @@ public class NettyDecoder extends MessageToMessageDecoder<byte[]> {
         }
         return null;
     }
-
 }

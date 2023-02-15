@@ -37,8 +37,8 @@ public class DtuRegister {
      */
     public void start(ChannelHandlerContext ctx, byte[] bytes) {
         synchronized (this) {
-            RegisterInfo registerInfo = null;
-            String imei=null;
+            RegisterInfo registerInfo;
+            String imei;
             try {
                 registerInfo = objectMapper.readValue(new String(bytes, StandardCharsets.UTF_8), RegisterInfo.class);
                  imei = registerInfo.getImei().trim();

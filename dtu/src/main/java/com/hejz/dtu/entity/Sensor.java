@@ -22,7 +22,7 @@ public class Sensor implements Serializable{
     @Id
     @SequenceGenerator(
             name = "equ_sensor_sequence",
-            sequenceName = "equ_sensor_sequence",
+            sequenceName = "sensor_sequence",
             allocationSize = 1
     )
     @GeneratedValue(

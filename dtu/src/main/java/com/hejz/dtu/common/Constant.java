@@ -26,6 +26,7 @@ public class Constant {
     public static final String DTU_INFO_IMEI_CACHE_KEY = "dtuInfoImeiCacheKey";
     public static final String CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEY = "cacheInstructionsThatNeedToContinueProcessingCacheKey";
     public static final String COMMAND_STATUS_CACHE_KEY = "commandStatusCacheKey";
+    public static final String INSTRUCTION_DEFINITION_CACHE_KEY = "instructionDefinitionCacheKey";
     //最后时间——key为ctx.channel().id()
     public static final Map<String, LocalDateTime> END_TIME_MAP = new HashMap<>();
     //缓存每组dtu查询后返回的bytes值，够数量才解析，不够数量解析没有用——key为ctx.channel().id()

@@ -5,7 +5,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -52,5 +51,4 @@ public class Role implements Serializable{
             joinColumns = @JoinColumn(name = "menu_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Menu> menus;
-
 }

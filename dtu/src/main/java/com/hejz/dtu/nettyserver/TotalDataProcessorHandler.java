@@ -22,9 +22,8 @@ import java.util.List;
  * * @Description: 总数据处理器——根据上一次解码器得到的数据结果把数据分发给感应器和继电器
  */
 @Component
-@ChannelHandler.Sharable
 @Slf4j
-public class TotalDataProcessorHandler extends SimpleChannelInboundHandler {
+public class TotalDataProcessorHandler {
     @Autowired
     ProcessSensorReturnValue processSensorReturnValue;
     @Autowired
@@ -32,23 +31,7 @@ public class TotalDataProcessorHandler extends SimpleChannelInboundHandler {
     @Autowired
     private DtuInfoService dtuInfoService;
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.getCause();
-        NettyServiceCommon.deleteKey(ctx.channel());
-        ctx.channel().close();
-    }
-
-    @Override
-    public void channelRead0(ChannelHandlerContext ctx, Object msg) {
-        try {
-            start(ctx, (byte[]) msg);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void start(ChannelHandlerContext ctx, byte[] bytes) {
+    public void start(ChannelHandlerContext ctx, byte[] bytes) {
         try {
             AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
             Long dtuId = ctx.channel().attr(key).get();

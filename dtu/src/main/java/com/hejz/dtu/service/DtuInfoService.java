@@ -10,7 +10,8 @@ import java.util.List;
  *
  */
 public interface DtuInfoService {
-    DtuInfo Save(DtuInfo dtuInfo);
+    DtuInfo save(DtuInfo dtuInfo);
+    DtuInfo update(DtuInfo dtuInfo);
     void delete(Long id);
     DtuInfo findById(Long id);
     Page<DtuInfo> findPage(DtuInfoFindByPageDto dto);

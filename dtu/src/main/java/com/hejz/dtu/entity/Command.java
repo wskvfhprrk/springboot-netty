@@ -6,7 +6,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -99,22 +98,27 @@ public class Command implements Serializable{
     /**
      * 外键表——checking_rules中的字段id
      */
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = {"command"})
     @JoinColumn(name = "checking_rules_id")
     private CheckingRules checkingRules;
-    /**
-     * 外键表——equ_command中的字段id
-     */
+//    /**
+//     * 外键表——equ_command中的字段id
+//     */
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JsonIgnoreProperties(value = {"command"})
+//    @JoinColumn(name = "next_level_instruction")
+//    private Command nextLevelInstructionId;
+
     @Column(
             name = "next_level_instruction_id",
-            columnDefinition = "int(5)" + " COMMENT '下一条指令'"
+            columnDefinition = "bigint" + " COMMENT '下一个指令ID'"
     )
     private Long nextLevelInstructionId;
 
 
     @JsonIgnoreProperties(value = {"commands"})
-    @ManyToMany( mappedBy = "commands", fetch = FetchType.LAZY)
+    @ManyToMany( mappedBy = "commands", fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private Set<InstructionDefinition> instructionDefinitions;
 
     public Command(String manufacturer, String name, String remarks, String instructions, CheckingRules checkingRules, CommandTypeEnum commandType, String calculationFormula,  Integer waitTimeNextCommand, Long nextLevelInstructionId, Boolean isUse) {

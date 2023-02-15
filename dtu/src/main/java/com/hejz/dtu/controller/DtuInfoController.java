@@ -35,7 +35,7 @@ public class DtuInfoController {
     public Result createDtuInfo(@Valid @RequestBody DtuInfoCreateDto dto){
         DtuInfo dtuInfo=new DtuInfo();
         BeanUtils.copyProperties(dto,dtuInfo);
-        dtuInfo = dtuInfoService.Save(dtuInfo);
+        dtuInfo = dtuInfoService.save(dtuInfo);
         return Result.ok(dtuInfo);
 
     }
@@ -44,7 +44,7 @@ public class DtuInfoController {
     public Result updateDtuInfo(@Valid @RequestBody DtuInfoUpdateDto dto){
         DtuInfo dtuInfo=new DtuInfo();
         BeanUtils.copyProperties(dto,dtuInfo);
-        dtuInfo = dtuInfoService.Save(dtuInfo);
+        dtuInfo = dtuInfoService.update(dtuInfo);
         return Result.ok(dtuInfo);
     }
     @DeleteMapping
