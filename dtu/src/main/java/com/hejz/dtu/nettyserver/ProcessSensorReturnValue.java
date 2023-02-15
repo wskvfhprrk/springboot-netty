@@ -108,7 +108,7 @@ public class ProcessSensorReturnValue {
                     for (int i = 0; i < sensorDataByteList.size(); i++) {
                         for (Sensor sensor : sensors) {
                             if(sensor.getSensorSort()==i){
-                                processRelayCommands.handleAccordingToRelayCommand(sensor, Double.valueOf(sensorDataList.get(i).get("data").toString()), ctx);
+                                processRelayCommands.handleAccordingToRelayCommand(sensor, Double.valueOf(sensorDataList.get(i-1).get("data").toString()), ctx);
                             }
                         }
                     }
