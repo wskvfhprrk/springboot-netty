@@ -1,25 +1,18 @@
 package com.hejz.dtu.nettyserver;
 
 import com.hejz.dtu.common.Constant;
-import com.hejz.dtu.enm.InstructionTypeEnum;
-import com.hejz.dtu.entity.InstructionDefinitionStatus;
 import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.entity.InstructionDefinition;
 import com.hejz.dtu.entity.Sensor;
-import com.hejz.dtu.service.InstructionDefinitionStatusService;
 import com.hejz.dtu.service.DtuInfoService;
-import com.hejz.dtu.service.InstructionDefinitionService;
 import com.hejz.dtu.utils.HexConvert;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,7 +84,9 @@ public class ProcessRelayCommands {
                 List<Double> collect = Constant.THREE_RECORDS_MAP.get(key).stream().sorted().collect(Collectors.toList());
                 if (collect.get(2) - Double.parseDouble(sensor.getMax().toString()) > 0) {
                     InstructionDefinition maxInstructionDefinitionId = sensor.getMaxInstructionDefinitionId();
-                    NettyServiceCommon.sendRelayCommandAccordingToLayIds( maxInstructionDefinitionId);
+                    if (maxInstructionDefinitionId != null) {
+                        NettyServiceCommon.sendRelayCommandAccordingToLayIds(maxInstructionDefinitionId);
+                    }
                     Constant.THREE_RECORDS_MAP.remove(key);
                 }
             }
@@ -112,7 +107,9 @@ public class ProcessRelayCommands {
                 List<Double> collect = Constant.THREE_RECORDS_MAP.get(key).stream().sorted().collect(Collectors.toList());
                 if (collect.get(2) - Double.parseDouble(sensor.getMin().toString()) < 0) {
                     InstructionDefinition minInstructionDefinitionId = sensor.getMinInstructionDefinitionId();
-                    NettyServiceCommon.sendRelayCommandAccordingToLayIds(minInstructionDefinitionId);
+                    if (minInstructionDefinitionId != null) {
+                        NettyServiceCommon.sendRelayCommandAccordingToLayIds(minInstructionDefinitionId);
+                    }
                     Constant.THREE_RECORDS_MAP.remove(key);
                 }
             }
