@@ -96,7 +96,7 @@ public class InitController {
         //imei值
         Long imei = 865328063321359L;
         for (int i = 0; i < 30; i++) {
-            DtuInfo dtuInfo = dtuInfoRepository.save(new DtuInfo(imei.toString(), 89, 30000, true, "1,1,2,2,2,2,2,2,2"));
+            DtuInfo dtuInfo = dtuInfoRepository.save(new DtuInfo(imei.toString(), 89, 30000, false, "1,1,2,2,2,2,2,2,2"));
 
             //处理继电器信息
 //        relayRepository.save(new Relay((long) (i + 1), 3, "第1个继电器", "03 05 00 00 FF 00 8D D8", "03 05 00 00 00 00 CC 28", "lcaolhost:8080/hello", "大棚电机双锁开关"));
