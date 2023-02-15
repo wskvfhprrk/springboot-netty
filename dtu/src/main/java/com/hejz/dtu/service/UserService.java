@@ -10,7 +10,8 @@ import java.util.List;
  *
  */
 public interface UserService {
-    User Save(User user);
+    User save(User user);
+    User update(User user);
     void delete(Integer id);
     User findById(Integer id);
     Page<User> findPage(UserFindByPageDto dto);

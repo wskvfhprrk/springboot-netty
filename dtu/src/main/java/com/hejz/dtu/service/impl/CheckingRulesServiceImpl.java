@@ -6,7 +6,9 @@ import com.hejz.dtu.repository.CheckingRulesRepository;
 import com.hejz.dtu.service.CheckingRulesService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -21,18 +23,23 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
     private CheckingRulesRepository checkingRulesRepository;
 
     @Override
-    public CheckingRules Save(CheckingRules checkingRules) {
+    public CheckingRules save(CheckingRules checkingRules) {
+        return checkingRulesRepository.save(checkingRules);
+    }
+
+    @Override
+    public CheckingRules update(CheckingRules checkingRules) {
         return checkingRulesRepository.save(checkingRules);
     }
 
     @Override
     public void delete(Integer id) {
-        checkingRulesRepository.deleteById( id);
+        checkingRulesRepository.deleteById(id);
     }
 
     @Override
     public CheckingRules findById(Integer id) {
-       return checkingRulesRepository.findById( id).orElse(null);
+        return checkingRulesRepository.findById(id).orElse(null);
     }
 
     @Override

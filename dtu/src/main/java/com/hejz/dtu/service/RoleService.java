@@ -10,7 +10,8 @@ import java.util.List;
  *
  */
 public interface RoleService {
-    Role Save(Role role);
+    Role save(Role role);
+    Role update(Role role);
     void delete(Integer id);
     Role findById(Integer id);
     Page<Role> findPage(RoleFindByPageDto dto);

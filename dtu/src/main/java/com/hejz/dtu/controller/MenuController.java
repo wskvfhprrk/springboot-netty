@@ -35,7 +35,7 @@ public class MenuController {
     public Result createMenu(@Valid @RequestBody MenuCreateDto dto){
         Menu menu=new Menu();
         BeanUtils.copyProperties(dto,menu);
-        menu = menuService.Save(menu);
+        menu = menuService.save(menu);
         return Result.ok(menu);
 
     }
@@ -44,7 +44,7 @@ public class MenuController {
     public Result updateMenu(@Valid @RequestBody MenuUpdateDto dto){
         Menu menu=new Menu();
         BeanUtils.copyProperties(dto,menu);
-        menu = menuService.Save(menu);
+        menu = menuService.update(menu);
         return Result.ok(menu);
     }
     @DeleteMapping

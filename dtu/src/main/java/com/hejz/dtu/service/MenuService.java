@@ -10,7 +10,8 @@ import java.util.List;
  *
  */
 public interface MenuService {
-    Menu Save(Menu menu);
+    Menu save(Menu menu);
+    Menu update(Menu menu);
     void delete(Integer id);
     Menu findById(Integer id);
     Page<Menu> findPage(MenuFindByPageDto dto);

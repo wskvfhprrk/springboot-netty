@@ -5,7 +5,6 @@ import com.hejz.dtu.common.Result;
 import com.hejz.dtu.dto.*;
 import com.hejz.dtu.entity.User;
 import com.hejz.dtu.service.UserService;
-import com.hejz.dtu.vo.UserAllVo;
 import com.hejz.dtu.vo.UserFindByPageVo;
 import com.hejz.dtu.vo.UserInfoVo;
 import io.swagger.annotations.Api;
@@ -68,7 +67,7 @@ public class UserController {
     public Result createUser(@Valid @RequestBody UserCreateDto dto){
         User user=new User();
         BeanUtils.copyProperties(dto,user);
-        user = userService.Save(user);
+        user = userService.save(user);
         return Result.ok(user);
 
     }
@@ -77,7 +76,7 @@ public class UserController {
     public Result updateUser(@Valid @RequestBody UserUpdateDto dto){
         User user=new User();
         BeanUtils.copyProperties(dto,user);
-        user = userService.Save(user);
+        user = userService.update(user);
         return Result.ok(user);
     }
     @DeleteMapping

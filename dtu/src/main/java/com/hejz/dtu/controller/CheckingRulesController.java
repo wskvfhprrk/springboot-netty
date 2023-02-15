@@ -35,7 +35,7 @@ public class CheckingRulesController {
     public Result createCheckingRules(@Valid @RequestBody CheckingRulesCreateDto dto){
         CheckingRules checkingRules=new CheckingRules();
         BeanUtils.copyProperties(dto,checkingRules);
-        checkingRules = checkingRulesService.Save(checkingRules);
+        checkingRules = checkingRulesService.save(checkingRules);
         return Result.ok(checkingRules);
 
     }
@@ -44,7 +44,7 @@ public class CheckingRulesController {
     public Result updateCheckingRules(@Valid @RequestBody CheckingRulesUpdateDto dto){
         CheckingRules checkingRules=new CheckingRules();
         BeanUtils.copyProperties(dto,checkingRules);
-        checkingRules = checkingRulesService.Save(checkingRules);
+        checkingRules = checkingRulesService.update(checkingRules);
         return Result.ok(checkingRules);
     }
     @DeleteMapping

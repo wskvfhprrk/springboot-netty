@@ -35,7 +35,7 @@ public class RoleController {
     public Result createRole(@Valid @RequestBody RoleCreateDto dto){
         Role role=new Role();
         BeanUtils.copyProperties(dto,role);
-        role = roleService.Save(role);
+        role = roleService.save(role);
         return Result.ok(role);
 
     }
@@ -44,7 +44,7 @@ public class RoleController {
     public Result updateRole(@Valid @RequestBody RoleUpdateDto dto){
         Role role=new Role();
         BeanUtils.copyProperties(dto,role);
-        role = roleService.Save(role);
+        role = roleService.update(role);
         return Result.ok(role);
     }
     @DeleteMapping

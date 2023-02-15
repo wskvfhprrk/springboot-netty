@@ -10,7 +10,8 @@ import java.util.List;
  *
  */
 public interface CheckingRulesService {
-    CheckingRules Save(CheckingRules checkingRules);
+    CheckingRules save(CheckingRules checkingRules);
+    CheckingRules update(CheckingRules checkingRules);
     void delete(Integer id);
     CheckingRules findById(Integer id);
     Page<CheckingRules> findPage(CheckingRulesFindByPageDto dto);
