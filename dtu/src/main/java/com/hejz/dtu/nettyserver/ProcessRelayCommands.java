@@ -32,12 +32,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProcessRelayCommands {
     @Autowired
-    private InstructionDefinitionService instructionDefinitionService;
-    @Autowired
-    private RedisTemplate redisTemplate;
-    @Autowired
-    private InstructionDefinitionStatusService instructionDefinitionStatusService;
-    @Autowired
     private DtuInfoService dtuInfoService;
 
     /**
