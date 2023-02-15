@@ -148,7 +148,7 @@ public class ProcessSensorReturnValue {
             map.put("order",i);
             map.put("name",sensor.getName());
             map.put("address",address);
-            map.put("data",address);
+            map.put("data",aDouble);
             map.put("unit",sensor.getUnit());
             dataList.add(map);
         }

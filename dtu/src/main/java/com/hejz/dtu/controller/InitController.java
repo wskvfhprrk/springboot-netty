@@ -146,15 +146,15 @@ public class InitController {
             set.add(command17);
             InstructionDefinition instructionDefinition12 = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "土壤电导率", "土壤电导率", InstructionTypeEnum.SENSOR_COMMAND, set));
 //        //感应器信息
-            sensorRepository.save(new Sensor(dtuInfo,"空气温度",25,15,instructionDefinition,instructionDefinition1,command9,1,"D/10"));
-            sensorRepository.save(new Sensor(dtuInfo,"空气湿度",25,15,null,null,command10,2,"D/10"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤PH",25,15,null,null,command11,3, "D/10"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤温度",25,15,null,null,command12,4,"D/100+5"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤湿度",25,15,instructionDefinition2,instructionDefinition3,command13,5,"D/100"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤氮",25,15,null,null,command14,6, "D/1"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤磷",25,15,null,null,command15,7, "D/1"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤钾",25,15,null,null,command16,8, "D/1"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤电导率",25,15,null,null,command17,9,"D/1"));
+            sensorRepository.save(new Sensor(dtuInfo,"空气温度",25,15,instructionDefinition,instructionDefinition1,command9,1,"ºC"));
+            sensorRepository.save(new Sensor(dtuInfo,"空气湿度",25,15,null,null,command10,2,"%"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤PH",25,15,null,null,command11,3, ""));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤温度",25,15,null,null,command12,4,"ºC"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤湿度",25,15,instructionDefinition2,instructionDefinition3,command13,5,"%"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤氮",25,15,null,null,command14,6, "mg/L"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤磷",25,15,null,null,command15,7, "mg/L"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤钾",25,15,null,null,command16,8, "mg/L"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤电导率",25,15,null,null,command17,9,"us/cm"));
 
 //        List<InstructionDefinition> relayDefinitionCommands = relayDefinitionCommandRepository.findByDtuInfo((long) (i + 1));
 //        Optional<InstructionDefinition> open = relayDefinitionCommands.stream().filter(r -> r.getName().equals("打开通风指令")).findFirst();
