@@ -94,7 +94,6 @@ public class ProcessSensorReturnValue {
                 for (Map sensorData : sensorDataList) {
                     sb.append(sensorData.get("address"));
                 }
-                // TODO: 2023/2/5 在添加到数据库前可以根据数据做自动判断处理指令
                 //如果没有按顺序排列，不要此组数据
                 if(!dtuInfo.getSensorAddressOrder().replaceAll(",","").equals(sb.toString())){
                     log.error("此组数据没有按顺序上报作废！");
@@ -137,7 +136,7 @@ public class ProcessSensorReturnValue {
         List<Map> dataList = new ArrayList<>();
         //按顺序解析，根据sensor顺序解析找对应关系
         for (int i = 0; i < list.size(); i++) {
-            Integer address = NettyServiceCommon.addressValueOfInstruction(dtuInfo, list.get(i));
+            Integer address = NettyServiceCommon.addressValueOfInstruction(list.get(i));
             addressStr.append(addressStr);
             Double aDouble = parseSensorOneData(list.get(i), i, ctx, dtuInfo);
             if (aDouble == null) {
@@ -221,7 +220,6 @@ public class ProcessSensorReturnValue {
      * @throws Exception
      */
     private Integer calculateReturnValue(DtuInfo dtuInfo, byte[] bytes) throws Exception {
-        //todo 根据设备找到校验规则与指令匹配——感应器返回值检测规则,多个以逗号隔开，首个为地址位，末位为规则id
         Set<CheckingRules> checkingRulesSet=new HashSet<>();
         instructionDefinitionService.findAllByDtuInfo(dtuInfo).forEach(instructionDefinition -> instructionDefinition.getCommands().forEach(command -> {
             checkingRulesSet.add(command.getCheckingRules());
@@ -238,7 +236,6 @@ public class ProcessSensorReturnValue {
             }
             return i;
         }).collect(Collectors.toList());
-        //todo 此处有多个相同值时会问题
         if (list.size() > 1) {
 //            log.error("有多个相同的规则——总长度为：{}，此处还要开发！", checkingRules.get(0).getCommonLength());
         }

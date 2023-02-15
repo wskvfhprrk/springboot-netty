@@ -62,7 +62,6 @@ public class ProcessRelayCommands {
             log.error("继电器返回值：{}校验不通过！", HexConvert.BinaryToHexString(bytes));
             return;
         }
-        // TODO: 2023/2/15 这个逻辑要重构——收到继电器返回信号就可以了，说明其执行了此功能，然后再改变状态，它的延时发送功能已经交于指令自己发送，不在此方法中处理
     }
 
     /**

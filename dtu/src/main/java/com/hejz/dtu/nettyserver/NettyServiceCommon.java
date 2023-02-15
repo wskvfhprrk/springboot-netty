@@ -1,12 +1,11 @@
 package com.hejz.dtu.nettyserver;
 
 import com.hejz.dtu.common.Constant;
-import com.hejz.dtu.enm.InstructionTypeEnum;
 import com.hejz.dtu.entity.*;
 import com.hejz.dtu.service.CommandService;
-import com.hejz.dtu.service.InstructionDefinitionStatusService;
 import com.hejz.dtu.service.DtuInfoService;
 import com.hejz.dtu.service.InstructionDefinitionService;
+import com.hejz.dtu.service.InstructionDefinitionStatusService;
 import com.hejz.dtu.utils.CRC16;
 import com.hejz.dtu.utils.HexConvert;
 import io.netty.buffer.ByteBuf;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -87,7 +85,7 @@ public class NettyServiceCommon {
      * @param bytes   16进制指令
      * @return
      */
-    public static Integer addressValueOfInstruction(DtuInfo dtuInfo, byte[] bytes) {
+    public static Integer addressValueOfInstruction(byte[] bytes) {
         String hexStr = HexConvert.BinaryToHexString(bytes);
         String hex = "0x" + hexStr.substring(0, 2);
         return Integer.parseInt(hex.substring(2), 16);//从第2个字符开始截取
@@ -180,15 +178,12 @@ public class NettyServiceCommon {
      *
      * @param instructionDefinition
      */
-    public static void sendRelayCommandAccordingToLayIds(InstructionDefinition
-                                                                 instructionDefinition) {
+    public static void sendRelayCommandAccordingToLayIds(InstructionDefinition instructionDefinition) {
         List<InstructionDefinitionStatus> instructionDefinitionStatuses = instructionDefinitionStatusService.findByInstructionDefinition(instructionDefinition);
-        if(!instructionDefinitionStatuses.isEmpty()){
-            log.error("当前已经是此指令，只能发送相反指令后再发送此指令！");
+        if (!instructionDefinitionStatuses.isEmpty()) {
+            //log.error("当前已经是此指令，只能发送相反指令后再发送此指令！");
             return;
         }
-        //修改状态
-        updateInstrctionDefintionStatus(instructionDefinition);
         //如果三次————三倍时间
 //        LocalDateTime beginTime = instructionDefinition.getSendCommandTime()==null?LocalDateTime.now():instructionDefinition.getSendCommandTime();
 //        Duration duration = Duration.between(beginTime, LocalDateTime.now());
@@ -206,13 +201,14 @@ public class NettyServiceCommon {
                 //缓存需要继续处理的指令，如果不再处理不缓存——为程序收到继电器信号（继电器发送什么信号接收到什么信号）能联系在一起
                 write(command.getInstructions(), finalChannel1);
                 //发送完指令后要延时发送下一个延时指令
-                Command nextCommand=commandService.findById(command.getNextLevelInstructionId());
+                Command nextCommand = commandService.findById(command.getNextLevelInstructionId());
                 finalChannel1.eventLoop().schedule(() -> {
                     log.info("通道==》{}开始延时任务，延时：{}秒", finalChannel1.id().toString(), nextCommand.getWaitTimeNextCommand());
-                    NettyServiceCommon.write(nextCommand.getInstructions(),finalChannel1);
+                    NettyServiceCommon.write(nextCommand.getInstructions(), finalChannel1);
                 }, nextCommand.getWaitTimeNextCommand(), TimeUnit.SECONDS);
             });
-
+            //修改状态
+            updateInstrctionDefintionStatus(instructionDefinition);
         } else {
             //不存在的话就找到任何一个活动的channel重新发一次
             if (Constant.CHANNELGROUP.isEmpty()) {

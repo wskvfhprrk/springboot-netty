@@ -78,7 +78,7 @@ public class NettyDecoder {
     @Transactional
     public void splitInstruction(ChannelHandlerContext ctx, DtuInfo dtuInfo, byte[] bytes) {
         //计算出实际地址
-        Integer address = NettyServiceCommon.addressValueOfInstruction(dtuInfo, bytes);
+        Integer address = NettyServiceCommon.addressValueOfInstruction(bytes);
         //根据地址位得出应该截取的长度
         Integer commonLength = calculatedLength(dtuInfo, address);
         //bytes值——计算长度都以bytes计算的
@@ -112,14 +112,13 @@ public class NettyDecoder {
      * @return
      */
     private Integer calculatedLength(DtuInfo dtuInfo, Integer address) {
-        Integer commonLength = 0;
         //if(地址位==0)then(是的)应截取长度=2;
         if (address == 0) return 2;
         //根据dtu得到所有指令
         List<InstructionDefinition> instructionDefinitions = instructionDefinitionService.findAllByDtuInfo(dtuInfo);
         for (InstructionDefinition instructionDefinition : instructionDefinitions) {
             for (Command command : instructionDefinition.getCommands()) {
-                Integer addr = NettyServiceCommon.addressValueOfInstruction(dtuInfo, HexConvert.hexStringToBytes(command.getInstructions().replaceAll(" ", "")));
+                Integer addr = NettyServiceCommon.addressValueOfInstruction(HexConvert.hexStringToBytes(command.getInstructions().replaceAll(" ", "")));
                 if (addr == address) {
                     return command.getCheckingRules().getCommonLength();
                 }
