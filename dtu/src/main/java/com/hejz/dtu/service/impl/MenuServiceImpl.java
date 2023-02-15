@@ -24,6 +24,10 @@ public class MenuServiceImpl implements MenuService {
     public Menu save(Menu menu) {
         return menuRepository.save(menu);
     }
+    @Override
+    public Menu update(Menu menu) {
+        return menuRepository.save(menu);
+    }
 
     @Override
     public void delete(Integer id) {
