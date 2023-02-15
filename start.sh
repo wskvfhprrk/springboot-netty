@@ -14,8 +14,7 @@ rm -rf /root/springboot-netty
 #git拉取代码
 echo -e ======================4.git拉取代码======================
 git clone git@github.com:wskvfhprrk/springboot-netty.git
-git checkout master
-#git checkout -b master 2342dsfsdfs2
+#git checkout -b master 8470ddadf55921f7296c544032ada3c2c50687ee
 echo -e ======================5.先删除start.sh源文件再拷贝======================r
 #先删除源文件再拷贝
 cd /root/springboot-netty/
@@ -36,12 +35,7 @@ mvn clean package -Dmaven.test.skip=true
 echo -e ======================8.重启服务======================
 cd target
 nohup java -jar -Dserver.port=8080 dtu-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
+echo -e ======================9.启动小米球======================
 
-#echo -e ======================9.重新部署守护服务======================
-#ps -aux | grep runtime_sh_file | grep -v grep| awk '{print $2}' |xargs  kill -9
-#cd /root/runtimeshfile/runtime_sh_file/target
-#nohup java -jar -Dserver.port=8090 runtime_sh_file-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
-
-echo -e ======================10.启动小米球======================
 cd /root/linux_xiaomiqu
 nohup ./xiaomiqiu -authtoken=bAe854993e6444e3925b24c7edcdd72A -log=xiaomiqiu.log -log-level=info start-all & > /dev/null 2>&1 &
