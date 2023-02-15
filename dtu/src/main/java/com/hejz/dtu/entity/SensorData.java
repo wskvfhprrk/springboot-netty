@@ -43,7 +43,7 @@ public class SensorData implements Serializable{
     @Column(
             name = "create_date",
             nullable = false,
-            columnDefinition="date"+" COMMENT '接收时间'"
+            columnDefinition="datetime"+" COMMENT '接收时间'"
     )
     private java.util.Date createDate;
 

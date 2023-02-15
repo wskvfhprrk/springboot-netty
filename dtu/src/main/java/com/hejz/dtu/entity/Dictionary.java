@@ -48,7 +48,7 @@ public class Dictionary implements Serializable{
     @Column(
             name = "create_time",
             nullable = false,
-            columnDefinition="date"+" COMMENT '创建时间'"
+            columnDefinition="datetime"+" COMMENT '创建时间'"
     )
     private java.util.Date createTime;
 

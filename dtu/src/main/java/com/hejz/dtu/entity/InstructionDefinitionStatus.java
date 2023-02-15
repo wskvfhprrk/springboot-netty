@@ -40,7 +40,7 @@ public class InstructionDefinitionStatus implements Serializable{
     @Column(
             name = "create_date",
             nullable = false,
-            columnDefinition="date"+" COMMENT '创建时间'"
+            columnDefinition="datetime"+" COMMENT '创建时间'"
     )
     private java.util.Date createDate;
 
@@ -54,7 +54,7 @@ public class InstructionDefinitionStatus implements Serializable{
     @Column(
             name = "update_date",
             nullable = false,
-            columnDefinition="date"+" COMMENT '修改时间'"
+            columnDefinition="datetime"+" COMMENT '修改时间'"
     )
     private java.util.Date updateDate;
     /**

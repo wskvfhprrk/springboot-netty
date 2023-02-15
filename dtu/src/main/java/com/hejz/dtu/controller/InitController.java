@@ -147,7 +147,7 @@ public class InitController {
             set.add(command17);
             InstructionDefinition instructionDefinition12 = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "土壤电导率", "土壤电导率", InstructionTypeEnum.SENSOR_COMMAND, set));
 //        //感应器信息
-            sensorRepository.save(new Sensor(dtuInfo,"空气温度",25,15,instructionDefinition,instructionDefinition1,command9,1,"ºC"));
+            sensorRepository.save(new Sensor(dtuInfo,"空气温度",25,20,instructionDefinition,instructionDefinition1,command9,1,"ºC"));
             sensorRepository.save(new Sensor(dtuInfo,"空气湿度",25,15,null,null,command10,2,"%"));
             sensorRepository.save(new Sensor(dtuInfo,"土壤PH",25,15,null,null,command11,3, ""));
             sensorRepository.save(new Sensor(dtuInfo,"土壤温度",25,15,null,null,command12,4,"ºC"));

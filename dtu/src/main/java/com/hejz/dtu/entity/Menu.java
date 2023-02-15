@@ -38,7 +38,7 @@ public class Menu implements Serializable{
     @Column(
             name = "hidden",
             nullable = false,
-            columnDefinition="date"+" COMMENT '是否隐藏——true隐藏，false不隐藏（默认）'"
+            columnDefinition="datetime"+" COMMENT '是否隐藏——true隐藏，false不隐藏（默认）'"
     )
     private Boolean hidden;
 
