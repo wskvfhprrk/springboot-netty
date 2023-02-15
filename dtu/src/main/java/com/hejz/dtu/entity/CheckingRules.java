@@ -92,18 +92,6 @@ public class CheckingRules implements Serializable{
     )
     private String name;
 
-
-    public CheckingRules(String name, Integer commonLength, Integer functionCodeLength, Integer addressBitLength, Integer dataBitsLength, Integer dataValueLength, Integer crc16CheckDigitLength, Boolean isUse) {
-        this.addressBitLength = addressBitLength;
-        this.dataBitsLength = dataBitsLength;
-        this.dataValueLength = dataValueLength;
-        this.commonLength = commonLength;
-        this.crc16CheckDigitLength = crc16CheckDigitLength;
-        this.functionCodeLength = functionCodeLength;
-        this.isUse = isUse;
-        this.name = name;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -115,5 +103,16 @@ public class CheckingRules implements Serializable{
     @Override
     public int hashCode() {
         return Objects.hash(id, addressBitLength, dataBitsLength, dataValueLength, commonLength, crc16CheckDigitLength, functionCodeLength, isUse, name);
+    }
+
+    public CheckingRules(String name, Integer commonLength, Integer functionCodeLength, Integer addressBitLength, Integer dataBitsLength, Integer dataValueLength, Integer crc16CheckDigitLength, Boolean isUse) {
+        this.addressBitLength = addressBitLength;
+        this.dataBitsLength = dataBitsLength;
+        this.dataValueLength = dataValueLength;
+        this.commonLength = commonLength;
+        this.crc16CheckDigitLength = crc16CheckDigitLength;
+        this.functionCodeLength = functionCodeLength;
+        this.isUse = isUse;
+        this.name = name;
     }
 }

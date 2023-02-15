@@ -76,20 +76,6 @@ public class InstructionDefinition implements Serializable{
             joinColumns = @JoinColumn(name = "instruction_definition_id", referencedColumnName = "id"))
     private Set<Command> commands;
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof InstructionDefinition)) return false;
-        InstructionDefinition that = (InstructionDefinition) o;
-        return Objects.equals(getId(), that.getId()) && getInstructionType() == that.getInstructionType() && Objects.equals(getName(), that.getName()) && Objects.equals(getRemarks(), that.getRemarks()) && Objects.equals(getDtuInfo(), that.getDtuInfo()) && Objects.equals(getCommands(), that.getCommands()) && Objects.equals(getSendCommandTime(), that.getSendCommandTime());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getInstructionType(), getName(), getRemarks(), getDtuInfo(), getCommands(), getSendCommandTime());
-    }
-
     public InstructionDefinition(DtuInfo dtuInfo, String name, String remarks, InstructionTypeEnum instructionType, Set<Command> commands) {
         this.instructionType = instructionType;
         this.name = name;

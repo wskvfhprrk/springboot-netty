@@ -112,18 +112,6 @@ public class Command implements Serializable{
     )
     private Long nextLevelInstructionId;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Command)) return false;
-        Command command = (Command) o;
-        return Objects.equals(getId(), command.getId()) && Objects.equals(getCalculationFormula(), command.getCalculationFormula()) && getCommandType() == command.getCommandType() && Objects.equals(getInstructions(), command.getInstructions()) && Objects.equals(getIsUse(), command.getIsUse()) && Objects.equals(getManufacturer(), command.getManufacturer()) && Objects.equals(getName(), command.getName()) && Objects.equals(getRemarks(), command.getRemarks()) && Objects.equals(getWaitTimeNextCommand(), command.getWaitTimeNextCommand()) && Objects.equals(getCheckingRules(), command.getCheckingRules()) && Objects.equals(getNextLevelInstructionId(), command.getNextLevelInstructionId()) && Objects.equals(getInstructionDefinitions(), command.getInstructionDefinitions());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getCalculationFormula(), getCommandType(), getInstructions(), getIsUse(), getManufacturer(), getName(), getRemarks(), getWaitTimeNextCommand(), getCheckingRules(), getNextLevelInstructionId(), getInstructionDefinitions());
-    }
 
     @JsonIgnoreProperties(value = {"commands"})
     @ManyToMany( mappedBy = "commands", fetch = FetchType.LAZY)
