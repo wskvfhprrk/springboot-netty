@@ -1,7 +1,9 @@
 package com.hejz.dtu.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,6 +17,8 @@ import java.util.Set;
 @Data
 @Entity(name = "sys_user")
 @org.hibernate.annotations.Table(appliesTo = "sys_user", comment = "用户信息")
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements Serializable{
 
     @Id
@@ -54,4 +58,10 @@ public class User implements Serializable{
             joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
     private Set<Role> roles;
+
+    public User(Integer age, String username, Set<Role> roles) {
+        this.age = age;
+        this.username = username;
+        this.roles = roles;
+    }
 }
