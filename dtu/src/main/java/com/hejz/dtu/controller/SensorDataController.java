@@ -3,6 +3,7 @@ package com.hejz.dtu.controller;
 import com.hejz.dtu.common.PageResult;
 import com.hejz.dtu.dto.*;
 import com.hejz.dtu.entity.SensorData;
+import com.hejz.dtu.service.DtuInfoService;
 import com.hejz.dtu.service.SensorDataService;
 import com.hejz.dtu.common.Result;
 import com.hejz.dtu.vo.*;
@@ -29,6 +30,8 @@ public class SensorDataController {
 
     @Autowired
     private SensorDataService sensorDataService;
+    @Autowired
+    private DtuInfoService dtuInfoService;
 
     @PostMapping()
     @ApiOperation("添加传感器数据")
@@ -57,12 +60,11 @@ public class SensorDataController {
     @GetMapping("findPage")
     @ApiOperation("条件查询传感器数据")
     public Result<PageResult<SensorDataFindByPageVo>> findBypage( @Valid SensorDataFindByPageDto dto){
-        SensorData sensorData=new SensorData();
-        BeanUtils.copyProperties(dto,sensorData);
         Page<SensorData> sensorDataPage = sensorDataService.findPage(dto);
         List<SensorDataFindByPageVo> list = sensorDataPage.getContent().stream().map(d -> {
             SensorDataFindByPageVo vo = new SensorDataFindByPageVo();
             BeanUtils.copyProperties(d,vo);
+            vo.setDtuId(d.getDtuInfo().getId());
             return vo;
         }).collect(Collectors.toList());
         PageResult<SensorDataFindByPageVo> pages=new PageResult<>();

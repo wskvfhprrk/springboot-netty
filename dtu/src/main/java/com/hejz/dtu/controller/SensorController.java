@@ -63,6 +63,7 @@ public class SensorController {
         List<SensorFindByPageVo> list = sensorPage.getContent().stream().map(d -> {
             SensorFindByPageVo vo = new SensorFindByPageVo();
             BeanUtils.copyProperties(d,vo);
+            vo.setDtuId(d.getDtuInfo().getId());
             return vo;
         }).collect(Collectors.toList());
         PageResult<SensorFindByPageVo> pages=new PageResult<>();
