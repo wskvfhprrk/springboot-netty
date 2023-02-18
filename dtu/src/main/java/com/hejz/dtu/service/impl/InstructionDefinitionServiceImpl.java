@@ -125,9 +125,9 @@ public class InstructionDefinitionServiceImpl implements InstructionDefinitionSe
         List<InstructionDefinition> instructionDefinitions = instructionDefinitionRepository.findAllByDtuInfo(dtuInfo);
         Optional<InstructionDefinition> first = instructionDefinitions.stream().filter(instructionDefinition -> instructionDefinition.getInstructionType() == dto.getType()).findFirst();
         if(first.isPresent()){
-            NettyServiceCommon.sendRelayCommandAccordingToLayIds(first.get());
+            return NettyServiceCommon.sendRelayCommandAccordingToLayIds(first.get());
         }
-        return Result.ok();
+        return Result.error(500,"查不到指令！");
     }
 
     /**

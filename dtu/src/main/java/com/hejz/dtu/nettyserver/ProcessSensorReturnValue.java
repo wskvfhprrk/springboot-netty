@@ -193,6 +193,7 @@ public class ProcessSensorReturnValue {
         for (Sensor sensor1 : sensors) {
             if(sensor1.getSensorSort()-1==arrayNumber){
                 sensor=sensor1;
+                break;
             }
         }
         if(sensor==null){

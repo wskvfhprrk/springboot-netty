@@ -5,6 +5,7 @@ import com.hejz.dtu.common.Result;
 import com.hejz.dtu.dto.*;
 import com.hejz.dtu.entity.User;
 import com.hejz.dtu.service.UserService;
+import com.hejz.dtu.vo.UserFindAllVo;
 import com.hejz.dtu.vo.UserFindByPageVo;
 import com.hejz.dtu.vo.UserInfoVo;
 import io.swagger.annotations.Api;
@@ -87,7 +88,7 @@ public class UserController {
     }
 
     @GetMapping("findPage")
-    @ApiOperation("条件查询用户信息")
+    @ApiOperation("条件分页查询用户信息")
     public Result<PageResult<UserFindByPageVo>> findBypage(@Valid UserFindByPageDto dto){
         Page<User> userPage = userService.findPage(dto);
         List<UserFindByPageVo> list = userPage.getContent().stream().map(d -> {
@@ -101,6 +102,18 @@ public class UserController {
         pages.setLimit(dto.getLimit());
         pages.setItems(list);
         return Result.ok(pages);
+    }
+
+    @GetMapping("findAll")
+    @ApiOperation("条件查询用户信息")
+    public Result<UserFindAllVo> findBypage(@Valid UserFindAllDto dto){
+        List<User> userList = userService.findAll(dto);
+        List<UserFindAllVo> list = userList.stream().map(d -> {
+            UserFindAllVo vo = new UserFindAllVo();
+            BeanUtils.copyProperties(d,vo);
+            return vo;
+        }).collect(Collectors.toList());
+        return Result.ok(list);
     }
 
 }

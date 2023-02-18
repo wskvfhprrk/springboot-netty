@@ -1,6 +1,7 @@
 package com.hejz.dtu.nettyserver;
 
 import com.hejz.dtu.common.Constant;
+import com.hejz.dtu.common.Result;
 import com.hejz.dtu.entity.*;
 import com.hejz.dtu.service.CommandService;
 import com.hejz.dtu.service.DtuInfoService;
@@ -177,11 +178,11 @@ public class NettyServiceCommon {
      *
      * @param instructionDefinition
      */
-    public static void sendRelayCommandAccordingToLayIds(InstructionDefinition instructionDefinition) {
+    public static Result sendRelayCommandAccordingToLayIds(InstructionDefinition instructionDefinition) {
         List<InstructionDefinitionStatus> instructionDefinitionStatuses = instructionDefinitionStatusService.findByInstructionDefinition(instructionDefinition);
         if (!instructionDefinitionStatuses.isEmpty()) {
             //log.error("当前已经是此指令，只能发送相反指令后再发送此指令！");
-            return;
+            return Result.error(500,"命令已经执行，请执行相反命令后才能执行！");
         }
         //如果三次————三倍时间
 //        LocalDateTime beginTime = instructionDefinition.getSendCommandTime()==null?LocalDateTime.now():instructionDefinition.getSendCommandTime();
@@ -212,7 +213,7 @@ public class NettyServiceCommon {
             //不存在的话就找到任何一个活动的channel重新发一次
             if (Constant.CHANNELGROUP.isEmpty()) {
                 log.error("没有活动的通道，消息未能发送成功！{}", instructionDefinition);
-                return;
+                return Result.error(500,"没有活动的通道，消息未能发送成功！");
             }
             for (Channel channel1 : Constant.CHANNELGROUP) {
                 channel = channel1;
@@ -227,6 +228,7 @@ public class NettyServiceCommon {
                 return;
             });
         }
+        return null;
     }
 
     private static void updateInstrctionDefintionStatus(InstructionDefinition instructionDefinition) {

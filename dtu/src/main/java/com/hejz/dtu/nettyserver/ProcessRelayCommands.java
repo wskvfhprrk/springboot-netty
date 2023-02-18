@@ -107,8 +107,7 @@ public class ProcessRelayCommands {
                 List<Double> collect = Constant.THREE_RECORDS_MAP.get(key).stream().sorted().collect(Collectors.toList());
                 if (collect.get(2) - Double.parseDouble(sensor.getMin().toString()) < 0) {
                     InstructionDefinition minInstructionDefinitionId = sensor.getMinInstructionDefinitionId();
-                    if (minInstructionDefinitionId != null) {
-                        NettyServiceCommon.sendRelayCommandAccordingToLayIds(minInstructionDefinitionId);
+                    if (minInstructionDefinitionId != null) {NettyServiceCommon.sendRelayCommandAccordingToLayIds(minInstructionDefinitionId);
                     }
                     Constant.THREE_RECORDS_MAP.remove(key);
                 }

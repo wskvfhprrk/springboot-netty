@@ -1,12 +1,15 @@
 package com.hejz.dtu.service.impl;
 
+import com.hejz.dtu.dto.UserFindAllDto;
 import com.hejz.dtu.dto.UserFindByPageDto;
 import com.hejz.dtu.entity.User;
 import com.hejz.dtu.repository.UserRepository;
 import com.hejz.dtu.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -60,4 +63,8 @@ public class UserServiceImpl implements UserService {
         return all;
     }
 
+    @Override
+    public List<User> findAll(UserFindAllDto dto) {
+        return userRepository.findAll();
+    }
 }
