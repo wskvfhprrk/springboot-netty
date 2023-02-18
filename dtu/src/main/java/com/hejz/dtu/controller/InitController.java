@@ -98,10 +98,10 @@ public class InitController {
             Set<Command> set = new HashSet<>();
             set.add(command4);
             set.add(command2);
-            InstructionDefinition instructionDefinition = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "打开通风", "打开通风", InstructionTypeEnum.OPEN_VENTILATION, set));
+            InstructionDefinition instructionDefinition = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "打开通风", "打开通风", InstructionTypeEnum.CLOSE_VENTILATION, set));
             set.clear();
             set.add(command4);
-            InstructionDefinition instructionDefinition1 = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "关闭通风", "关闭通风", InstructionTypeEnum.CLOSE_VENTILATION, set));
+            InstructionDefinition instructionDefinition1 = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "关闭通风", "关闭通风", InstructionTypeEnum.OPEN_VENTILATION, set));
             set.clear();
             set.add(command6);
             InstructionDefinition instructionDefinition2 = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "打开浇水阀", "打开浇水阀", InstructionTypeEnum.TURN_ON_WATERING, set));
