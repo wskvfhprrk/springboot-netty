@@ -25,7 +25,7 @@ public class RemoteDeploymentServer {
         String command = "shutdown -r now";
         String[] cmdStrings = new String[]{"sh", "-c", command};
 
-        Process p = null;
+        Process p;
         p = Runtime.getRuntime().exec(cmdStrings);
         int status = p.waitFor();
         if (status != 0) {
