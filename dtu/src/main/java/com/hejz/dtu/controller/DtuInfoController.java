@@ -74,4 +74,18 @@ public class DtuInfoController {
         return Result.ok(pages);
     }
 
+    @GetMapping("findAll")
+    @ApiOperation("条件查询dtu信息")
+    public Result findBypage( @Valid DtuInfoFindAllDto dto){
+        DtuInfo dtuInfo=new DtuInfo();
+        BeanUtils.copyProperties(dto,dtuInfo);
+        List<DtuInfo> dtuInfoList = dtuInfoService.findAll(dto);
+        List<DtuInfoFindAllVo> list = dtuInfoList.stream().map(d -> {
+            DtuInfoFindAllVo vo = new DtuInfoFindAllVo();
+            BeanUtils.copyProperties(d,vo);
+            return vo;
+        }).collect(Collectors.toList());
+        return Result.ok(list);
+    }
+
 }

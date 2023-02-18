@@ -46,7 +46,7 @@ public class InstructionDefinition implements Serializable{
     @Column(
             name = "instruction_type",
             nullable = true,
-            columnDefinition = "int(2)" + " COMMENT '指令类型'"
+            columnDefinition = "varchar(20)" + " COMMENT '指令类型'"
     )
     private InstructionTypeEnum instructionType;
 

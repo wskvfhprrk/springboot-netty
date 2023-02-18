@@ -48,7 +48,7 @@ public class Command implements Serializable{
     @Column(
             name = "command_type",
             nullable = true,
-            columnDefinition = "int" + " COMMENT '指令类型'"
+            columnDefinition = "varchar(20)" + " COMMENT '指令类型'"
     )
     private CommandTypeEnum commandType;
 

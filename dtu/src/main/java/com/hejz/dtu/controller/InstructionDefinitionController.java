@@ -63,6 +63,7 @@ public class InstructionDefinitionController {
         List<InstructionDefinitionFindByPageVo> list = instructionDefinitionPage.getContent().stream().map(d -> {
             InstructionDefinitionFindByPageVo vo = new InstructionDefinitionFindByPageVo();
             BeanUtils.copyProperties(d,vo);
+            vo.setDtuId(d.getDtuInfo().getId());
             return vo;
         }).collect(Collectors.toList());
         PageResult<InstructionDefinitionFindByPageVo> pages=new PageResult<>();
