@@ -33,7 +33,6 @@ public class RemoteDeploymentServer {
     @ApiOperation("远程部署服务器")
     public void run() throws Exception {
         log.info("项目部署………………………………………………");
-        URI url=new URI("http://www.localhost:8090");
-        restTemplate.getForEntity(url,null);
+        restTemplate.getForEntity("http://www.localhost:8090",null);
     }
 }
