@@ -99,8 +99,8 @@ public class InitController {
             set.add(command4);
             InstructionDefinition instructionDefinition = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "打开通风", "打开通风", InstructionTypeEnum.OPEN_VENTILATION, set));
             set.clear();
-            set.add(command4);
             set.add(command2);
+            set.add(command4);
             InstructionDefinition instructionDefinition1 = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "关闭通风", "关闭通风", InstructionTypeEnum.CLOSE_VENTILATION, set));
             set.clear();
             set.add(command6);
@@ -143,8 +143,8 @@ public class InitController {
             sensorRepository.save(new Sensor(dtuInfo,"土壤湿度",100,15,instructionDefinition2,instructionDefinition3,command13,5,"%"));
             sensorRepository.save(new Sensor(dtuInfo,"土壤氮",25,15,null,null,command14,6, "mg/L"));
             sensorRepository.save(new Sensor(dtuInfo,"土壤磷",25,15,null,null,command15,7, "mg/L"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤钾",25,15,null,null,command16,8, "mg/L"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤电导率",25,15,null,null,command17,9,"us/cm"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤钾",25,15,null,null,command15,8, "mg/L"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤电导率",25,15,null,null,command16,9,"us/cm"));
 
             imei++;
         }
