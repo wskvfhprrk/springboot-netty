@@ -3,14 +3,18 @@ package com.hejz.dtu.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -21,10 +25,15 @@ import java.io.InputStreamReader;
 @Api(tags="远程部署服务器")
 @Slf4j
 public class RemoteDeploymentServer {
-    @GetMapping("rmote")
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @GetMapping("remote")
     @ApiOperation("远程部署服务器")
-    public void run() throws IOException {
+    public void run() throws Exception {
         log.info("项目部署………………………………………………");
-        Process process = Runtime.getRuntime().exec("reboot" );
+        URI url=new URI("www.localhost:8090");
+        restTemplate.getForEntity(url,null);
     }
 }

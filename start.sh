@@ -1,8 +1,8 @@
 #!/bin/bash
 
 echo -e  ======================1.删除运行的服务器======================
-ps -aux | grep dtu | grep -v grep| awk '{print $2}' |xargs  kill -9
-ps -aux | grep xiaomiqiu | grep -v grep| awk '{print $2}' |xargs  kill -9
+ps -aux | grep dtu | grep -v grep| awk '{print $2}' | xargs  kill -9
+ps -aux | grep xiaomiqiu | grep -v grep| awk '{print $2}' | xargs  kill -9
 #启动docker
 echo -e ======================2.启动docker:为了启动mysql和redis======================
 systemctl start docker
