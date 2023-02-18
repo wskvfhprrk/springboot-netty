@@ -24,7 +24,6 @@ public class RemoteDeploymentServer {
         log.info("项目部署………………………………………………");
         String command = "shutdown -r now";
         String[] cmdStrings = new String[]{"sh", "-c", command};
-        String retString = "";
 
         Process p = null;
         p = Runtime.getRuntime().exec(cmdStrings);
