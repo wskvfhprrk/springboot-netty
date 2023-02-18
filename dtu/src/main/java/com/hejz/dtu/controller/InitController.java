@@ -97,11 +97,11 @@ public class InitController {
             //处理编辑继电器命令的信息
             Set<Command> set = new HashSet<>();
             set.add(command4);
-            set.add(command2);
-            InstructionDefinition instructionDefinition = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "打开通风", "打开通风", InstructionTypeEnum.CLOSE_VENTILATION, set));
+            InstructionDefinition instructionDefinition = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "打开通风", "打开通风", InstructionTypeEnum.OPEN_VENTILATION, set));
             set.clear();
             set.add(command4);
-            InstructionDefinition instructionDefinition1 = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "关闭通风", "关闭通风", InstructionTypeEnum.OPEN_VENTILATION, set));
+            set.add(command2);
+            InstructionDefinition instructionDefinition1 = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "关闭通风", "关闭通风", InstructionTypeEnum.CLOSE_VENTILATION, set));
             set.clear();
             set.add(command6);
             InstructionDefinition instructionDefinition2 = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "打开浇水阀", "打开浇水阀", InstructionTypeEnum.TURN_ON_WATERING, set));
@@ -140,7 +140,7 @@ public class InitController {
             sensorRepository.save(new Sensor(dtuInfo,"空气湿度",25,15,null,null,command10,2,"%"));
             sensorRepository.save(new Sensor(dtuInfo,"土壤PH",25,15,null,null,command11,3, ""));
             sensorRepository.save(new Sensor(dtuInfo,"土壤温度",25,15,null,null,command12,4,"ºC"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤湿度",25,15,instructionDefinition2,instructionDefinition3,command13,5,"%"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤湿度",100,15,instructionDefinition2,instructionDefinition3,command13,5,"%"));
             sensorRepository.save(new Sensor(dtuInfo,"土壤氮",25,15,null,null,command14,6, "mg/L"));
             sensorRepository.save(new Sensor(dtuInfo,"土壤磷",25,15,null,null,command15,7, "mg/L"));
             sensorRepository.save(new Sensor(dtuInfo,"土壤钾",25,15,null,null,command16,8, "mg/L"));
