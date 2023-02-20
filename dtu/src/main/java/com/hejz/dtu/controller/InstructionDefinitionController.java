@@ -63,6 +63,7 @@ public class InstructionDefinitionController {
         List<InstructionDefinitionFindByPageVo> list = instructionDefinitionPage.getContent().stream().map(d -> {
             InstructionDefinitionFindByPageVo vo = new InstructionDefinitionFindByPageVo();
             BeanUtils.copyProperties(d,vo);
+            vo.setDtuId(d.getDtuInfo().getId());
             return vo;
         }).collect(Collectors.toList());
         PageResult<InstructionDefinitionFindByPageVo> pages=new PageResult<>();
@@ -81,7 +82,6 @@ public class InstructionDefinitionController {
         List<InstructionDefinitionAllVo> list = dictionaries.stream().map(d -> {
             InstructionDefinitionAllVo vo = new InstructionDefinitionAllVo();
             BeanUtils.copyProperties(d,vo);
-
             return vo;
         }).collect(Collectors.toList());
         return Result.ok(list);
