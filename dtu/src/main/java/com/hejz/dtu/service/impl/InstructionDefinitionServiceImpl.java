@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hejz.dtu.common.Constant;
 import com.hejz.dtu.common.Result;
 import com.hejz.dtu.dto.DendManuallyDto;
+import com.hejz.dtu.dto.InstructionDefinitionAllDto;
 import com.hejz.dtu.dto.InstructionDefinitionFindByPageDto;
 import com.hejz.dtu.enm.InstructionTypeEnum;
 import com.hejz.dtu.entity.DtuInfo;
@@ -42,7 +43,11 @@ public class InstructionDefinitionServiceImpl implements InstructionDefinitionSe
     private ObjectMapper objectMapper;
 
     @Override
-    public InstructionDefinition Save(InstructionDefinition instructionDefinition) {
+    public InstructionDefinition save(InstructionDefinition instructionDefinition) {
+        return instructionDefinitionRepository.save(instructionDefinition);
+    }
+    @Override
+    public InstructionDefinition update(InstructionDefinition instructionDefinition) {
         return instructionDefinitionRepository.save(instructionDefinition);
     }
 
@@ -60,7 +65,7 @@ public class InstructionDefinitionServiceImpl implements InstructionDefinitionSe
     public Page<InstructionDefinition> findPage(InstructionDefinitionFindByPageDto dto) {
         Specification<InstructionDefinition> sp= (root, query, cb)-> {
             List<Predicate> predicates = new ArrayList<>();
-            if(dto.getInstructionType()!=null && dto.getInstructionType()!=0) {
+            if(dto.getInstructionType()!=null ) {
             predicates.add(cb.equal(root.get("instructionType"), dto.getInstructionType()));
             }
             if(StringUtils.isNotBlank(dto.getName())) {
@@ -144,5 +149,31 @@ public class InstructionDefinitionServiceImpl implements InstructionDefinitionSe
             ordinal=ordinal-1;
         }
         return instructionDefinitionRepository.findAllByDtuInfoAndInstructionType(instructionDefinition.getDtuInfo(),InstructionTypeEnum.values()[ordinal]);
+    }
+
+    @Override
+    public List<InstructionDefinition> findAll(InstructionDefinitionAllDto dto) {
+        Specification<InstructionDefinition> spec= (root, query, cb)-> {
+            List<Predicate> predicates = new ArrayList<>();
+            if(dto.getId()!=null && dto.getId()!=0) {
+                predicates.add(cb.equal(root.get("Id"), dto.getId()));
+            }
+            if(StringUtils.isNotBlank(dto.getInstructionType())) {
+                predicates.add(cb.like(root.get("InstructionType"), "%"+dto.getInstructionType()+"%"));
+            }
+            if(StringUtils.isNotBlank(dto.getName())) {
+                predicates.add(cb.like(root.get("Name"), "%"+dto.getName()+"%"));
+            }
+            if(StringUtils.isNotBlank(dto.getRemarks())) {
+                predicates.add(cb.like(root.get("Remarks"), "%"+dto.getRemarks()+"%"));
+            }
+            if(dto.getDtuId()!=null && dto.getDtuId()!=0) {
+                predicates.add(cb.equal(root.get("DtuId"), dto.getDtuId()));
+            }
+            Predicate[] andPredicate = new Predicate[predicates.size()];
+            return cb.and(predicates.toArray(andPredicate));
+        };
+        List<InstructionDefinition> all = instructionDefinitionRepository.findAll(spec);
+        return all;
     }
 }
