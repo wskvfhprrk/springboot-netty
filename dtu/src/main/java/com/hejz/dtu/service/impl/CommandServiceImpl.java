@@ -1,6 +1,7 @@
 package com.hejz.dtu.service.impl;
 
 import com.hejz.dtu.dto.CommandFindByPageDto;
+import com.hejz.dtu.entity.CheckingRules;
 import com.hejz.dtu.entity.Command;
 import com.hejz.dtu.repository.CommandRepository;
 import com.hejz.dtu.service.CommandService;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +47,8 @@ public class CommandServiceImpl implements CommandService {
     public Page<Command> findPage(CommandFindByPageDto dto) {
         Specification<Command> sp= (root, query, cb)-> {
             List<Predicate> predicates = new ArrayList<>();
+            //关联查询
+            Join<Command, CheckingRules> join =  root.join("checkingRules", JoinType.LEFT);
             if(StringUtils.isNotBlank(dto.getCalculationFormula())) {
                 predicates.add(cb.like(root.get("calculationFormula"), "%"+dto.getCalculationFormula()+"%"));
             }
@@ -72,7 +77,7 @@ public class CommandServiceImpl implements CommandService {
                 predicates.add(cb.like(root.get("waitTimeNextCommand"), "%"+dto.getWaitTimeNextCommand()+"%"));
             }
             if(dto.getCheckingRulesId()!=null && dto.getCheckingRulesId()!=0) {
-            predicates.add(cb.equal(root.get("checkingRulesId"), dto.getCheckingRulesId()));
+            predicates.add(cb.equal(join.get("id"), dto.getCheckingRulesId()));
             }
             if(dto.getNextLevelInstruction()!=null && dto.getNextLevelInstruction()!=0) {
             predicates.add(cb.equal(root.get("nextLevelInstruction"), dto.getNextLevelInstruction()));

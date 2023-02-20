@@ -1,5 +1,6 @@
 package com.hejz.dtu.service.impl;
 
+import com.hejz.dtu.dto.CheckingRulesFindAllDto;
 import com.hejz.dtu.dto.CheckingRulesFindByPageDto;
 import com.hejz.dtu.entity.CheckingRules;
 import com.hejz.dtu.repository.CheckingRulesRepository;
@@ -78,6 +79,43 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
         Sort sort = Sort.by(direction, dto.getSort().substring(1));
         Page<CheckingRules> all = checkingRulesRepository.findAll(sp, PageRequest.of(dto.getPage(), dto.getLimit(), sort));
         System.out.println(all);
+        return all;
+    }
+    @Override
+    public List<CheckingRules> findAll(CheckingRulesFindAllDto dto) {
+        Specification<CheckingRules> spec= (root, query, cb)-> {
+            List<Predicate> predicates = new ArrayList<>();
+            if(dto.getId()!=null && dto.getId()!=0) {
+                predicates.add(cb.equal(root.get("Id"), dto.getId()));
+            }
+            if(dto.getAddressBitLength()!=null && dto.getAddressBitLength()!=0) {
+                predicates.add(cb.equal(root.get("AddressBitLength"), dto.getAddressBitLength()));
+            }
+            if(dto.getCommonLength()!=null && dto.getCommonLength()!=0) {
+                predicates.add(cb.equal(root.get("CommonLength"), dto.getCommonLength()));
+            }
+            if(dto.getCrc16CheckDigitLength()!=null && dto.getCrc16CheckDigitLength()!=0) {
+                predicates.add(cb.equal(root.get("Crc16CheckDigitLength"), dto.getCrc16CheckDigitLength()));
+            }
+            if(dto.getDataBitsLength()!=null && dto.getDataBitsLength()!=0) {
+                predicates.add(cb.equal(root.get("DataBitsLength"), dto.getDataBitsLength()));
+            }
+            if(dto.getDataValueLength()!=null && dto.getDataValueLength()!=0) {
+                predicates.add(cb.equal(root.get("DataValueLength"), dto.getDataValueLength()));
+            }
+            if(dto.getFunctionCodeLength()!=null && dto.getFunctionCodeLength()!=0) {
+                predicates.add(cb.equal(root.get("FunctionCodeLength"), dto.getFunctionCodeLength()));
+            }
+            if(dto.getIsUse()!= null ) {
+                predicates.add(cb.equal(root.get("IsUse"), dto.getIsUse()));
+            }
+            if(StringUtils.isNotBlank(dto.getName())) {
+                predicates.add(cb.like(root.get("Name"), "%"+dto.getName()+"%"));
+            }
+            Predicate[] andPredicate = new Predicate[predicates.size()];
+            return cb.and(predicates.toArray(andPredicate));
+        };
+        List<CheckingRules> all = checkingRulesRepository.findAll(spec);
         return all;
     }
 
