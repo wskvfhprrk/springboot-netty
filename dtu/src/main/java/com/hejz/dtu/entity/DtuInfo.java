@@ -70,17 +70,12 @@ public class DtuInfo implements Serializable{
             columnDefinition = "varchar(60)" + " COMMENT '感应器地址顺序,以逗号隔开'"
     )
     private String sensorAddressOrder;
-    //检验规则
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(name = "dtuInfo_checking_rules")
-//    private Set<CheckingRules> checkingRules;
 
     /**
      * 外键表——tb_user中的字段id
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties(value = {"dtuInfos"})
     private User user;
 
 

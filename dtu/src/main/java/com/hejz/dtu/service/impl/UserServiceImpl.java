@@ -67,4 +67,9 @@ public class UserServiceImpl implements UserService {
     public List<User> findAll(UserFindAllDto dto) {
         return userRepository.findAll();
     }
+
+    @Override
+    public User getFindById(Integer userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
 }

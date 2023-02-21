@@ -1,11 +1,17 @@
 package com.hejz.dtu.controller;
 
 import com.hejz.dtu.common.PageResult;
-import com.hejz.dtu.dto.*;
-import com.hejz.dtu.entity.DtuInfo;
-import com.hejz.dtu.service.DtuInfoService;
 import com.hejz.dtu.common.Result;
-import com.hejz.dtu.vo.*;
+import com.hejz.dtu.dto.DtuInfoCreateDto;
+import com.hejz.dtu.dto.DtuInfoFindAllDto;
+import com.hejz.dtu.dto.DtuInfoFindByPageDto;
+import com.hejz.dtu.dto.DtuInfoUpdateDto;
+import com.hejz.dtu.entity.DtuInfo;
+import com.hejz.dtu.entity.User;
+import com.hejz.dtu.service.DtuInfoService;
+import com.hejz.dtu.service.UserService;
+import com.hejz.dtu.vo.DtuInfoFindAllVo;
+import com.hejz.dtu.vo.DtuInfoFindByPageVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
@@ -29,12 +35,18 @@ public class DtuInfoController {
 
     @Autowired
     private DtuInfoService dtuInfoService;
+    @Autowired
+    private UserService userService;
 
     @PostMapping()
     @ApiOperation("添加dtu信息")
     public Result createDtuInfo(@Valid @RequestBody DtuInfoCreateDto dto){
         DtuInfo dtuInfo=new DtuInfo();
         BeanUtils.copyProperties(dto,dtuInfo);
+        if(dto.getUserId()!=null){
+            User user=userService.getFindById(dto.getUserId());
+            dtuInfo.setUser(user);
+        }
         dtuInfo = dtuInfoService.save(dtuInfo);
         return Result.ok(dtuInfo);
 
@@ -44,12 +56,17 @@ public class DtuInfoController {
     public Result updateDtuInfo(@Valid @RequestBody DtuInfoUpdateDto dto){
         DtuInfo dtuInfo=new DtuInfo();
         BeanUtils.copyProperties(dto,dtuInfo);
+        if(dto.getUserId()!=null){
+            User user=userService.getFindById(dto.getUserId());
+            dtuInfo.setUser(user);
+        }
         dtuInfo = dtuInfoService.update(dtuInfo);
         return Result.ok(dtuInfo);
     }
-    @DeleteMapping
+
+    @DeleteMapping("{id}")
     @ApiOperation("删除dtu信息")
-    public Result DeleteDtuInfo(Long id){
+    public Result DeleteDtuInfo(@PathVariable Long id){
         dtuInfoService.delete(id);
         return Result.ok();
     }
@@ -62,7 +79,10 @@ public class DtuInfoController {
         Page<DtuInfo> dtuInfoPage = dtuInfoService.findPage(dto);
         List<DtuInfoFindByPageVo> list = dtuInfoPage.getContent().stream().map(d -> {
             DtuInfoFindByPageVo vo = new DtuInfoFindByPageVo();
-            BeanUtils.copyProperties(d,vo);
+            BeanUtils.copyProperties(d, vo);
+            if (d.getUser() != null) {
+                vo.setUserId(d.getUser().getId());
+            }
             return vo;
         }).collect(Collectors.toList());
         PageResult<DtuInfoFindByPageVo> pages=new PageResult<>();

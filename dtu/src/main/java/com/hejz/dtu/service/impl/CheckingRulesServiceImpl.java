@@ -47,9 +47,6 @@ public class CheckingRulesServiceImpl implements CheckingRulesService {
     public Page<CheckingRules> findPage(CheckingRulesFindByPageDto dto) {
         Specification<CheckingRules> sp= (root, query, cb)-> {
             List<Predicate> predicates = new ArrayList<>();
-            if(dto.getAddressBitLength()!=null && dto.getAddressBitLength()!=0) {
-            predicates.add(cb.equal(root.get("addressBitLength"), dto.getAddressBitLength()));
-            }
             if(dto.getDataBitsLength()!=null && dto.getDataBitsLength()!=0) {
             predicates.add(cb.equal(root.get("dataBitsLength"), dto.getDataBitsLength()));
             }

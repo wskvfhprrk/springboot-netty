@@ -25,6 +25,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +67,7 @@ public class InstructionDefinitionServiceImpl implements InstructionDefinitionSe
     public Page<InstructionDefinition> findPage(InstructionDefinitionFindByPageDto dto) {
         Specification<InstructionDefinition> sp= (root, query, cb)-> {
             List<Predicate> predicates = new ArrayList<>();
+            Join<InstructionDefinition,DtuInfo> join=root.join("dtuInfo", JoinType.LEFT);
             if(dto.getInstructionType()!=null ) {
             predicates.add(cb.equal(root.get("instructionType"), dto.getInstructionType()));
             }
@@ -75,7 +78,7 @@ public class InstructionDefinitionServiceImpl implements InstructionDefinitionSe
                 predicates.add(cb.like(root.get("remarks"), "%"+dto.getRemarks()+"%"));
             }
             if(dto.getDtuId()!=null && dto.getDtuId()!=0) {
-            predicates.add(cb.equal(root.get("dtuId"), dto.getDtuId()));
+            predicates.add(cb.equal(join.get("id"), dto.getDtuId()));
             }
             Predicate[] andPredicate = new Predicate[predicates.size()];
             return cb.and(predicates.toArray(andPredicate));
