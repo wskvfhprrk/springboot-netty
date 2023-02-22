@@ -96,7 +96,7 @@ public class DtuInfoController {
 
     @GetMapping("findAll")
     @ApiOperation("条件查询dtu信息")
-    public Result findBypage( @Valid DtuInfoFindAllDto dto){
+    public Result findByPage( @Valid DtuInfoFindAllDto dto){
         DtuInfo dtuInfo=new DtuInfo();
         BeanUtils.copyProperties(dto,dtuInfo);
         List<DtuInfo> dtuInfoList = dtuInfoService.findAll(dto);
