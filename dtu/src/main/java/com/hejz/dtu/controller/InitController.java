@@ -92,7 +92,7 @@ public class InitController {
         //imei值
         Long imei = 865328063321359L;
         for (int i = 0; i < 30; i++) {
-            DtuInfo dtuInfo = dtuInfoRepository.save(new DtuInfo(imei.toString(), 89, 120000, true, "1,1,2,2,2,2,2,2,2"));
+            DtuInfo dtuInfo = dtuInfoRepository.save(new DtuInfo(imei.toString(), 89, 30000, true, "1,1,2,2,2,2,2,2,2"));
 
             //处理编辑继电器命令的信息
             Set<Command> set = new HashSet<>();
