@@ -1,12 +1,11 @@
 package com.hejz.dtu.controller;
 
+import com.hejz.dtu.common.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * @author:hejz 75412985@qq.com
@@ -32,5 +31,11 @@ public class RemoteDeploymentServer {
             System.err.println(String.format("runShellCommand: %s, status: %s", command,
                     status));
         }
+    }
+
+    @GetMapping("/deployServer/heartbeat")
+    @ApiOperation("心跳")
+    public Result heartbeat(){
+        return Result.ok();
     }
 }
