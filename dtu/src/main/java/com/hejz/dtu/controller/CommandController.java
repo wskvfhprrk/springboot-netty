@@ -63,7 +63,6 @@ public class CommandController {
         List<CommandFindByPageVo> list = commandPage.getContent().stream().map(d -> {
             CommandFindByPageVo vo = new CommandFindByPageVo();
             BeanUtils.copyProperties(d,vo);
-            vo.setCheckingRulesId(d.getCheckingRules().getId());
             return vo;
         }).collect(Collectors.toList());
         PageResult<CommandFindByPageVo> pages=new PageResult<>();
@@ -73,17 +72,6 @@ public class CommandController {
         pages.setTotal(commandPage.getTotalElements());
         pages.setItems(list);
         return Result.ok(pages);
-    }
-    @GetMapping("findAll")
-    @ApiOperation("分布条件查询指令所有的数据")
-    public Result<List<CommandAllVo>> findAll(CommandAllDto dto){
-        List<Command> dictionaries = commandService.findAll(dto);
-        List<CommandAllVo> list = dictionaries.stream().map(d -> {
-            CommandAllVo vo = new CommandAllVo();
-            BeanUtils.copyProperties(d,vo);
-            return vo;
-        }).collect(Collectors.toList());
-        return Result.ok(list);
     }
 
 }

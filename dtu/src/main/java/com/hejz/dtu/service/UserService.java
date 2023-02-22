@@ -18,6 +18,4 @@ public interface UserService {
     Page<User> findPage(UserFindByPageDto dto);
 
     List<User> findAll(UserFindAllDto dto);
-
-    User getFindById(Integer userId);
 }

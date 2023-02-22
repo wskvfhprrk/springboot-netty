@@ -1,13 +1,11 @@
 package com.hejz.dtu.controller;
 
 import com.hejz.dtu.common.PageResult;
-import com.hejz.dtu.common.Result;
-import com.hejz.dtu.dto.SensorCreateDto;
-import com.hejz.dtu.dto.SensorFindByPageDto;
-import com.hejz.dtu.dto.SensorUpdateDto;
+import com.hejz.dtu.dto.*;
 import com.hejz.dtu.entity.Sensor;
 import com.hejz.dtu.service.SensorService;
-import com.hejz.dtu.vo.SensorFindByPageVo;
+import com.hejz.dtu.common.Result;
+import com.hejz.dtu.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
@@ -64,18 +62,8 @@ public class SensorController {
         Page<Sensor> sensorPage = sensorService.findPage(dto);
         List<SensorFindByPageVo> list = sensorPage.getContent().stream().map(d -> {
             SensorFindByPageVo vo = new SensorFindByPageVo();
-            BeanUtils.copyProperties(d, vo);
+            BeanUtils.copyProperties(d,vo);
             vo.setDtuId(d.getDtuInfo().getId());
-            vo.setDtuId(d.getDtuInfo().getId());
-            if (d.getMaxInstructionDefinitionId() != null) {
-                vo.setMaxInstructionDefinitionId(d.getMaxInstructionDefinitionId().getId());
-            }
-            if (d.getMinInstructionDefinitionId() != null) {
-                vo.setMinInstructionDefinitionId(d.getMinInstructionDefinitionId().getId());
-            }
-            if (d.getCommand() != null) {
-                vo.setCommandId(d.getCommand().getId());
-            }
             return vo;
         }).collect(Collectors.toList());
         PageResult<SensorFindByPageVo> pages=new PageResult<>();

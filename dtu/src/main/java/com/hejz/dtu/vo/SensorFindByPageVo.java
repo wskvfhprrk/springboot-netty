@@ -19,8 +19,4 @@ public class SensorFindByPageVo{
     private Long maxInstructionDefinitionId;
     @ApiModelProperty(value = "ID")
     private Long minInstructionDefinitionId;
-    @ApiModelProperty(value = "ID")
-    private Long commandId;
-    private Integer sensorSort;
-    private String unit;
 }

@@ -25,8 +25,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -182,15 +180,20 @@ public class NettyServiceCommon {
      */
     public static Result sendRelayCommandAccordingToLayIds(InstructionDefinition instructionDefinition) {
         List<InstructionDefinitionStatus> instructionDefinitionStatuses = instructionDefinitionStatusService.findByInstructionDefinition(instructionDefinition);
-        //检验当前命令是否已经发送
         if (!instructionDefinitionStatuses.isEmpty()) {
             //log.error("当前已经是此指令，只能发送相反指令后再发送此指令！");
             return Result.error(500,"命令已经执行，请执行相反命令后才能执行！");
         }
+        //如果三次————三倍时间
+//        LocalDateTime beginTime = instructionDefinition.getSendCommandTime()==null?LocalDateTime.now():instructionDefinition.getSendCommandTime();
+//        Duration duration = Duration.between(beginTime, LocalDateTime.now());
+        //指令过期时间
+//        if (duration.getSeconds() > Constant.INSTRUCTION_NUM*instructionDefinition.getSendCommandTime()) {
+//            log.error("指令{}已经发了{}次，不再发送", instructionDefinition, Constant.INSTRUCTION_NUM);
+//            return;
+//        }
         //先判断channel是否存在，如果存在直接发，如果不存在通过dtuId找到chaannel再发，
         Channel channel = Constant.USER_CHANNEL.get(instructionDefinition.getDtuInfo().getId());
-        //ScheduledExecutorService 来实现延时任务，不使用EventLoop提供了一种实现延时任务的方式，防止中途通道断线，延时任务无法进行
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         //如果还在活动状态就直接发送指令
         if (channel != null) {
             Channel finalChannel1 = channel;
@@ -199,7 +202,7 @@ public class NettyServiceCommon {
                 write(command.getInstructions(), finalChannel1);
                 //发送完指令后要延时发送下一个延时指令
                 Command nextCommand = commandService.findById(command.getNextLevelInstructionId());
-                executorService.schedule(() -> {
+                finalChannel1.eventLoop().schedule(() -> {
                     log.info("通道==》{}开始延时任务，延时：{}秒", finalChannel1.id().toString(), nextCommand.getWaitTimeNextCommand());
                     NettyServiceCommon.write(nextCommand.getInstructions(), finalChannel1);
                 }, nextCommand.getWaitTimeNextCommand(), TimeUnit.SECONDS);
@@ -218,13 +221,14 @@ public class NettyServiceCommon {
             }
             Channel finalChannel = channel;
             instructionDefinition.getCommands().stream().forEach(command -> {
-                executorService.schedule(() -> {
+                finalChannel.eventLoop().schedule(() -> {
                     log.info("从通道{}发送指令{}",finalChannel.id().toString(), instructionDefinition);
                     sendRelayCommandAccordingToLayIds(instructionDefinition);
                 }, command.getWaitTimeNextCommand(), TimeUnit.SECONDS);
+                return;
             });
         }
-        return Result.ok();
+        return null;
     }
 
     private static void updateInstrctionDefintionStatus(InstructionDefinition instructionDefinition) {

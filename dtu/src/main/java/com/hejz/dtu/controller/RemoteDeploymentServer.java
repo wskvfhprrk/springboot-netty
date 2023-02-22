@@ -1,6 +1,5 @@
 package com.hejz.dtu.controller;
 
-import com.hejz.dtu.common.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +32,5 @@ public class RemoteDeploymentServer {
             System.err.println(String.format("runShellCommand: %s, status: %s", command,
                     status));
         }
-    }
-
-    @GetMapping("deployServer/heartbeat")
-    public Result heartbeat(){
-        return Result.ok();
     }
 }

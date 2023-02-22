@@ -2,7 +2,6 @@ package com.hejz.dtu.service;
 
 import com.hejz.dtu.common.Result;
 import com.hejz.dtu.dto.DendManuallyDto;
-import com.hejz.dtu.dto.InstructionDefinitionAllDto;
 import com.hejz.dtu.dto.InstructionDefinitionFindByPageDto;
 import com.hejz.dtu.enm.InstructionTypeEnum;
 import com.hejz.dtu.entity.Command;
@@ -17,8 +16,7 @@ import java.util.List;
  *
  */
 public interface InstructionDefinitionService {
-    InstructionDefinition save(InstructionDefinition instructionDefinition);
-    InstructionDefinition update(InstructionDefinition instructionDefinition);
+    InstructionDefinition Save(InstructionDefinition instructionDefinition);
     void delete(Long id);
     InstructionDefinition findById(Long id);
     Page<InstructionDefinition> findPage(InstructionDefinitionFindByPageDto dto);
@@ -32,6 +30,4 @@ public interface InstructionDefinitionService {
     Result sendManually(DendManuallyDto dto);
 
     InstructionDefinition findContrary(InstructionDefinition instructionDefinition);
-
-    List<InstructionDefinition> findAll(InstructionDefinitionAllDto dto);
 }

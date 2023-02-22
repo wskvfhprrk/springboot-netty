@@ -67,12 +67,7 @@ public class NettyHandler extends SimpleChannelInboundHandler<ByteBuf> {
             } else {
                 byte[] bytes = new byte[in.readableBytes()];
                 in.readBytes(bytes);
-                String s = HexConvert.BinaryToHexString(bytes);
-                if (s.equals("00 00 ")) {
-                    log.info("通道：{},心跳数据：{}",ctx.channel().id().toString(), s);
-                } else {
-                    log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), bytes.length, s);
-                }
+                log.error("通道：{},获取的byte[]长度： {} ，不能解析数据,server received message：{}", ctx.channel().id(), bytes.length, HexConvert.BinaryToHexString(bytes));
             }
         }catch (Exception e){
             log.error(e.toString());

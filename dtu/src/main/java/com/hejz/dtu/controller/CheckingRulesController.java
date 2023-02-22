@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * 数据校检规则控制器
  * author: hejz
- * data: 2023-2-18
+ * data: 2023-2-7
  */
 @RestController
 @RequestMapping("checkingRules")
@@ -35,8 +35,8 @@ public class CheckingRulesController {
     public Result createCheckingRules(@Valid @RequestBody CheckingRulesCreateDto dto){
         CheckingRules checkingRules=new CheckingRules();
         BeanUtils.copyProperties(dto,checkingRules);
-        checkingRulesService.save(checkingRules);
-        return Result.ok();
+        checkingRules = checkingRulesService.save(checkingRules);
+        return Result.ok(checkingRules);
 
     }
     @PutMapping
@@ -44,19 +44,19 @@ public class CheckingRulesController {
     public Result updateCheckingRules(@Valid @RequestBody CheckingRulesUpdateDto dto){
         CheckingRules checkingRules=new CheckingRules();
         BeanUtils.copyProperties(dto,checkingRules);
-        checkingRulesService.update(checkingRules);
-        return Result.ok();
+        checkingRules = checkingRulesService.update(checkingRules);
+        return Result.ok(checkingRules);
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @ApiOperation("删除数据校检规则")
-    public Result DeleteCheckingRules(@PathVariable Integer id){
+    public Result DeleteCheckingRules(Integer id){
         checkingRulesService.delete(id);
         return Result.ok();
     }
 
     @GetMapping("findPage")
     @ApiOperation("条件查询数据校检规则")
-    public Result<PageResult<CheckingRulesFindByPageVo>> findBypage(CheckingRulesFindByPageDto dto){
+    public Result<PageResult<CheckingRulesFindByPageVo>> findBypage( @Valid CheckingRulesFindByPageDto dto){
         CheckingRules checkingRules=new CheckingRules();
         BeanUtils.copyProperties(dto,checkingRules);
         Page<CheckingRules> checkingRulesPage = checkingRulesService.findPage(dto);
@@ -72,18 +72,6 @@ public class CheckingRulesController {
         pages.setTotal(checkingRulesPage.getTotalElements());
         pages.setItems(list);
         return Result.ok(pages);
-    }
-
-    @GetMapping("findAll")
-    @ApiOperation("分布条件查询数据校检规则所有的数据")
-    public Result<List<CheckingRulesAllVo>> findAll(CheckingRulesFindAllDto dto){
-        List<CheckingRules> dictionaries = checkingRulesService.findAll(dto);
-        List<CheckingRulesAllVo> list = dictionaries.stream().map(d -> {
-            CheckingRulesAllVo vo = new CheckingRulesAllVo();
-            BeanUtils.copyProperties(d,vo);
-            return vo;
-        }).collect(Collectors.toList());
-        return Result.ok(list);
     }
 
 }

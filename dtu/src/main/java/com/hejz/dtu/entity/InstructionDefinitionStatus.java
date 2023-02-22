@@ -14,21 +14,21 @@ import javax.persistence.*;
  */
 @Getter
 @Setter
-@Entity(name = "equ_instruction_definition_status")
+@Entity(name = "equ_command_status")
 @NoArgsConstructor
 @AllArgsConstructor
-@org.hibernate.annotations.Table(appliesTo = "equ_instruction_definition_status", comment = "继电器命令状态")
+@org.hibernate.annotations.Table(appliesTo = "equ_command_status", comment = "继电器命令状态")
 public class InstructionDefinitionStatus implements Serializable{
 
     @Id
     @SequenceGenerator(
-            name = "equ_instruction_definition_status_sequence",
-            sequenceName = "equ_instruction_definition_status_sequence",
+            name = "equ_command_status_sequence",
+            sequenceName = "equ_command_status_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "equ_instruction_definition_status_sequence"
+            generator = "equ_command_status_sequence"
     )
     @Column(
             name = "id",

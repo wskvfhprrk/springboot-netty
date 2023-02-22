@@ -4,7 +4,6 @@ import com.hejz.dtu.common.Constant;
 import com.hejz.dtu.dto.DtuInfoFindAllDto;
 import com.hejz.dtu.dto.DtuInfoFindByPageDto;
 import com.hejz.dtu.entity.DtuInfo;
-import com.hejz.dtu.entity.User;
 import com.hejz.dtu.repository.DtuInfoRepository;
 import com.hejz.dtu.service.DtuInfoService;
 import org.apache.commons.lang3.StringUtils;
@@ -18,8 +17,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +58,6 @@ public class DtuInfoServiceImpl implements DtuInfoService {
     public Page<DtuInfo> findPage(DtuInfoFindByPageDto dto) {
         Specification<DtuInfo> sp= (root, query, cb)-> {
             List<Predicate> predicates = new ArrayList<>();
-            Join<DtuInfo, User> join= root.join("user", JoinType.LEFT);
             if(dto.getAutomaticAdjustment()!=null) {
             predicates.add(cb.equal(root.get("automaticAdjustment"), dto.getAutomaticAdjustment()));
             }
@@ -78,7 +74,7 @@ public class DtuInfoServiceImpl implements DtuInfoService {
                 predicates.add(cb.like(root.get("sensorAddressOrder"), "%"+dto.getSensorAddressOrder()+"%"));
             }
             if(dto.getUserId()!=null && dto.getUserId()!=0) {
-            predicates.add(cb.equal(join.get("id"), dto.getUserId()));
+            predicates.add(cb.equal(root.get("userId"), dto.getUserId()));
             }
             Predicate[] andPredicate = new Predicate[predicates.size()];
             return cb.and(predicates.toArray(andPredicate));

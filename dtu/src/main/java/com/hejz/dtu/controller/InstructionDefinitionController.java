@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * 继电器定义指令控制器
  * author: hejz
- * data: 2023-2-20
+ * data: 2023-2-7
  */
 @RestController
 @RequestMapping("instructionDefinition")
@@ -35,8 +35,8 @@ public class InstructionDefinitionController {
     public Result createInstructionDefinition(@Valid @RequestBody InstructionDefinitionCreateDto dto){
         InstructionDefinition instructionDefinition=new InstructionDefinition();
         BeanUtils.copyProperties(dto,instructionDefinition);
-        instructionDefinitionService.save(instructionDefinition);
-        return Result.ok();
+        instructionDefinition = instructionDefinitionService.Save(instructionDefinition);
+        return Result.ok(instructionDefinition);
 
     }
     @PutMapping
@@ -44,19 +44,19 @@ public class InstructionDefinitionController {
     public Result updateInstructionDefinition(@Valid @RequestBody InstructionDefinitionUpdateDto dto){
         InstructionDefinition instructionDefinition=new InstructionDefinition();
         BeanUtils.copyProperties(dto,instructionDefinition);
-        instructionDefinitionService.update(instructionDefinition);
-        return Result.ok();
+        instructionDefinition = instructionDefinitionService.Save(instructionDefinition);
+        return Result.ok(instructionDefinition);
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @ApiOperation("删除继电器定义指令")
-    public Result DeleteInstructionDefinition(@PathVariable Long id){
+    public Result DeleteInstructionDefinition(Long id){
         instructionDefinitionService.delete(id);
         return Result.ok();
     }
 
     @GetMapping("findPage")
     @ApiOperation("条件查询继电器定义指令")
-    public Result<PageResult<InstructionDefinitionFindByPageVo>> findBypage(InstructionDefinitionFindByPageDto dto){
+    public Result<PageResult<InstructionDefinitionFindByPageVo>> findBypage( @Valid InstructionDefinitionFindByPageDto dto){
         InstructionDefinition instructionDefinition=new InstructionDefinition();
         BeanUtils.copyProperties(dto,instructionDefinition);
         Page<InstructionDefinition> instructionDefinitionPage = instructionDefinitionService.findPage(dto);
@@ -75,16 +75,10 @@ public class InstructionDefinitionController {
         return Result.ok(pages);
     }
 
-    @GetMapping("findAll")
-    @ApiOperation("分布条件查询继电器定义指令所有的数据")
-    public Result<List<InstructionDefinitionAllVo>> findAll(InstructionDefinitionAllDto dto){
-        List<InstructionDefinition> dictionaries = instructionDefinitionService.findAll(dto);
-        List<InstructionDefinitionAllVo> list = dictionaries.stream().map(d -> {
-            InstructionDefinitionAllVo vo = new InstructionDefinitionAllVo();
-            BeanUtils.copyProperties(d,vo);
-            return vo;
-        }).collect(Collectors.toList());
-        return Result.ok(list);
+    @PostMapping ("sendManually")
+    @ApiOperation("手动发送指令")
+    public Result sendManually(DendManuallyDto dto){
+        return instructionDefinitionService.sendManually(dto);
     }
 
 }

@@ -30,4 +30,5 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         //注册拦截器
         pipeline.addLast(nettyHandler);
     }
+
 }
