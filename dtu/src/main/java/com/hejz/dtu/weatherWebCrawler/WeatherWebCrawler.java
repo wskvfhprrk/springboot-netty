@@ -25,7 +25,11 @@ public class WeatherWebCrawler {
     @Autowired
     WeatherRepository weatherRepository;
 
-    @Scheduled(cron = "* 0/1 * * * ? ")
+    /**
+     * 每天8：05，16：05去天气网爬取数据
+     * @throws IOException
+     */
+    @Scheduled(cron = "0 5 8,16 * * ?")
     public void runtime() throws IOException {
        run();
     }
