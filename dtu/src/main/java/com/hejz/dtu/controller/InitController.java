@@ -10,6 +10,7 @@ import com.hejz.dtu.service.CommandService;
 import com.hejz.dtu.service.DictionaryService;
 import com.hejz.dtu.service.UserService;
 import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 //此处不能删除——不然系统不能自动部署
@@ -27,6 +28,7 @@ import java.util.Set;
  * @Description: 启动时初始化数据
  */
 @RestController
+@Slf4j
 //@Api(tags = "初始化数据")
 public class InitController {
     @Autowired
@@ -48,6 +50,7 @@ public class InitController {
 
 //    @PostConstruct
     public void initData() {
+        log.info("数据库始化中……");
         start();
         //清除所有缓存
         Set<String> keys = redisTemplate.keys(Constant.SENSOR_CACHE_KEY + ":*");
