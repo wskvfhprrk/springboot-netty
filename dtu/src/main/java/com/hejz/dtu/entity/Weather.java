@@ -35,10 +35,10 @@ public class Weather {
     private Long id;
     //抓取时间
     @Column(
-            name = "created_time",
+            name = "create_time",
             columnDefinition="datetime"+" COMMENT '抓取时间'"
     )
-    private Date createdTime;
+    private Date createTime;
     //描述
     @Column(
             name = "remarks",

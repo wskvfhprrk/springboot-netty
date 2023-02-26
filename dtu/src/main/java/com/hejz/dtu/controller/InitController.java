@@ -27,7 +27,7 @@ import java.util.Set;
  * @Description: 启动时初始化数据
  */
 @RestController
-@Api(tags = "初始化数据")
+//@Api(tags = "初始化数据")
 public class InitController {
     @Autowired
     SensorRepository sensorRepository;
@@ -46,7 +46,7 @@ public class InitController {
     @Autowired
     UserRepository userRepository;
 
-    @PostConstruct
+//    @PostConstruct
     public void initData() {
         start();
         //清除所有缓存

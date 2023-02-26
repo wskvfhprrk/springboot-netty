@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,13 +27,16 @@ public class WeatherWebCrawler {
     WeatherRepository weatherRepository;
 
     /**
-     * 每天8：05，16：05去天气网爬取数据
+     * 每小时去天气网爬取数据
+     *
      * @throws IOException
      */
-    @Scheduled(cron = "0 5 8,16 * * ?")
+//    @Scheduled(cron = "* 0/1 * * * ? ")
+    @Scheduled(cron = "* 3 0/1 * * ?")
     public void runtime() throws IOException {
-       run();
+        run();
     }
+
     private void run() {
         //        String cityCode = "101251401"; //城区
 //        String cityCode = "101251411"; //冷水滩
@@ -58,33 +62,42 @@ public class WeatherWebCrawler {
             log.info("时间:" + dateStr);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             Date date = sdf.parse(dateStr);
-            weather.setCreatedTime(date);
-            Element element = doc.selectFirst(".t").select("li:nth-child(1)").get(0);
-            String s = element.selectFirst("h1").text();
-            log.info("日期：" + s);
-            weather.setDn1(element.selectFirst("h1").text());
-            log.info("天气：" + element.selectFirst(".wea").text());
-            weather.setWeather1(element.selectFirst(".wea").text());
-            log.info("温度：" + element.selectFirst(".tem").text());
-            weather.setTemperature1(element.selectFirst(".tem").text());
-            log.info("风向：" + element.selectFirst(".win span").attr("title"));
-            weather.setWindDirection1(element.selectFirst(".win span").attr("title"));
-            log.info("风速：" + element.selectFirst(".win").text());
-            weather.setWindSpeed1(element.selectFirst(".win").text().replaceAll("<","&lt;"));
-            s = element.selectFirst("h1").text();
-            element = doc.selectFirst(".t").select("li:nth-child(2)").get(0);
-            log.info("日期：" + element.selectFirst("h1").text());
-            weather.setDn2(element.selectFirst("h1").text());
-            log.info("天气：" + element.selectFirst(".wea").text());
-            weather.setWeather2(element.selectFirst(".wea").text());
-            weather.setWindDirection2(element.selectFirst(".wea").text());
-            log.info("温度：" + element.selectFirst(".tem").text());
-            weather.setTemperature2(element.selectFirst(".tem").text());
-            log.info("风向：" + element.selectFirst(".win span").attr("title"));
-            weather.setWindDirection2( element.selectFirst(".win span").attr("title"));
-            log.info("风速：" + element.selectFirst(".win").text());
-            weather.setWindSpeed2(element.selectFirst(".win").text().replaceAll("<","&lt;"));
-            weatherRepository.save(weather);
+            weather.setCreateTime(date);
+            Elements elements = doc.selectFirst(".t").select("li:nth-child(1)");
+            for (Element element : elements) {
+                if (element.selectFirst("h1") != null) {
+                    String s = element.selectFirst("h1").text();
+                    log.info("日期：" + s);
+                    weather.setDn1(element.selectFirst("h1").text());
+                    log.info("天气：" + element.selectFirst(".wea").text());
+                    weather.setWeather1(element.selectFirst(".wea").text());
+                    log.info("温度：" + element.selectFirst(".tem").text());
+                    weather.setTemperature1(element.selectFirst(".tem").text());
+                    log.info("风向：" + element.selectFirst(".win span").attr("title"));
+                    weather.setWindDirection1(element.selectFirst(".win span").attr("title"));
+                    log.info("风速：" + element.selectFirst(".win").text());
+                    weather.setWindSpeed1(element.selectFirst(".win").text().replaceAll("<", "&lt;"));
+                }
+            }
+            Elements elements1 = doc.selectFirst(".t").select("li:nth-child(2)");
+            for (Element element : elements1) {
+                if (element.selectFirst("h1") != null) {
+                    log.info("日期：" + element.selectFirst("h1").text());
+                    weather.setDn2(element.selectFirst("h1").text());
+                    log.info("天气：" + element.selectFirst(".wea").text());
+                    weather.setWeather2(element.selectFirst(".wea").text());
+                    weather.setWindDirection2(element.selectFirst(".wea").text());
+                    log.info("温度：" + element.selectFirst(".tem").text());
+                    weather.setTemperature2(element.selectFirst(".tem").text());
+                    log.info("风向：" + element.selectFirst(".win span").attr("title"));
+                    weather.setWindDirection2(element.selectFirst(".win span").attr("title"));
+                    log.info("风速：" + element.selectFirst(".win").text());
+                    weather.setWindSpeed2(element.selectFirst(".win").text().replaceAll("<", "&lt;"));
+                }
+            }
+            if (weatherRepository.findByCreateTime(weather.getCreateTime()) == null) {
+                weatherRepository.save(weather);
+            }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
