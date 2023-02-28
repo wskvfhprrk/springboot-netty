@@ -33,9 +33,6 @@ public class Constant {
     public static final  Map<String,Integer> INTERVAL_TIME_MAP = new ConcurrentHashMap() ;
 
 
-
-    //已处理相应的ID锁
-    public static final String PROCESSED_THE_CORRESPONDING_ID_LOCK = "processedTheCorrespondingIdLock";
     //channel绑定的dtuId的Key
     public static final String CHANNEl_KEY = "dtuId";
     //IMEI长度
@@ -44,18 +41,14 @@ public class Constant {
     public static final int DUT_REGISTERED_BYTES_LENGTH = 89;
     //每组间隔默认时间（毫秒）
     public static final int INTERVAL_TIME = 30000;
-    //需要继续处理缓存键的缓存指令失效时间（毫秒）
-    public static final long EXPIRATION_TIME_OF_CACHE_INSTRUCTIONS_THAT_NEED_TO_CONTINUE_PROCESSING_CACHE_KEYS = 600000;
-    //指令次数
-    public static final int INSTRUCTION_NUM = 3;
     //netty客户端所有的连接绑定信息
     public static final Map<Long, Channel> USER_CHANNEL = new ConcurrentHashMap<>();
     //所有活动的客户端
     public static ChannelGroup CHANNELGROUP = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
 
-    public static final int READ_IDEL_TIME_OUT = 60; // 读超时
+    public static final int READ_IDEL_TIME_OUT = 180; // 读超时
     public static final int WRITE_IDEL_TIME_OUT = 60; // 写超时
-    public static final int ALL_IDEL_TIME_OUT = 60; // 所有超时
+    public static final int ALL_IDEL_TIME_OUT = 180; // 所有超时
 
 }

@@ -1,5 +1,6 @@
 package com.hejz.dtu.nettyserver;
 
+import com.hejz.dtu.common.Constant;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -26,7 +27,7 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         log.info("==================netty报告完毕==================");
         ChannelPipeline pipeline = ch.pipeline();
         //定义读写空闲时间——（单位秒）
-        pipeline.addLast(new IdleStateHandler(180, 60,180));
+        pipeline.addLast(new IdleStateHandler(Constant.READ_IDEL_TIME_OUT, Constant.WRITE_IDEL_TIME_OUT,Constant.ALL_IDEL_TIME_OUT));
         //注册拦截器
         pipeline.addLast(nettyHandler);
     }

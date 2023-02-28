@@ -69,7 +69,7 @@ public class ProcessRelayCommands {
         if (data - Double.parseDouble(sensor.getMax().toString()) > 0) {
             if(sensor.getMaxInstructionDefinitionId()==null)return;
             log.info("{} 结果值 {} 大于最大值 {}", sensor.getName(), data, sensor.getMax());
-            String key = ctx.channel().id().toString() + "max" + sensor.getId();
+            String key = "max" + sensor.getDtuInfo().getId();
             if (Constant.THREE_RECORDS_MAP.get(key) == null) {
                 List<Double> l = new ArrayList<>();
                 l.add(data);
@@ -93,7 +93,7 @@ public class ProcessRelayCommands {
         } else if (data - Double.parseDouble(sensor.getMin().toString()) < 0) {
             if(sensor.getMinInstructionDefinitionId()==null)return;
             log.info("{} 结果值 {} 小于最小值{}", sensor.getName(), data, sensor.getMin());
-            String key = ctx.channel().id().toString() + "min" + sensor.getId();
+            String key = "min" + sensor.getDtuInfo().getId();
             if (Constant.THREE_RECORDS_MAP.get(key) == null) {
                 List<Double> l = new ArrayList<>();
                 l.add(data);
