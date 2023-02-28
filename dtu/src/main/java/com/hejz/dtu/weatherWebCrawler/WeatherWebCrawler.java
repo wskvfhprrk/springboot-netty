@@ -32,7 +32,7 @@ public class WeatherWebCrawler {
      * @throws IOException
      */
 //    @Scheduled(cron = "* 0/1 * * * ? ")
-    @Scheduled(cron = "* 3 0/1 * * ?")
+    @Scheduled(cron = "0 3 1-23 * * ?")
     public void runtime() throws IOException {
         run();
     }
