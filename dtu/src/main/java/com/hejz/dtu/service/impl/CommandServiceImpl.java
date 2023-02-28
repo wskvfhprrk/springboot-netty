@@ -1,5 +1,6 @@
 package com.hejz.dtu.service.impl;
 
+import com.hejz.dtu.dto.CommandAllDto;
 import com.hejz.dtu.dto.CommandFindByPageDto;
 import com.hejz.dtu.entity.CheckingRules;
 import com.hejz.dtu.entity.Command;
@@ -87,6 +88,49 @@ public class CommandServiceImpl implements CommandService {
         Sort sort = Sort.by(direction, dto.getSort().substring(1));
         Page<Command> all = commandRepository.findAll(sp, PageRequest.of(dto.getPage(), dto.getLimit(), sort));
         System.out.println(all);
+        return all;
+    }
+    @Override
+    public List<Command> findAll(CommandAllDto dto) {
+        Specification<Command> spec= (root, query, cb)-> {
+            List<Predicate> predicates = new ArrayList<>();
+            if(dto.getId()!=null && dto.getId()!=0) {
+                predicates.add(cb.equal(root.get("Id"), dto.getId()));
+            }
+            if(StringUtils.isNotBlank(dto.getCalculationFormula())) {
+                predicates.add(cb.like(root.get("CalculationFormula"), "%"+dto.getCalculationFormula()+"%"));
+            }
+            if(StringUtils.isNotBlank(dto.getCommandType())) {
+                predicates.add(cb.like(root.get("CommandType"), "%"+dto.getCommandType()+"%"));
+            }
+            if(StringUtils.isNotBlank(dto.getInstructions())) {
+                predicates.add(cb.like(root.get("Instructions"), "%"+dto.getInstructions()+"%"));
+            }
+            if(dto.getIsUse()!= null ) {
+                predicates.add(cb.equal(root.get("IsUse"), dto.getIsUse()));
+            }
+            if(StringUtils.isNotBlank(dto.getManufacturer())) {
+                predicates.add(cb.like(root.get("Manufacturer"), "%"+dto.getManufacturer()+"%"));
+            }
+            if(StringUtils.isNotBlank(dto.getName())) {
+                predicates.add(cb.like(root.get("Name"), "%"+dto.getName()+"%"));
+            }
+            if(dto.getNextLevelInstructionId()!=null && dto.getNextLevelInstructionId()!=0) {
+                predicates.add(cb.equal(root.get("NextLevelInstructionId"), dto.getNextLevelInstructionId()));
+            }
+            if(StringUtils.isNotBlank(dto.getRemarks())) {
+                predicates.add(cb.like(root.get("Remarks"), "%"+dto.getRemarks()+"%"));
+            }
+            if(dto.getWaitTimeNextCommand()!=null && dto.getWaitTimeNextCommand()!=0) {
+                predicates.add(cb.equal(root.get("WaitTimeNextCommand"), dto.getWaitTimeNextCommand()));
+            }
+            if(dto.getCheckingRulesId()!=null && dto.getCheckingRulesId()!=0) {
+                predicates.add(cb.equal(root.get("CheckingRulesId"), dto.getCheckingRulesId()));
+            }
+            Predicate[] andPredicate = new Predicate[predicates.size()];
+            return cb.and(predicates.toArray(andPredicate));
+        };
+        List<Command> all = commandRepository.findAll(spec);
         return all;
     }
 }

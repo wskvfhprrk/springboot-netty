@@ -22,7 +22,6 @@ public class SensorDataCreateDto {
     @ApiModelProperty(value = "接收到数据的单位",required = true)
     @NotEmpty
     private String units;
-    @ApiModelProperty(value = "ID",required = true)
-    @NotEmpty
+    @ApiModelProperty(value = "dtuID")
     private Long dtuId;
 }

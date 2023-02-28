@@ -10,7 +10,7 @@ import javax.validation.constraints.NotEmpty;
  */
 @Data
 public class SensorDataUpdateDto {
-    @ApiModelProperty(value = "ID",required = true)
+    @ApiModelProperty(value = "传感器数据ID",required = true)
     @NotEmpty
     private Long id;
     @ApiModelProperty(value = "接收时间",required = true)
@@ -25,7 +25,6 @@ public class SensorDataUpdateDto {
     @ApiModelProperty(value = "接收到数据的单位",required = true)
     @NotEmpty
     private String units;
-    @ApiModelProperty(value = "ID",required = true)
-    @NotEmpty
+    @ApiModelProperty(value = "dtuID")
     private Long dtuId;
 }

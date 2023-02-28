@@ -16,11 +16,16 @@ public class SensorCreateDto {
     private Integer min;
     @ApiModelProperty(value = "名称")
     private String name;
-    @ApiModelProperty(value = "ID",required = true)
-    @NotEmpty
-    private Long dtuId;
-    @ApiModelProperty(value = "ID")
+    @ApiModelProperty(value = "接收感应器数据排序")
+    private String sensorSort;
+    @ApiModelProperty(value = "接收到数据的单位")
+    private String unit;
+    @ApiModelProperty(value = "指令ID")
+    private Long commandId;
+    @ApiModelProperty(value = "dtuID")
+    private Long equDtuId;
+    @ApiModelProperty(value = "继电器定义指令ID")
     private Long maxInstructionDefinitionId;
-    @ApiModelProperty(value = "ID")
+    @ApiModelProperty(value = "继电器定义指令ID")
     private Long minInstructionDefinitionId;
 }

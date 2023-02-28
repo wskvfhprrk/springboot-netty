@@ -80,5 +80,16 @@ public class InstructionDefinitionController {
     public Result sendManually(DendManuallyDto dto){
         return instructionDefinitionService.sendManually(dto);
     }
+    @GetMapping("findAll")
+    @ApiOperation("分布条件查询继电器定义指令所有的数据")
+    public Result<List<InstructionDefinitionAllVo>> findAll(InstructionDefinitionAllDto dto){
+        List<InstructionDefinition> dictionaries = instructionDefinitionService.findAll(dto);
+        List<InstructionDefinitionAllVo> list = dictionaries.stream().map(d -> {
+            InstructionDefinitionAllVo vo = new InstructionDefinitionAllVo();
+            BeanUtils.copyProperties(d,vo);
+            return vo;
+        }).collect(Collectors.toList());
+        return Result.ok(list);
+    }
 
 }

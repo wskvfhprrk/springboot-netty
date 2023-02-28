@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * data: 2023-2-7
  */
 @RestController
-@RequestMapping("commandStatus")
+@RequestMapping("instructionDefinitionStatus")
 @Api(tags="继电器命令状态")
 public class InstructionDefinitionStatusController {
 

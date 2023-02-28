@@ -5,17 +5,13 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
-/**
- * 更新入参——必须带主键
- */
 @Data
-public class SensorUpdateDto {
-    @ApiModelProperty(value = "传感器ID",required = true)
-    @NotEmpty
+public class SensorAllDto {
+    @ApiModelProperty(value = "传感器ID")
     private Long id;
-    @ApiModelProperty(value = "获取值参考最大值",example = "1")
+    @ApiModelProperty(value = "获取值参考最大值")
     private Integer max;
-    @ApiModelProperty(value = "获取值参考最小值",example = "1")
+    @ApiModelProperty(value = "获取值参考最小值")
     private Integer min;
     @ApiModelProperty(value = "名称")
     private String name;

@@ -2,12 +2,13 @@ package com.hejz.dtu.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import com.hejz.dtu.common.Page;
 import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class SensorDataFindByPageDto extends Page {
+public class SensorDataAllDto {
+    @ApiModelProperty(value = "传感器数据ID")
+    private Long id;
     @ApiModelProperty(value = "接收时间")
     private java.util.Date createDate;
     @ApiModelProperty(value = "接收到数据")
