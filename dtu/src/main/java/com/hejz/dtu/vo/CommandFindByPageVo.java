@@ -1,7 +1,11 @@
 package com.hejz.dtu.vo;
 
+import com.hejz.dtu.enm.CommandTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Data
 public class CommandFindByPageVo{
@@ -10,7 +14,8 @@ public class CommandFindByPageVo{
     @ApiModelProperty(value = "校正数据计算公式——D是测得数据，如果实际数据是原来的小10倍加上5，公式为D/10+5,用测得的结果带入计算公式得到最后实际结果")
     private String calculationFormula;
     @ApiModelProperty(value = "指令类型")
-    private Integer commandType;
+    @Enumerated(value = EnumType.STRING)
+    private CommandTypeEnum commandType;
     @ApiModelProperty(value = "指令")
     private String instructions;
     @ApiModelProperty(value = "是否正在使用——true正在使用，flase没有使用")
@@ -21,12 +26,10 @@ public class CommandFindByPageVo{
     private String name;
     @ApiModelProperty(value = "备注")
     private String remarks;
-    @ApiModelProperty(value = "接收到数据的单位")
-    private String unit;
     @ApiModelProperty(value = "等待时间下一指令（单位：秒）")
-    private String waitTimeNextCommand;
+    private Integer waitTimeNextCommand;
     @ApiModelProperty(value = "ID")
     private Integer checkingRulesId;
     @ApiModelProperty(value = "ID")
-    private Long nextLevelInstruction;
+    private Long nextLevelInstructionId;
 }

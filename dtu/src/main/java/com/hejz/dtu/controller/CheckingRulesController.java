@@ -74,4 +74,16 @@ public class CheckingRulesController {
         return Result.ok(pages);
     }
 
+    @GetMapping("findAll")
+    @ApiOperation("分布条件查询数据校检规则所有的数据")
+    public Result<List<CheckingRulesAllVo>> findAll(CheckingRulesAllDto dto){
+        List<CheckingRules> dictionaries = checkingRulesService.findAll(dto);
+        List<CheckingRulesAllVo> list = dictionaries.stream().map(d -> {
+            CheckingRulesAllVo vo = new CheckingRulesAllVo();
+            BeanUtils.copyProperties(d,vo);
+            return vo;
+        }).collect(Collectors.toList());
+        return Result.ok(list);
+    }
+
 }

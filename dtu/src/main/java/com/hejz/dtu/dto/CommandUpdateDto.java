@@ -31,8 +31,6 @@ public class CommandUpdateDto {
     private String name;
     @ApiModelProperty(value = "备注")
     private String remarks;
-    @ApiModelProperty(value = "接收到数据的单位")
-    private String unit;
     @ApiModelProperty(value = "等待时间下一指令（单位：秒）")
     private String waitTimeNextCommand;
     @ApiModelProperty(value = "ID",example = "1")

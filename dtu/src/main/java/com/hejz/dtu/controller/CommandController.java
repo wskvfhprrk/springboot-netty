@@ -63,6 +63,9 @@ public class CommandController {
         List<CommandFindByPageVo> list = commandPage.getContent().stream().map(d -> {
             CommandFindByPageVo vo = new CommandFindByPageVo();
             BeanUtils.copyProperties(d,vo);
+            vo.setCheckingRulesId(d.getCheckingRules().getId());
+            vo.setNextLevelInstructionId(d.getNextLevelInstructionId());
+            vo.setWaitTimeNextCommand(d.getWaitTimeNextCommand());
             return vo;
         }).collect(Collectors.toList());
         PageResult<CommandFindByPageVo> pages=new PageResult<>();

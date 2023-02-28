@@ -48,9 +48,9 @@ public class InitController {
     @Autowired
     UserRepository userRepository;
 
-//    @PostConstruct
+    @PostConstruct
     public void initData() {
-        log.info("数据库始化中……");
+        log.info("数据库初始化中……");
         start();
         //清除所有缓存
         Set<String> keys = redisTemplate.keys(Constant.SENSOR_CACHE_KEY + ":*");
