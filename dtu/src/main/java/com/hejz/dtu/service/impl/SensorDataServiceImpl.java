@@ -1,6 +1,7 @@
 package com.hejz.dtu.service.impl;
 
 import com.hejz.dtu.dto.SensorDataFindByPageDto;
+import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.entity.SensorData;
 import com.hejz.dtu.repository.SensorDataRepository;
 import com.hejz.dtu.service.SensorDataService;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +43,7 @@ public class SensorDataServiceImpl implements SensorDataService {
     public Page<SensorData> findPage(SensorDataFindByPageDto dto) {
         Specification<SensorData> sp= (root, query, cb)-> {
             List<Predicate> predicates = new ArrayList<>();
+            Join<SensorData, DtuInfo> join=root.join("dtuInfo", JoinType.LEFT);
             if(dto.getCreateDate()!=null) {
             predicates.add(cb.equal(root.get("createDate"), dto.getCreateDate()));
             }
@@ -53,7 +57,7 @@ public class SensorDataServiceImpl implements SensorDataService {
                 predicates.add(cb.like(root.get("units"), "%"+dto.getUnits()+"%"));
             }
             if(dto.getDtuId()!=null && dto.getDtuId()!=0) {
-            predicates.add(cb.equal(root.get("dtuId"), dto.getDtuId()));
+            predicates.add(cb.equal(join.get("id"), dto.getDtuId()));
             }
             Predicate[] andPredicate = new Predicate[predicates.size()];
             return cb.and(predicates.toArray(andPredicate));
