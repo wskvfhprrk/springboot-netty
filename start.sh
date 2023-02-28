@@ -28,8 +28,8 @@ chmod +x /root/start.sh
 cd dtu
 echo -e ======================6.修改application.yml文件======================
 find -name 'application.yml' | xargs perl -pi -e 's|create-drop|update|g'
-# 启动时写入数据库中的初始化数据不用写了
-find -name 'InitController.java' | xargs perl -pi -e 's|start();|return;|g'
+# 启动时写入数据库中的不再初始化数据
+find -name 'InitController.java' | xargs perl -pi -e 's|start();|if(true)return;|g'
 #跳过测试建jar包
 echo -e ======================7.跳过测试构建jar包======================
 mvn clean package -Dmaven.test.skip=true
