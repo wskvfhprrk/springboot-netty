@@ -8,13 +8,10 @@ import com.hejz.dtu.entity.*;
 import com.hejz.dtu.repository.*;
 import com.hejz.dtu.service.CommandService;
 import com.hejz.dtu.service.DictionaryService;
-import com.hejz.dtu.service.UserService;
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 //此处不能删除——不然系统不能自动部署
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
