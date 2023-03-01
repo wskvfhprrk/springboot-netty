@@ -47,9 +47,9 @@ public class RoleController {
         role = roleService.update(role);
         return Result.ok(role);
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ApiOperation("删除角色实体类")
-    public Result DeleteRole(Integer id){
+    public Result DeleteRole(@PathVariable Integer id){
         roleService.delete(id);
         return Result.ok();
     }

@@ -47,9 +47,9 @@ public class CommandController {
         command = commandService.update(command);
         return Result.ok(command);
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ApiOperation("删除指令")
-    public Result DeleteCommand(Long id){
+    public Result DeleteCommand(@PathVariable Long id){
         commandService.delete(id);
         return Result.ok();
     }

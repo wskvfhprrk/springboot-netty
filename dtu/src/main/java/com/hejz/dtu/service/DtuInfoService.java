@@ -1,5 +1,6 @@
 package com.hejz.dtu.service;
 
+import com.hejz.dtu.common.Result;
 import com.hejz.dtu.dto.DtuInfoFindAllDto;
 import com.hejz.dtu.dto.DtuInfoFindByPageDto;
 import com.hejz.dtu.entity.DtuInfo;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface DtuInfoService {
     DtuInfo save(DtuInfo dtuInfo);
     DtuInfo update(DtuInfo dtuInfo);
-    void delete(Long id);
+    Result delete(Long id);
     DtuInfo findById(Long id);
     Page<DtuInfo> findPage(DtuInfoFindByPageDto dto);
 

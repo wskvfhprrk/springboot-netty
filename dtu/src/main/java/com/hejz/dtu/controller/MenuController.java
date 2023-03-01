@@ -47,9 +47,9 @@ public class MenuController {
         menu = menuService.update(menu);
         return Result.ok(menu);
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ApiOperation("删除菜单")
-    public Result DeleteMenu(Integer id){
+    public Result DeleteMenu(@PathVariable Integer id){
         menuService.delete(id);
         return Result.ok();
     }

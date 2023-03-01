@@ -47,9 +47,9 @@ public class CheckingRulesController {
         checkingRules = checkingRulesService.update(checkingRules);
         return Result.ok(checkingRules);
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ApiOperation("删除数据校检规则")
-    public Result DeleteCheckingRules(Integer id){
+    public Result DeleteCheckingRules(@PathVariable Integer id){
         checkingRulesService.delete(id);
         return Result.ok();
     }

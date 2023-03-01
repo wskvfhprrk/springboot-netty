@@ -80,9 +80,9 @@ public class UserController {
         user = userService.update(user);
         return Result.ok(user);
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ApiOperation("删除用户信息")
-    public Result DeleteUser(Integer id){
+    public Result DeleteUser(@PathVariable Integer id){
         userService.delete(id);
         return Result.ok();
     }

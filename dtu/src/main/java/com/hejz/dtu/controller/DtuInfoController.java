@@ -47,11 +47,10 @@ public class DtuInfoController {
         dtuInfo = dtuInfoService.update(dtuInfo);
         return Result.ok(dtuInfo);
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ApiOperation("删除dtu信息")
-    public Result DeleteDtuInfo(Long id){
-        dtuInfoService.delete(id);
-        return Result.ok();
+    public Result DeleteDtuInfo(@PathVariable Long id){
+        return dtuInfoService.delete(id);
     }
 
     @GetMapping("findPage")
@@ -86,6 +85,19 @@ public class DtuInfoController {
             return vo;
         }).collect(Collectors.toList());
         return Result.ok(list);
+    }
+
+    @GetMapping("automaticAdjustmentStatus/{id}")
+    @ApiOperation("控制状态修改")
+    public Result automaticAdjustmentStatus(@PathVariable Long id){
+        DtuInfo dtuInfo = dtuInfoService.findById(id);
+        if(dtuInfo.getAutomaticAdjustment()){
+            dtuInfo.setAutomaticAdjustment(false);
+        }else {
+            dtuInfo.setAutomaticAdjustment(true);
+        }
+        dtuInfoService.update(dtuInfo);
+        return Result.ok();
     }
 
 }

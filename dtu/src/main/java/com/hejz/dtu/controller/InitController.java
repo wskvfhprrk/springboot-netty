@@ -50,6 +50,7 @@ public class InitController {
 
     @PostConstruct
     public void initData() {
+        if(false)return;
         start();
         log.info("数据库初始化中……");
         //清除所有缓存

@@ -47,9 +47,9 @@ public class InstructionDefinitionStatusController {
         instructionDefinitionStatus = instructionDefinitionStatusService.save(instructionDefinitionStatus);
         return Result.ok(instructionDefinitionStatus);
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ApiOperation("删除继电器命令状态")
-    public Result DeleteCommandStatus(Long id){
+    public Result DeleteCommandStatus(@PathVariable Long id){
         instructionDefinitionStatusService.delete(id);
         return Result.ok();
     }

@@ -49,9 +49,9 @@ public class SensorController {
         sensor = sensorService.update(sensor);
         return Result.ok(sensor);
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ApiOperation("删除传感器")
-    public Result DeleteSensor(Long id){
+    public Result DeleteSensor(@PathVariable Long id){
         sensorService.delete(id);
         return Result.ok();
     }

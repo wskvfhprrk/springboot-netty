@@ -19,7 +19,7 @@ public class Result<T> {
     private Integer code;
 
     // 响应消息
-    private String msg;
+    private String message;
 
     // 响应中的数据
     private T data;
@@ -47,15 +47,15 @@ public class Result<T> {
         return new Result(status, msg, null);
     }
 
-    public Result(Integer status, String msg, T data) {
+    public Result(Integer status, String message, T data) {
         this.code = status;
-        this.msg = msg;
+        this.message = message;
         this.data = data;
     }
 
     public Result(T data) {
         this.code = 20000;
-        this.msg = "OK";
+        this.message = "OK";
         this.data = data;
     }
 
@@ -68,12 +68,12 @@ public class Result<T> {
         this.code = code;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public Object getData() {

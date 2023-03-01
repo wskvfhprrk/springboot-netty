@@ -50,9 +50,9 @@ public class SensorDataController {
         sensorData = sensorDataService.save(sensorData);
         return Result.ok(sensorData);
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ApiOperation("删除传感器数据")
-    public Result DeleteSensorData(Long id){
+    public Result DeleteSensorData(@PathVariable Long id){
         sensorDataService.delete(id);
         return Result.ok();
     }

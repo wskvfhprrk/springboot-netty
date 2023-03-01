@@ -1,6 +1,7 @@
 package com.hejz.dtu.service.impl;
 
 import com.hejz.dtu.common.Constant;
+import com.hejz.dtu.common.Result;
 import com.hejz.dtu.dto.DtuInfoFindAllDto;
 import com.hejz.dtu.dto.DtuInfoFindByPageDto;
 import com.hejz.dtu.entity.DtuInfo;
@@ -18,6 +19,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.Predicate;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,10 +44,15 @@ public class DtuInfoServiceImpl implements DtuInfoService {
     }
     @CacheEvict(value = Constant.DTU_INFO_CACHE_KEY, key = "#p0")
     @Override
-    public void delete(Long id) {
+    public Result delete(Long id) {
         Optional<DtuInfo> dtuInfo = dtuInfoRepository.findById(id);
+        try {
+            dtuInfoRepository.deleteById( id);
+        }catch (Exception e){
+            return Result.error(500,"不能删除，已经被其它数据使用！");
+        }
         redisTemplate.delete(Constant.DTU_INFO_IMEI_CACHE_KEY+"::"+dtuInfo.get().getImei());
-        dtuInfoRepository.deleteById( id);
+        return Result.ok();
     }
 
     @Cacheable(value = Constant.DTU_INFO_CACHE_KEY, key = "#p0",unless = "#result==null")

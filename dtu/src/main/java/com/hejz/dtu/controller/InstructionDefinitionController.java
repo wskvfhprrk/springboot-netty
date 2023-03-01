@@ -47,9 +47,9 @@ public class InstructionDefinitionController {
         instructionDefinition = instructionDefinitionService.Save(instructionDefinition);
         return Result.ok(instructionDefinition);
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ApiOperation("删除继电器定义指令")
-    public Result DeleteInstructionDefinition(Long id){
+    public Result DeleteInstructionDefinition(@PathVariable Long id){
         instructionDefinitionService.delete(id);
         return Result.ok();
     }
