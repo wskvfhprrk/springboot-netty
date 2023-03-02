@@ -76,4 +76,10 @@ public class SensorDataController {
         return Result.ok(pages);
     }
 
+    @GetMapping("getChartData")
+    @ApiOperation("查询echarts图表数据")
+    public Result<EchartsVo> getChartData(GetChartDataDto getChartDataDto){
+        return sensorDataService.getChartData(getChartDataDto);
+    }
+
 }

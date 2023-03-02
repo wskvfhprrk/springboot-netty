@@ -1,11 +1,15 @@
 package com.hejz.dtu.service.impl;
 
+import com.hejz.dtu.common.Result;
+import com.hejz.dtu.dto.GetChartDataDto;
 import com.hejz.dtu.dto.SensorDataFindByPageDto;
 import com.hejz.dtu.entity.DtuInfo;
 import com.hejz.dtu.entity.SensorData;
 import com.hejz.dtu.repository.SensorDataRepository;
 import com.hejz.dtu.service.SensorDataService;
+import com.hejz.dtu.vo.EchartsVo;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,6 +20,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SensorDataServiceImpl implements SensorDataService {
@@ -70,4 +75,36 @@ public class SensorDataServiceImpl implements SensorDataService {
         return all;
     }
 
+    @Override
+    public Result<EchartsVo> getChartData(GetChartDataDto dto) {
+        Specification<SensorData> sp= (root, query, cb)-> {
+            List<Predicate> predicates = new ArrayList<>();
+            Join<SensorData, DtuInfo> join=root.join("dtuInfo", JoinType.LEFT);
+            if(dto.getDtuId()!=null && dto.getDtuId()!=0) {
+                predicates.add(cb.equal(join.get("id"), dto.getDtuId()));
+            }
+            Predicate[] andPredicate = new Predicate[predicates.size()];
+            return cb.and(predicates.toArray(andPredicate));
+        };
+        //截取第一个字符，为-是倒序，为+正排序,后面为字段名称
+        Sort.Direction direction = dto.getSort().substring(0, 1).equals("+") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, dto.getSort().substring(1));
+        Page<SensorData> page = sensorDataRepository.findAll(sp, PageRequest.of(dto.getPage(), dto.getLimit(), sort));
+        List<String> createDateList = page.get().map(sensorData -> sensorData.getCreateDate().toString()).collect(Collectors.toList());
+        List<String> dateList = page.get().map(sensorData -> sensorData.getData().split(",")[dto.getOrderNumber()]).collect(Collectors.toList());
+        EchartsVo vo=new EchartsVo();
+        List<EchartsVo.DatasetsBean> list=new ArrayList<>();
+        EchartsVo.DatasetsBean datasetsBean=new EchartsVo.DatasetsBean();
+        datasetsBean.setData(dateList);
+        datasetsBean.setLabel("Data");
+        datasetsBean.setBackgroundColor(dto.getBackgroundColor());
+        datasetsBean.setType(dto.getType());
+        list.add(datasetsBean);
+        vo.setDatasets(list);
+        vo.setLabels(createDateList);
+        //标题
+        SensorData sensorData = page.get().collect(Collectors.toList()).get(0);
+        vo.setTitle(sensorData.getNames().split(",")[dto.getOrderNumber()]+"(单位："+sensorData.getUnits().split(",")[dto.getOrderNumber()]+")");
+        return Result.ok(vo);
+    }
 }
