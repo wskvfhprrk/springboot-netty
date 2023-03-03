@@ -31,6 +31,7 @@ public class Constant {
     public static final Map<String,List<Double>> THREE_RECORDS_MAP = new HashMap();
     //按通道存储每组上报间隔时间——在接到据后会自传感器数据后动修改与dtu设置的每组间隔时间一致，否则会是默认时间。
     public static final  Map<String,Integer> INTERVAL_TIME_MAP = new ConcurrentHashMap() ;
+    public static final String GET_CHART_DATA_KEY = "GetChartDataKey";
 
 
     //channel绑定的dtuId的Key

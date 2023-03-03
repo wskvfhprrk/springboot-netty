@@ -1,5 +1,9 @@
 package com.hejz.dtu.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hejz.dtu.common.Constant;
 import com.hejz.dtu.common.Result;
 import com.hejz.dtu.dto.GetChartDataDto;
 import com.hejz.dtu.dto.SensorDataFindByPageDto;
@@ -14,19 +18,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
-import javax.xml.crypto.Data;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,18 +35,21 @@ public class SensorDataServiceImpl implements SensorDataService {
 
     @Autowired
     private SensorDataRepository sensorDataRepository;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private ObjectMapper objectMapper;
+
 
     @Override
     public SensorData save(SensorData sensorData) {
         return sensorDataRepository.save(sensorData);
     }
 
-
     @Override
     public void delete(Long id) {
-        sensorDataRepository.deleteById( id);
+        sensorDataRepository.deleteById(id);
     }
-
     @Override
     public SensorData findById(Long id) {
        return sensorDataRepository.findById( id).orElse(null);
@@ -84,22 +88,44 @@ public class SensorDataServiceImpl implements SensorDataService {
 
     @Override
     public Result<EchartsVo> getChartData(GetChartDataDto dto) {
-        Specification<SensorData> sp= (root, query, cb)-> {
+        //获取一天内的数据——加缓存
+        List<SensorData> dataList = new ArrayList<>();
+        Object o = redisTemplate.opsForValue().get(Constant.GET_CHART_DATA_KEY + "::" + dto.getDtuId());
+        try {
+            if (o != null) {
+                dataList = objectMapper.readValue(o.toString(), new TypeReference<List<SensorData>>() {
+                });
+            } else {
+                dataList = getSensorData(dto);
+                if (dataList.isEmpty()) return Result.ok();
+                String s = objectMapper.writeValueAsString(dataList);
+                redisTemplate.opsForValue().set(Constant.GET_CHART_DATA_KEY + "::" + dto.getDtuId(), s, 1, TimeUnit.MINUTES);
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        EchartsVo vo = getEchartsVo(dto, dataList);
+        return Result.ok(vo);
+    }
+
+    private List<SensorData> getSensorData(GetChartDataDto dto) {
+        Specification<SensorData> sp = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             Join<SensorData, DtuInfo> join = root.join("dtuInfo", JoinType.LEFT);
             if (dto.getDtuId() != null && dto.getDtuId() != 0) {
                 predicates.add(cb.equal(join.get("id"), dto.getDtuId()));
             }
             // 获取今天和昨天的日期
-            Date today = new Date() ;
+            Date today = new Date();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
             calendar.add(Calendar.DAY_OF_MONTH, -1);
-            Date yesterday =  calendar.getTime();;
+            Date yesterday = calendar.getTime();
+            ;
             // 构建查询语句
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             try {
-                predicates.add(cb.between(root.get("createDate"),formatter.parse(formatter.format(yesterday)),formatter.parse(formatter.format(today))));
+                predicates.add(cb.between(root.get("createDate"), formatter.parse(formatter.format(yesterday)), formatter.parse(formatter.format(today))));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -110,8 +136,7 @@ public class SensorDataServiceImpl implements SensorDataService {
         Sort.Direction direction = dto.getSort().substring(0, 1).equals("+") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, dto.getSort().substring(1));
         List<SensorData> dataList = sensorDataRepository.findAll(sp);
-        EchartsVo vo = getEchartsVo(dto, dataList);
-        return Result.ok(vo);
+        return dataList;
     }
 
     private EchartsVo getEchartsVo(GetChartDataDto dto, List<SensorData> data) {

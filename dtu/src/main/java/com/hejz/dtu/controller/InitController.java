@@ -139,7 +139,7 @@ public class InitController {
 //        //感应器信息
             sensorRepository.save(new Sensor(dtuInfo,"空气温度",25,20,instructionDefinition,instructionDefinition1,command9,1,"ºC"));
             sensorRepository.save(new Sensor(dtuInfo,"空气湿度",25,15,null,null,command10,2,"%"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤PH",25,15,null,null,command11,3, ""));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤PH",25,15,null,null,command11,3, "mol·L"));
             sensorRepository.save(new Sensor(dtuInfo,"土壤温度",25,15,null,null,command12,4,"ºC"));
             sensorRepository.save(new Sensor(dtuInfo,"土壤湿度",100,15,instructionDefinition2,instructionDefinition3,command13,5,"%"));
             sensorRepository.save(new Sensor(dtuInfo,"土壤氮",25,15,null,null,command14,6, "mg/L"));
