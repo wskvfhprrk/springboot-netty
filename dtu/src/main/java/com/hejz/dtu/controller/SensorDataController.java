@@ -3,7 +3,6 @@ package com.hejz.dtu.controller;
 import com.hejz.dtu.common.PageResult;
 import com.hejz.dtu.dto.*;
 import com.hejz.dtu.entity.SensorData;
-import com.hejz.dtu.service.DtuInfoService;
 import com.hejz.dtu.service.SensorDataService;
 import com.hejz.dtu.common.Result;
 import com.hejz.dtu.vo.*;
@@ -30,8 +29,6 @@ public class SensorDataController {
 
     @Autowired
     private SensorDataService sensorDataService;
-    @Autowired
-    private DtuInfoService dtuInfoService;
 
     @PostMapping()
     @ApiOperation("添加传感器数据")
@@ -80,6 +77,12 @@ public class SensorDataController {
     @ApiOperation("查询echarts图表数据")
     public Result<EchartsVo> getChartData(GetChartDataDto getChartDataDto){
         return sensorDataService.getChartData(getChartDataDto);
+    }
+
+    @GetMapping("last/{dtuId}")
+    @ApiOperation("查询最后一条数据")
+    private Result<SensorData> last(@PathVariable Long dtuId){
+        return sensorDataService.getLast(dtuId);
     }
 
 }

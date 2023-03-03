@@ -132,9 +132,6 @@ public class SensorDataServiceImpl implements SensorDataService {
             Predicate[] andPredicate = new Predicate[predicates.size()];
             return cb.and(predicates.toArray(andPredicate));
         };
-        //截取第一个字符，为-是倒序，为+正排序,后面为字段名称
-        Sort.Direction direction = dto.getSort().substring(0, 1).equals("+") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, dto.getSort().substring(1));
         List<SensorData> dataList = sensorDataRepository.findAll(sp);
         return dataList;
     }
@@ -171,7 +168,19 @@ public class SensorDataServiceImpl implements SensorDataService {
         vo.setLabels(createDateList);
         //标题
         SensorData sensorData = data.get(0);
-        vo.setTitle("一天内每小时平均："+sensorData.getNames().split(",")[dto.getOrderNumber()]+"(单位："+sensorData.getUnits().split(",")[dto.getOrderNumber()]+")");
+        vo.setTitle("一天内每小时平均：" + sensorData.getNames().split(",")[dto.getOrderNumber()] + "(单位：" + sensorData.getUnits().split(",")[dto.getOrderNumber()] + ")");
         return vo;
+    }
+
+
+    @Override
+    public Result<SensorData> getLast(Long dtuId) {
+        SensorDataFindByPageDto dto=new SensorDataFindByPageDto();
+        dto.setSort("-id");
+        dto.setPage(1);
+        dto.setLimit(1);
+        dto.setDtuId(dtuId);
+        Page<SensorData> page = this.findPage(dto);
+        return Result.ok(page.get().findFirst().get());
     }
 }

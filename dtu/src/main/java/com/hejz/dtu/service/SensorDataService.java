@@ -16,4 +16,6 @@ public interface SensorDataService {
     SensorData findById(Long id);
     Page<SensorData> findPage(SensorDataFindByPageDto dto);
     Result<EchartsVo> getChartData(GetChartDataDto i);
+
+    Result<SensorData> getLast(Long dtuId);
 }

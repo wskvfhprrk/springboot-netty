@@ -21,6 +21,7 @@ import java.util.Date;
 @org.hibernate.annotations.Table(appliesTo = "equ_sensor_data", comment = "传感器数据")
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class SensorData implements Serializable{
 
     @Id
@@ -70,9 +71,9 @@ public class SensorData implements Serializable{
     /**
      * 外键表——tb_dtu_info中的字段id
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "dtu_id")
-    @JsonIgnoreProperties(value = {"sensorDatas"})
+    @JsonIgnoreProperties(value = {"sensorData"})
     private DtuInfo dtuInfo;
 
     @Transient
