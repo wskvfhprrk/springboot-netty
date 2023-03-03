@@ -97,7 +97,7 @@ public class SensorDataServiceImpl implements SensorDataService {
             calendar.add(Calendar.DAY_OF_MONTH, -1);
             Date yesterday =  calendar.getTime();;
             // 构建查询语句
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             try {
                 predicates.add(cb.between(root.get("createDate"),formatter.parse(formatter.format(yesterday)),formatter.parse(formatter.format(today))));
             } catch (ParseException e) {
@@ -116,8 +116,6 @@ public class SensorDataServiceImpl implements SensorDataService {
 
     private EchartsVo getEchartsVo(GetChartDataDto dto, List<SensorData> data) {
         //每个小时，求平均数
-
-
         // 定义时间格式
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH");
         Map<String, Double> map = data.stream().collect(Collectors.groupingBy(
