@@ -181,6 +181,7 @@ public class SensorDataServiceImpl implements SensorDataService {
         dto.setLimit(1);
         dto.setDtuId(dtuId);
         Page<SensorData> page = this.findPage(dto);
+        if(page.get().findFirst()==null)return Result.error(500,"没有传感器数据!");
         return Result.ok(page.get().findFirst().get());
     }
 }

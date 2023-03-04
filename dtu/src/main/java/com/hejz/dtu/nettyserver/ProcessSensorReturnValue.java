@@ -88,6 +88,7 @@ public class ProcessSensorReturnValue {
             log.info("======{}=>{}=>解析一组出数据=========", ctx.channel().id().toString(), dtuInfo.getId());
             try {
                 List<Map> sensorDataList = parseSensorListData(Constant.SENSOR_DATA_BYTE_LIST_MAP.get(ctx.channel().id().toString()), ctx);
+
                 if(sensorDataList.isEmpty())return;
                 //检查地址位排列顺序
                 StringBuffer sb=new StringBuffer();
@@ -129,6 +130,9 @@ public class ProcessSensorReturnValue {
      * @return
      */
     private List<Map> parseSensorListData(List<byte[]> list, ChannelHandlerContext ctx) throws Exception {
+//        for (byte[] bytes : list) {
+//            log.info(HexConvert.BinaryToHexString(bytes));
+//        }
         AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
         Long dtuId = ctx.channel().attr(key).get();
         DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
@@ -203,12 +207,12 @@ public class ProcessSensorReturnValue {
         Double actualResults = calculateActualData(sensor.getCommand().getCalculationFormula(), d);
         log.info(" 通道：{} dtuId==>{},{} =====> {}  ====> {}", ctx.channel().id().toString(), dtuInfo.getId(), arrayNumber, sensor.getName(), actualResults);
         //开新建程——异步处理根据解析到数据大小判断是否产生事件
-        if (arrayNumber == 0) {
-            if (actualResults - 50 >= 0 || actualResults + 50 <= 0) {
-                log.error("当前一组数据:{}不合理温度没有大于50或小于-50的温度，数据记录错位，不作为参考！", actualResults);
-                return null;
-            }
-        }
+//        if (arrayNumber == 0) {
+//            if (actualResults - 50 >= 0 || actualResults + 50 <= 0) {
+//                log.error("当前一组数据:{}不合理温度没有大于50或小于-50的温度，数据记录错位，不作为参考！", actualResults);
+//                return null;
+//            }
+//        }
         return actualResults;
     }
 

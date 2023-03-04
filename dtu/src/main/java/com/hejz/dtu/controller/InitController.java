@@ -93,7 +93,7 @@ public class InitController {
         //imei值
         Long imei = 865328063321359L;
         for (int i = 0; i < 30; i++) {
-            DtuInfo dtuInfo = dtuInfoRepository.save(new DtuInfo(imei.toString(), 89, 30000, true, "1,1,2,2,2,2,2,2,2"));
+            DtuInfo dtuInfo = dtuInfoRepository.save(new DtuInfo(imei.toString(), 89, 30000, true, "1,2,2,2,2,2,2,2,1"));
 
             //处理编辑继电器命令的信息
             Set<Command> set = new HashSet<>();
@@ -137,15 +137,15 @@ public class InitController {
             set.add(command17);
             InstructionDefinition instructionDefinition12 = instructionDefinitionRepository.save(new InstructionDefinition(dtuInfo, "土壤电导率", "土壤电导率", InstructionTypeEnum.SENSOR_COMMAND, set));
 //        //感应器信息
-            sensorRepository.save(new Sensor(dtuInfo,"空气温度",25,20,instructionDefinition,instructionDefinition1,command9,1,"ºC"));
-            sensorRepository.save(new Sensor(dtuInfo,"空气湿度",25,15,null,null,command10,2,"%"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤PH",25,15,null,null,command11,3, "mol·L"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤温度",25,15,null,null,command12,4,"ºC"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤湿度",100,15,instructionDefinition2,instructionDefinition3,command13,5,"%"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤氮",25,15,null,null,command14,6, "mg/L"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤磷",25,15,null,null,command15,7, "mg/L"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤钾",25,15,null,null,command15,8, "mg/L"));
-            sensorRepository.save(new Sensor(dtuInfo,"土壤电导率",25,15,null,null,command16,9,"us/cm"));
+            sensorRepository.save(new Sensor(dtuInfo,"空气温度",25,20,null,null,command9,9,"ºC"));
+            sensorRepository.save(new Sensor(dtuInfo,"空气湿度",25,15,null,null,command10,1,"%"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤PH",25,15,null,null,command11,2, "mol·L"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤温度",25,15,instructionDefinition,instructionDefinition1,command12,3,"ºC"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤湿度",100,15,instructionDefinition2,instructionDefinition3,command13,4,"%"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤氮",25,15,null,null,command14,5, "mg/L"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤磷",25,15,null,null,command15,6, "mg/L"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤钾",25,15,null,null,command15,7, "mg/L"));
+            sensorRepository.save(new Sensor(dtuInfo,"土壤电导率",25,15,null,null,command16,8,"us/cm"));
 
             imei++;
         }
