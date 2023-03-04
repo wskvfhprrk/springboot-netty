@@ -60,24 +60,15 @@ public class InstructionDefinitionStatus implements Serializable{
     /**
      * 外键表——instruction_definition中的字段id
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "instruction_definition_id")
-    @JsonIgnoreProperties(value = {"commandStatus"})
+    @JsonIgnoreProperties(value = {"instructionDefinitionStatus"})
     private InstructionDefinition instructionDefinition;
     /**
      * 外键表——tb_dtu_info中的字段id，此字段是为了查询方便，保存时InstructionDefinition已经含有了dtuId
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = {"commandStatus"})
+    @JsonIgnoreProperties(value = {"instructionDefinitionStatus"})
     @JoinColumn(name = "dtu_id")
     private DtuInfo dtuInfo;
-
-    public InstructionDefinitionStatus(DtuInfo dtuInfo, InstructionDefinition instructionDefinition, Date createDate, Date updateDate, boolean status) {
-        this.dtuInfo=dtuInfo;
-        this.instructionDefinition=instructionDefinition;
-        this.createDate=createDate;
-        this.updateDate=updateDate;
-        this.status=status;
-
-    }
 }

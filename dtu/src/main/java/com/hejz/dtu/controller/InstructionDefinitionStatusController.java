@@ -63,9 +63,32 @@ public class InstructionDefinitionStatusController {
         List<CommandStatusFindByPageVo> list = commandStatusPage.getContent().stream().map(d -> {
             CommandStatusFindByPageVo vo = new CommandStatusFindByPageVo();
             BeanUtils.copyProperties(d,vo);
+            vo.setInstructionDefinitionId(d.getInstructionDefinition().getId());
+            vo.setDtuId(d.getDtuInfo().getId());
             return vo;
         }).collect(Collectors.toList());
         PageResult<CommandStatusFindByPageVo> pages=new PageResult<>();
+        pages.setPage(dto.getPage());
+        pages.setLimit(dto.getLimit());
+        pages.setTotalPage(commandStatusPage.getTotalPages());
+        pages.setTotal(commandStatusPage.getTotalElements());
+        pages.setItems(list);
+        return Result.ok(pages);
+    }
+    @GetMapping("findPageByEcharts")
+    @ApiOperation("条件查询继电器命令状态")
+    public Result<PageResult<CommandStatusFindByPageForEchartsVo>> findPageByEcharts( @Valid CommandStatusFindByPageDto dto){
+        InstructionDefinitionStatus instructionDefinitionStatus =new InstructionDefinitionStatus();
+        BeanUtils.copyProperties(dto, instructionDefinitionStatus);
+        Page<InstructionDefinitionStatus> commandStatusPage = instructionDefinitionStatusService.findPage(dto);
+        List<CommandStatusFindByPageForEchartsVo> list = commandStatusPage.getContent().stream().map(d -> {
+            CommandStatusFindByPageForEchartsVo vo = new CommandStatusFindByPageForEchartsVo();
+            BeanUtils.copyProperties(d,vo);
+            vo.setInstructionDefinition(d.getInstructionDefinition().getName());
+            vo.setDtu(d.getDtuInfo().getImei());
+            return vo;
+        }).collect(Collectors.toList());
+        PageResult<CommandStatusFindByPageForEchartsVo> pages=new PageResult<>();
         pages.setPage(dto.getPage());
         pages.setLimit(dto.getLimit());
         pages.setTotalPage(commandStatusPage.getTotalPages());

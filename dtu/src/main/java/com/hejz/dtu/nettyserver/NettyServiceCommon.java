@@ -237,9 +237,10 @@ public class NettyServiceCommon {
             //查找相反指令的活动状态
             List<InstructionDefinitionStatus> contraryInstructionDefinitionStatuses = instructionDefinitionStatusService.findByInstructionDefinition(contraryInstructionDefinition);
             if(!contraryInstructionDefinitionStatuses.isEmpty()){
-                for (InstructionDefinitionStatus status : contraryInstructionDefinitionStatuses) {
-                    status.setStatus(false);
-                    instructionDefinitionStatusService.save(status);
+                for (InstructionDefinitionStatus definitionStatus : contraryInstructionDefinitionStatuses) {
+                    definitionStatus.setStatus(false);
+                    definitionStatus.setUpdateDate(new Date());
+                    instructionDefinitionStatusService.save(definitionStatus);
                 }
             }
         }
