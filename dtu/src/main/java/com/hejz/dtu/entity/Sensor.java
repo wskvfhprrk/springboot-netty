@@ -75,7 +75,7 @@ public class Sensor implements Serializable{
     /**
      * 外键表——tb_dtu_info中的字段id
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "dtu_id")
     @JsonIgnoreProperties(value = {"sensors"})
     private DtuInfo dtuInfo;

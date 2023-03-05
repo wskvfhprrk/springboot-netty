@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -58,6 +59,7 @@ public class SensorController {
 
     @GetMapping("findPage")
     @ApiOperation("条件查询传感器")
+
     public Result<PageResult<SensorFindByPageVo>> findBypage( @Valid SensorFindByPageDto dto){
         Sensor sensor=new Sensor();
         BeanUtils.copyProperties(dto,sensor);

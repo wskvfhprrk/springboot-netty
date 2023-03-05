@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class SensorServiceImpl implements SensorService {
     }
 
     @Override
+    @Transactional
     public Page<Sensor> findPage(SensorFindByPageDto dto) {
         Specification<Sensor> sp= (root, query, cb)-> {
             List<Predicate> predicates = new ArrayList<>();
