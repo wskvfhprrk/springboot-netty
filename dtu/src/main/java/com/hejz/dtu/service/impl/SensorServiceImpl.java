@@ -39,7 +39,7 @@ public class SensorServiceImpl implements SensorService {
         return sensorRepository.save(sensor);
     }
 
-    @CacheEvict(value = Constant.SENSOR_CACHE_KEY, key = "#p0")
+    @CacheEvict(value = Constant.SENSOR_CACHE_KEY, key = "#p0.id")
     @Override
     public Sensor update(Sensor sensor) {
         return sensorRepository.save(sensor);
