@@ -130,9 +130,9 @@ public class ProcessSensorReturnValue {
      * @return
      */
     private List<Map> parseSensorListData(List<byte[]> list, ChannelHandlerContext ctx) throws Exception {
-        for (byte[] bytes : list) {
-            log.info(HexConvert.BinaryToHexString(bytes));
-        }
+//        for (byte[] bytes : list) {
+//            log.info(HexConvert.BinaryToHexString(bytes));
+//        }
         AttributeKey<Long> key = AttributeKey.valueOf(Constant.CHANNEl_KEY);
         Long dtuId = ctx.channel().attr(key).get();
         DtuInfo dtuInfo = dtuInfoService.findById(dtuId);
