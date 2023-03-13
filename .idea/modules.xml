@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/dtu/dtu.iml" filepath="$PROJECT_DIR$/dtu/dtu.iml" />
+      <module fileurl="file://$PROJECT_DIR$/parent/parent.iml" filepath="$PROJECT_DIR$/parent/parent.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/springboot-netty.iml" filepath="$PROJECT_DIR$/.idea/springboot-netty.iml" />
     </modules>
   </component>

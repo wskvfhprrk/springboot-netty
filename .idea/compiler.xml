@@ -11,12 +11,13 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="dtu" target="1.8" />
+      <module name="dtu" target="8" />
+      <module name="parent" target="8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="dtu" options="-parameters" />
+      <module name="dtu" options="" />
     </option>
   </component>
 </project>
